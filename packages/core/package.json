@@ -29,10 +29,11 @@
     "neverthrow": "^8.1.1"
   },
   "devDependencies": {
-    "@ipf/eslint-config": "workspace:*",
-    "typescript": "^6.0.0",
-    "vitest": "^4.0.0",
     "@fast-check/vitest": "^0.3.0",
-    "eslint": "^10.0.0"
+    "@ipf/eslint-config": "workspace:*",
+    "@types/node": "^25.5.0",
+    "eslint": "^10.0.0",
+    "typescript": "^6.0.0",
+    "vitest": "^4.0.0"
   }
 }
