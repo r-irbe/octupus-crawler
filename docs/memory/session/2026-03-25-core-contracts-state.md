@@ -24,7 +24,7 @@
 | 1 | T-ARCH-001: FetchError discriminated union (9 variants) | `done` | `13c5a5d` | TDD RED→GREEN→REFACTOR |
 | 2 | T-ARCH-002: UrlError discriminated union (3 variants) | `done` | `13c5a5d` | TDD RED→GREEN→REFACTOR |
 | 3 | T-ARCH-003: CrawlError superset union | `done` | `13c5a5d` | TDD RED→GREEN→REFACTOR |
-| 4 | T-ARCH-004: CrawlUrl branded type | `pending` | — | — |
+| 4 | T-ARCH-004: CrawlUrl branded type | `done` | `3795aed` | TDD RED→GREEN→REFACTOR |
 | 5 | T-ARCH-005: Frontier interface | `pending` | — | — |
 | 6 | T-ARCH-006: Fetcher interface | `pending` | — | — |
 | 7 | T-ARCH-007: Logger interface | `pending` | — | — |
@@ -44,11 +44,11 @@
 
 | Field | Value |
 | --- | --- |
-| Current task # | 4 (T-ARCH-004: CrawlUrl branded type) |
-| Last completed gate | G7 (state tracker updated after error type commit) |
+| Current task # | 5 (T-ARCH-005..012, T-ARCH-028: Contract interfaces + Disposable) |
+| Last completed gate | G7 (state tracker updated after CrawlUrl commit) |
 | Guard function status | PASS — typecheck ✅ lint ✅ test ✅ |
-| Commits on branch | 2 (`b0a34c0` scaffold, `13c5a5d` error types) |
-| Tests passing | yes (25 tests in 4 files) |
+| Commits on branch | 3 (`b0a34c0` scaffold, `13c5a5d` errors, `3795aed` CrawlUrl) |
+| Tests passing | yes (28 tests in 5 files) |
 | Blockers | None |
 
 ## Recovery Plan
