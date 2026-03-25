@@ -20,7 +20,7 @@
 
 | # | Task | Status | Commit | Notes |
 | --- | --- | --- | --- | --- |
-| 0 | Monorepo scaffold (package.json, pnpm-workspace, turbo.json, tsconfig) | `pending` | — | Prerequisite — ADR-001 |
+| 0 | Monorepo scaffold (package.json, pnpm-workspace, turbo.json, tsconfig) | `done` | `b0a34c0` | Prerequisite — ADR-001. G5 pass. |
 | 1 | T-ARCH-001: FetchError discriminated union (9 variants) | `pending` | — | — |
 | 2 | T-ARCH-002: UrlError discriminated union (3 variants) | `pending` | — | — |
 | 3 | T-ARCH-003: CrawlError superset union | `pending` | — | — |
@@ -44,19 +44,19 @@
 
 | Field | Value |
 | --- | --- |
-| Current task # | 0 (RECOVERY — scaffold files exist but not validated/committed) |
-| Last completed gate | G4 (state tracker created) |
-| Guard function status | `not-run` — VIOLATION: wrote ~19 files without running once |
-| Commits on branch | 0 — VIOLATION: Phase 0 scaffold complete but not committed |
-| Tests passing | unknown — never ran |
-| Blockers | RECOVERY: must validate scaffold, commit, then delete premature production code |
+| Current task # | 1 (T-ARCH-001: FetchError — TDD RED phase next) |
+| Last completed gate | G7 (state tracker updated after scaffold commit) |
+| Guard function status | PASS — typecheck ✅ lint ✅ test ✅ |
+| Commits on branch | 1 (`b0a34c0` scaffold) |
+| Tests passing | yes (0 test files, passWithNoTests) |
+| Blockers | Must delete premature production error files before TDD RED |
 
 ## Recovery Plan
 
-1. Run G5 guard functions on scaffold files (attempt 1/3)
-2. Fix any failures
-3. G6 commit scaffold: `chore(root): scaffold monorepo with turborepo + pnpm`
-4. G7 update this tracker
+1. ~~Run G5 guard functions on scaffold files~~ ✅ PASS
+2. ~~Fix failures~~ ✅ Fixed testing generators, config placeholder
+3. ~~G6 commit scaffold~~ ✅ `b0a34c0`
+4. ~~G7 update this tracker~~ ✅ (this update)
 5. Delete premature production error type files (written before tests — TDD violation)
 6. Restart Phase 1 with TDD RED phase (tests first)
 
