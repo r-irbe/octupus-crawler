@@ -40,18 +40,24 @@
 | 17 | T-ARCH-022: Error constructor unit tests | `done` | `13c5a5d` | Covered in Phase 1 error TDD |
 | 18 | T-ARCH-023: Config loading unit tests | `done` | `5d4b0ad` | Covered in config TDD |
 | 19 | G8 Review Council (Phase 1+2) | `done` | `f052239` | 4 Major findings fixed, 2 deferred to tasks.md |
+| 20 | Dependency upgrade (TS6, ESLint 10, Zod 4, Vitest 4) | `done` | `5fdd140` | G8 review: no Major findings |
+| 21 | T-ARCH-016: Layer boundary ESLint rules | `done` | `ee07cfa` | import-x/no-restricted-paths |
+| 22 | T-ARCH-017: Circular dependency detection | `done` | `ee07cfa` | import-x/no-cycle |
+| 23 | T-ARCH-018: Test boundary rules | `done` | `ee07cfa` | prod cannot import test files |
+| 24 | T-ARCH-019: Contracts purity rule | `done` | `ee07cfa` | no-restricted-syntax, smoke tested |
 
 ## Current State
 
 | Field | Value |
 | --- | --- |
-| Current task # | Dependency upgrade COMPLETE. Next: G8 review on upgrade, then Phase 3 (T-ARCH-016..019 static analysis rules) |
-| Last completed gate | G6 (commit `5fdd140` — dependency upgrade) |
+| Current task # | Phase 3 COMPLETE. Next: G8 review on Phase 3, then Phase 4 (composition root) |
+| Last completed gate | G6 (commit `ee07cfa` — Phase 3 static analysis rules) |
 | Guard function status | PASS — typecheck ✅ lint ✅ test ✅ (55 tests) |
-| Commits on branch | 10 (`b0a34c0`, `13c5a5d`, `3795aed`, `bc07226`, `5d4b0ad`, `1cea2f4`, `f052239`, `f99a5ea`, `5fdd140`) |
+| Commits on branch | 12 (`b0a34c0`..`5fdd140`, `a79dfa7`, `ee07cfa`) |
 | Tests passing | yes (55 tests in 10 files: 38 core + 17 config) |
 | Blockers | None |
 | Versions | TS 6.0.2, ESLint 10, Zod 4.3.6 (zod/v4), Vitest 4.x, pnpm 10.33.0, Node 22+ |
+| New dep | eslint-plugin-import-x ^4.16.2 (ADR-016) |
 
 ## Recovery Plan
 
