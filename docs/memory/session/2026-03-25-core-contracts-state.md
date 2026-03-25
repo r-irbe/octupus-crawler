@@ -21,9 +21,9 @@
 | # | Task | Status | Commit | Notes |
 | --- | --- | --- | --- | --- |
 | 0 | Monorepo scaffold (package.json, pnpm-workspace, turbo.json, tsconfig) | `done` | `b0a34c0` | Prerequisite — ADR-001. G5 pass. |
-| 1 | T-ARCH-001: FetchError discriminated union (9 variants) | `pending` | — | — |
-| 2 | T-ARCH-002: UrlError discriminated union (3 variants) | `pending` | — | — |
-| 3 | T-ARCH-003: CrawlError superset union | `pending` | — | — |
+| 1 | T-ARCH-001: FetchError discriminated union (9 variants) | `done` | `13c5a5d` | TDD RED→GREEN→REFACTOR |
+| 2 | T-ARCH-002: UrlError discriminated union (3 variants) | `done` | `13c5a5d` | TDD RED→GREEN→REFACTOR |
+| 3 | T-ARCH-003: CrawlError superset union | `done` | `13c5a5d` | TDD RED→GREEN→REFACTOR |
 | 4 | T-ARCH-004: CrawlUrl branded type | `pending` | — | — |
 | 5 | T-ARCH-005: Frontier interface | `pending` | — | — |
 | 6 | T-ARCH-006: Fetcher interface | `pending` | — | — |
@@ -44,12 +44,12 @@
 
 | Field | Value |
 | --- | --- |
-| Current task # | 1 (T-ARCH-001: FetchError — TDD RED phase next) |
-| Last completed gate | G7 (state tracker updated after scaffold commit) |
+| Current task # | 4 (T-ARCH-004: CrawlUrl branded type) |
+| Last completed gate | G7 (state tracker updated after error type commit) |
 | Guard function status | PASS — typecheck ✅ lint ✅ test ✅ |
-| Commits on branch | 1 (`b0a34c0` scaffold) |
-| Tests passing | yes (0 test files, passWithNoTests) |
-| Blockers | Must delete premature production error files before TDD RED |
+| Commits on branch | 2 (`b0a34c0` scaffold, `13c5a5d` error types) |
+| Tests passing | yes (25 tests in 4 files) |
+| Blockers | None |
 
 ## Recovery Plan
 
