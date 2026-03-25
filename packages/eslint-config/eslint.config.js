@@ -117,6 +117,14 @@ export default tseslint.config(
     },
   },
 
+  // --- Test files: disable unbound-method for vi.fn() mocks ---
+  {
+    files: ['**/*.test.ts'],
+    rules: {
+      '@typescript-eslint/unbound-method': 'off',
+    },
+  },
+
   // --- T-ARCH-019: Contracts purity — no runtime code (REQ-ARCH-002) ---
   {
     files: ['**/contracts/**/*.ts'],

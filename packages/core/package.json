@@ -7,8 +7,10 @@
     "./errors/fetch-error": "./src/errors/fetch-error.ts",
     "./errors/url-error": "./src/errors/url-error.ts",
     "./errors/crawl-error": "./src/errors/crawl-error.ts",
-    "./types/crawl-url": "./src/types/crawl-url.ts",
+    "./errors/queue-error": "./src/errors/queue-error.ts",
+    "./errors/strip-url-credentials": "./src/errors/strip-url-credentials.ts",
     "./types/result": "./src/types/result.ts",
+    "./domain/crawl-url": "./src/domain/crawl-url.ts",
     "./contracts/frontier": "./src/contracts/frontier.ts",
     "./contracts/fetcher": "./src/contracts/fetcher.ts",
     "./contracts/logger": "./src/contracts/logger.ts",
@@ -17,7 +19,9 @@
     "./contracts/job-event-source": "./src/contracts/job-event-source.ts",
     "./contracts/link-extractor": "./src/contracts/link-extractor.ts",
     "./contracts/control-plane": "./src/contracts/control-plane.ts",
-    "./contracts/disposable": "./src/contracts/disposable.ts"
+    "./contracts/disposable": "./src/contracts/disposable.ts",
+    "./application/composition-root": "./src/application/composition-root.ts",
+    "./application/signal-handlers": "./src/application/signal-handlers.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
@@ -26,7 +30,7 @@
     "clean": "rm -rf dist .turbo"
   },
   "dependencies": {
-    "neverthrow": "^8.1.1"
+    "neverthrow": "^8.2.0"
   },
   "devDependencies": {
     "@fast-check/vitest": "^0.3.0",

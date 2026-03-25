@@ -4,6 +4,7 @@
 import type { FetchError } from './fetch-error.js';
 import type { QueueError } from './queue-error.js';
 import type { UrlError } from './url-error.js';
+import { stripUrlCredentials } from './strip-url-credentials.js';
 
 // --- Crawl-specific variant types ---
 
@@ -36,9 +37,11 @@ export type CrawlError =
 export { createQueueError } from './queue-error.js';
 
 export function createDepthExceededError(p: { url: string; maxDepth: number; currentDepth: number }): DepthExceededError {
-  return { kind: 'depth_exceeded', url: p.url, maxDepth: p.maxDepth, currentDepth: p.currentDepth, message: `Crawl depth exceeded (${String(p.currentDepth)} > max ${String(p.maxDepth)}) for ${p.url}` };
+  const safeUrl = stripUrlCredentials(p.url);
+  return { kind: 'depth_exceeded', url: p.url, maxDepth: p.maxDepth, currentDepth: p.currentDepth, message: `Crawl depth exceeded (${String(p.currentDepth)} > max ${String(p.maxDepth)}) for ${safeUrl}` };
 }
 
 export function createDomainNotAllowedError(p: { url: string; domain: string }): DomainNotAllowedError {
-  return { kind: 'domain_not_allowed', url: p.url, domain: p.domain, message: `domain not allowed: ${p.domain} for ${p.url}` };
+  const safeUrl = stripUrlCredentials(p.url);
+  return { kind: 'domain_not_allowed', url: p.url, domain: p.domain, message: `domain not allowed: ${p.domain} for ${safeUrl}` };
 }

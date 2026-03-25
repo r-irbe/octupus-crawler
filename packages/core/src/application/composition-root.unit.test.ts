@@ -36,7 +36,7 @@ describe('createCompositionRoot', () => {
   });
 
   // Validates REQ-ARCH-006: phased wiring sequence
-  it('should create a composition root with disposable resources', () => {
+  it('should create a composition root with disposable resources', async () => {
     const logger = createMockDisposable('logger');
     const frontier = createMockDisposable('frontier');
 
@@ -47,7 +47,7 @@ describe('createCompositionRoot', () => {
       ],
     };
 
-    const root = createCompositionRoot(config);
+    const root = await createCompositionRoot(config);
 
     expect(root).toBeDefined();
     expect(root.disposables).toHaveLength(2);
@@ -56,28 +56,28 @@ describe('createCompositionRoot', () => {
   });
 
   // Validates REQ-ARCH-016: singleton guard
-  it('should throw on second instantiation', () => {
+  it('should reject on second instantiation', async () => {
     const config: CompositionRootConfig = {
       factories: [createMockFactory(createMockDisposable('logger'))],
     };
 
-    createCompositionRoot(config);
+    await createCompositionRoot(config);
 
-    expect(() => createCompositionRoot(config)).toThrow(
+    await expect(createCompositionRoot(config)).rejects.toThrow(
       /already initialized/i,
     );
   });
 
   // Validates REQ-ARCH-016: singleton guard error type
-  it('should throw an Error with descriptive message on duplicate init', () => {
+  it('should reject with descriptive message on duplicate init', async () => {
     const config: CompositionRootConfig = {
       factories: [createMockFactory(createMockDisposable('logger'))],
     };
 
-    createCompositionRoot(config);
+    await createCompositionRoot(config);
 
     try {
-      createCompositionRoot(config);
+      await createCompositionRoot(config);
       expect.unreachable('should have thrown');
     } catch (error) {
       expect(error).toBeInstanceOf(Error);
@@ -99,7 +99,7 @@ describe('createCompositionRoot', () => {
       ],
     };
 
-    const root = createCompositionRoot(config);
+    const root = await createCompositionRoot(config);
     await root.shutdown();
 
     expect(logger.close).toHaveBeenCalledOnce();
@@ -141,7 +141,7 @@ describe('createCompositionRoot', () => {
       ],
     };
 
-    const root = createCompositionRoot(config);
+    const root = await createCompositionRoot(config);
     await root.shutdown();
 
     expect(callOrder).toEqual(['metrics', 'frontier', 'logger']);
@@ -161,13 +161,11 @@ describe('createCompositionRoot', () => {
       ],
     };
 
-    expect(() => createCompositionRoot(config)).toThrow('metrics init failed');
+    await expect(createCompositionRoot(config)).rejects.toThrow('metrics init failed');
 
-    // Cleanup is async — wait for it
-    await vi.waitFor(() => {
-      expect(logger.close).toHaveBeenCalledOnce();
-      expect(frontier.close).toHaveBeenCalledOnce();
-    });
+    // Cleanup is now awaited before re-throw
+    expect(logger.close).toHaveBeenCalledOnce();
+    expect(frontier.close).toHaveBeenCalledOnce();
   });
 
   // Validates REQ-ARCH-017: reverse order on partial failure
@@ -197,16 +195,14 @@ describe('createCompositionRoot', () => {
       ],
     };
 
-    expect(() => createCompositionRoot(config)).toThrow('boom');
+    await expect(createCompositionRoot(config)).rejects.toThrow('boom');
 
-    // Wait for async cleanup
-    await vi.waitFor(() => {
-      expect(callOrder).toEqual(['frontier', 'logger']);
-    });
+    // Cleanup is now awaited before re-throw
+    expect(callOrder).toEqual(['frontier', 'logger']);
   });
 
   // Validates REQ-ARCH-017: cleanup errors don't mask original error
-  it('should not mask original error when cleanup also fails', () => {
+  it('should not mask original error when cleanup also fails', async () => {
     const failingDisposable: DisposableEntry = {
       name: 'logger',
       close: vi.fn<() => Promise<void>>().mockRejectedValue(new Error('cleanup failed')),
@@ -219,7 +215,7 @@ describe('createCompositionRoot', () => {
       ],
     };
 
-    expect(() => createCompositionRoot(config)).toThrow('init failed');
+    await expect(createCompositionRoot(config)).rejects.toThrow('init failed');
   });
 
   // Validates: shutdown is idempotent
@@ -230,7 +226,7 @@ describe('createCompositionRoot', () => {
       factories: [createMockFactory(logger)],
     };
 
-    const root = createCompositionRoot(config);
+    const root = await createCompositionRoot(config);
     await root.shutdown();
     await root.shutdown();
 
@@ -239,15 +235,15 @@ describe('createCompositionRoot', () => {
   });
 
   // Validates: resetCompositionRoot allows re-initialization (test helper)
-  it('should allow re-initialization after reset', () => {
+  it('should allow re-initialization after reset', async () => {
     const config: CompositionRootConfig = {
       factories: [createMockFactory(createMockDisposable('logger'))],
     };
 
-    createCompositionRoot(config);
+    await createCompositionRoot(config);
     resetCompositionRoot();
 
-    const root = createCompositionRoot(config);
+    const root = await createCompositionRoot(config);
     expect(root).toBeDefined();
   });
 });

@@ -6,7 +6,8 @@
   "exports": {
     "./config-schema": "./src/config-schema.ts",
     "./load-config": "./src/load-config.ts",
-    "./config-slices": "./src/config-slices.ts"
+    "./config-slices": "./src/config-slices.ts",
+    "./safe-log": "./src/safe-log.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",

@@ -1,9 +1,10 @@
 // Composition root — singleton factory with phased wiring and reverse cleanup
 // Implements: T-ARCH-020, T-ARCH-026, T-ARCH-027, REQ-ARCH-006, REQ-ARCH-016, REQ-ARCH-017
 
-export interface DisposableEntry {
+import type { Disposable } from '../contracts/disposable.js';
+
+export interface DisposableEntry extends Disposable {
   readonly name: string;
-  readonly close: () => Promise<void>;
 }
 
 export interface CompositionRootConfig {
@@ -17,7 +18,10 @@ export interface CompositionRoot {
 
 let initialized = false;
 
-/** Reset singleton state — for testing only. */
+/**
+ * Reset singleton state — for testing only.
+ * @internal Do not call in production code.
+ */
 export function resetCompositionRoot(): void {
   initialized = false;
 }
@@ -27,7 +31,7 @@ export function resetCompositionRoot(): void {
  * Enforces singleton instantiation (REQ-ARCH-016).
  * On partial failure, cleans up already-initialized resources in reverse order (REQ-ARCH-017).
  */
-export function createCompositionRoot(config: CompositionRootConfig): CompositionRoot {
+export async function createCompositionRoot(config: CompositionRootConfig): Promise<CompositionRoot> {
   if (initialized) {
     throw new Error('Composition root already initialized — singleton violation (REQ-ARCH-016)');
   }
@@ -42,7 +46,8 @@ export function createCompositionRoot(config: CompositionRootConfig): Compositio
     }
   } catch (error: unknown) {
     // REQ-ARCH-017: clean up already-initialized resources in reverse order
-    void cleanupReverse(disposables);
+    // Await cleanup before re-throwing to ensure resources are released
+    await cleanupReverse(disposables);
     // Reset singleton so the process can exit cleanly
     initialized = false;
     throw error;

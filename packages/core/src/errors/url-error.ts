@@ -1,6 +1,8 @@
 // UrlError — 3-variant discriminated union keyed by `kind`
 // Implements: REQ-ARCH-012, REQ-ARCH-013
 
+import { stripUrlCredentials } from './strip-url-credentials.js';
+
 // --- Variant types ---
 
 type InvalidUrlError = {
@@ -32,11 +34,13 @@ export type UrlError =
 // --- Constructors ---
 
 export function createInvalidUrlError(p: { raw: string; reason: string }): InvalidUrlError {
-  return { kind: 'invalid_url', raw: p.raw, reason: p.reason, message: `invalid URL "${p.raw}": ${p.reason}` };
+  const safeRaw = stripUrlCredentials(p.raw);
+  return { kind: 'invalid_url', raw: p.raw, reason: p.reason, message: `invalid URL "${safeRaw}": ${p.reason}` };
 }
 
 export function createDisallowedSchemeError(p: { raw: string; scheme: string }): DisallowedSchemeError {
-  return { kind: 'disallowed_scheme', raw: p.raw, scheme: p.scheme, message: `Disallowed scheme "${p.scheme}" in ${p.raw}` };
+  const safeRaw = stripUrlCredentials(p.raw);
+  return { kind: 'disallowed_scheme', raw: p.raw, scheme: p.scheme, message: `Disallowed scheme "${p.scheme}" in ${safeRaw}` };
 }
 
 export function createEmptyUrlError(): EmptyUrlError {

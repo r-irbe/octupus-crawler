@@ -1,6 +1,8 @@
 // FetchError — 9-variant discriminated union keyed by `kind`
 // Implements: REQ-ARCH-012, REQ-ARCH-013
 
+import { stripUrlCredentials } from './strip-url-credentials.js';
+
 // --- Variant types ---
 
 type TimeoutError = {
@@ -84,27 +86,33 @@ export type FetchError =
 // --- Constructors ---
 
 export function createTimeoutError(p: { url: string; timeoutMs: number }): TimeoutError {
-  return { kind: 'timeout', url: p.url, timeoutMs: p.timeoutMs, message: `Fetch timeout after ${String(p.timeoutMs)}ms for ${p.url}` };
+  const safeUrl = stripUrlCredentials(p.url);
+  return { kind: 'timeout', url: p.url, timeoutMs: p.timeoutMs, message: `Fetch timeout after ${String(p.timeoutMs)}ms for ${safeUrl}` };
 }
 
 export function createNetworkError(p: { url: string; cause: Error }): NetworkError {
-  return { kind: 'network', url: p.url, cause: p.cause, message: `network error fetching ${p.url}: ${p.cause.message}` };
+  const safeUrl = stripUrlCredentials(p.url);
+  return { kind: 'network', url: p.url, cause: p.cause, message: `network error fetching ${safeUrl}: ${p.cause.message}` };
 }
 
 export function createHttpError(p: { url: string; statusCode: number }): HttpError {
-  return { kind: 'http', url: p.url, statusCode: p.statusCode, message: `HTTP ${String(p.statusCode)} fetching ${p.url}` };
+  const safeUrl = stripUrlCredentials(p.url);
+  return { kind: 'http', url: p.url, statusCode: p.statusCode, message: `HTTP ${String(p.statusCode)} fetching ${safeUrl}` };
 }
 
 export function createSsrfBlockedError(p: { url: string; reason: string }): SsrfBlockedError {
-  return { kind: 'ssrf_blocked', url: p.url, reason: p.reason, message: `SSRF blocked for ${p.url}: ${p.reason}` };
+  const safeUrl = stripUrlCredentials(p.url);
+  return { kind: 'ssrf_blocked', url: p.url, reason: p.reason, message: `SSRF blocked for ${safeUrl}: ${p.reason}` };
 }
 
 export function createTooManyRedirectsError(p: { url: string; maxRedirects: number }): TooManyRedirectsError {
-  return { kind: 'too_many_redirects', url: p.url, maxRedirects: p.maxRedirects, message: `Too many redirects (max ${String(p.maxRedirects)}) for ${p.url}` };
+  const safeUrl = stripUrlCredentials(p.url);
+  return { kind: 'too_many_redirects', url: p.url, maxRedirects: p.maxRedirects, message: `Too many redirects (max ${String(p.maxRedirects)}) for ${safeUrl}` };
 }
 
 export function createBodyTooLargeError(p: { url: string; maxBytes: number; actualBytes: number }): BodyTooLargeError {
-  return { kind: 'body_too_large', url: p.url, maxBytes: p.maxBytes, actualBytes: p.actualBytes, message: `Body too large (${String(p.actualBytes)} > ${String(p.maxBytes)}) for ${p.url}` };
+  const safeUrl = stripUrlCredentials(p.url);
+  return { kind: 'body_too_large', url: p.url, maxBytes: p.maxBytes, actualBytes: p.actualBytes, message: `Body too large (${String(p.actualBytes)} > ${String(p.maxBytes)}) for ${safeUrl}` };
 }
 
 export function createDnsResolutionFailedError(p: { url: string; hostname: string }): DnsResolutionFailedError {
@@ -112,7 +120,8 @@ export function createDnsResolutionFailedError(p: { url: string; hostname: strin
 }
 
 export function createSslError(p: { url: string; code: string }): SslError {
-  return { kind: 'ssl_error', url: p.url, code: p.code, message: `SSL error (${p.code}) for ${p.url}` };
+  const safeUrl = stripUrlCredentials(p.url);
+  return { kind: 'ssl_error', url: p.url, code: p.code, message: `SSL error (${p.code}) for ${safeUrl}` };
 }
 
 export function createConnectionRefusedError(p: { url: string; host: string; port: number }): ConnectionRefusedError {
