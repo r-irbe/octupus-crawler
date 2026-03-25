@@ -39,16 +39,17 @@
 | 16 | T-ARCH-015: Narrow config slice types | `done` | `5d4b0ad` | TDD RED→GREEN→REFACTOR, 4 tests |
 | 17 | T-ARCH-022: Error constructor unit tests | `done` | `13c5a5d` | Covered in Phase 1 error TDD |
 | 18 | T-ARCH-023: Config loading unit tests | `done` | `5d4b0ad` | Covered in config TDD |
+| 19 | G8 Review Council (Phase 1+2) | `done` | `f052239` | 4 Major findings fixed, 2 deferred to tasks.md |
 
 ## Current State
 
 | Field | Value |
 | --- | --- |
-| Current task # | Phase 2 COMPLETE. Next: Phase 3 (T-ARCH-016..019 static analysis rules) |
-| Last completed gate | G7 (state tracker updated after config commit) |
+| Current task # | G8 review COMPLETE. Next: Phase 3 (T-ARCH-016..019 static analysis rules) |
+| Last completed gate | G8 (review council executed, findings fixed, committed) |
 | Guard function status | PASS — typecheck ✅ lint ✅ test ✅ |
-| Commits on branch | 5 (`b0a34c0`, `13c5a5d`, `3795aed`, `bc07226`, `5d4b0ad`) |
-| Tests passing | yes (53 tests in 10 files: 38 core + 15 config) |
+| Commits on branch | 7 (`b0a34c0`, `13c5a5d`, `3795aed`, `bc07226`, `5d4b0ad`, `1cea2f4`, `f052239`) |
+| Tests passing | yes (55 tests in 10 files: 38 core + 17 config) |
 | Blockers | None |
 
 ## Recovery Plan
