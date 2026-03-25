@@ -53,7 +53,7 @@ type DnsResolutionFailedError = {
   readonly message: string;
 };
 
-type SslErrorVariant = {
+type SslError = {
   readonly kind: 'ssl_error';
   readonly url: string;
   readonly code: string;
@@ -78,7 +78,7 @@ export type FetchError =
   | TooManyRedirectsError
   | BodyTooLargeError
   | DnsResolutionFailedError
-  | SslErrorVariant
+  | SslError
   | ConnectionRefusedError;
 
 // --- Constructors ---
@@ -111,7 +111,7 @@ export function createDnsResolutionFailedError(p: { url: string; hostname: strin
   return { kind: 'dns_resolution_failed', url: p.url, hostname: p.hostname, message: `DNS resolution failed for ${p.hostname}` };
 }
 
-export function createSslError(p: { url: string; code: string }): SslErrorVariant {
+export function createSslError(p: { url: string; code: string }): SslError {
   return { kind: 'ssl_error', url: p.url, code: p.code, message: `SSL error (${p.code}) for ${p.url}` };
 }
 

@@ -10,11 +10,17 @@ export const ConfigSchema = z.object({
   LOG_LEVEL: z.enum(['trace', 'debug', 'info', 'warn', 'error']).default('info'),
 
   // Redis / Dragonfly
-  REDIS_URL: z.string().url().startsWith('redis://'),
+  REDIS_URL: z.string().url().refine(
+    (v) => v.startsWith('redis://') || v.startsWith('rediss://'),
+    { message: 'REDIS_URL must start with redis:// or rediss://' },
+  ),
   REDIS_MAX_RETRIES: z.coerce.number().int().min(0).default(3),
 
   // PostgreSQL
-  DATABASE_URL: z.string().url().startsWith('postgres://'),
+  DATABASE_URL: z.string().url().refine(
+    (v) => v.startsWith('postgres://') || v.startsWith('postgresql://'),
+    { message: 'DATABASE_URL must start with postgres:// or postgresql://' },
+  ),
   DATABASE_POOL_SIZE: z.coerce.number().int().min(1).max(100).default(20),
 
   // S3 / MinIO

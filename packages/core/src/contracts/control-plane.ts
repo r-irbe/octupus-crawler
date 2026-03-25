@@ -2,8 +2,8 @@
 // Implements: T-ARCH-012, REQ-ARCH-002, REQ-ARCH-009
 
 import type { AsyncResult } from '../types/result.js';
+import type { QueueError } from '../errors/queue-error.js';
 import type { Disposable } from './disposable.js';
-import type { QueueError } from './frontier.js';
 
 export type CrawlState = 'idle' | 'running' | 'paused' | 'cancelled' | 'completed';
 

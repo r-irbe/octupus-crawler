@@ -54,6 +54,11 @@
 - [ ] **T-ARCH-030**: Scenario test for partial startup failure cleanup → REQ-ARCH-017
 - [ ] **T-ARCH-031**: Unit test for Disposable interface and close() tracking → REQ-ARCH-018
 
+## Deferred (from G8 Review Council)
+
+- [ ] **T-ARCH-032**: Add `sensitiveFields` constant to config listing secret keys (`S3_ACCESS_KEY`, `S3_SECRET_KEY`, `DATABASE_URL`) → prevents accidental logging of Config objects. Add `toSafeLog(config)` helper that redacts sensitive values. → Review finding S-1 (Major, sustained)
+- [ ] **T-ARCH-033**: Strip credentials from URLs before embedding in error `message` fields (e.g., `https://user:pass@host/` → `https://***@host/`). Applies to all error constructors in `fetch-error.ts`, `url-error.ts`. → Review finding S-2 (Minor, sustained)
+
 ---
 
 ## Dependencies

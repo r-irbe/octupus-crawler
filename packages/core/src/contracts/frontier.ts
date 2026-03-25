@@ -2,6 +2,7 @@
 // Implements: T-ARCH-005, REQ-ARCH-002, REQ-ARCH-009, REQ-ARCH-010
 
 import type { AsyncResult } from '../types/result.js';
+import type { QueueError } from '../errors/queue-error.js';
 import type { Disposable } from './disposable.js';
 
 export type FrontierEntry = {
@@ -16,12 +17,7 @@ export type FrontierSize = {
   readonly total: number;
 };
 
-export type QueueError = {
-  readonly kind: 'queue_error';
-  readonly operation: string;
-  readonly cause: unknown;
-  readonly message: string;
-};
+export type { QueueError } from '../errors/queue-error.js';
 
 export interface Frontier extends Disposable {
   enqueue(entries: FrontierEntry[]): AsyncResult<number, QueueError>;

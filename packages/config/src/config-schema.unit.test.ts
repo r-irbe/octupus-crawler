@@ -62,6 +62,18 @@ describe('ConfigSchema', () => {
     expect(result.success).toBe(false);
   });
 
+  it('accepts rediss:// for TLS Redis', () => {
+    const env = { ...validEnv(), REDIS_URL: 'rediss://localhost:6380' };
+    const result = ConfigSchema.safeParse(env);
+    expect(result.success).toBe(true);
+  });
+
+  it('accepts postgresql:// as DATABASE_URL', () => {
+    const env = { ...validEnv(), DATABASE_URL: 'postgresql://user:pass@localhost:5432/db' };
+    const result = ConfigSchema.safeParse(env);
+    expect(result.success).toBe(true);
+  });
+
   it('rejects DATABASE_POOL_SIZE out of range', () => {
     const env = { ...validEnv(), DATABASE_POOL_SIZE: '200' };
     const result = ConfigSchema.safeParse(env);
