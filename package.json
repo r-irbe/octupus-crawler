@@ -21,6 +21,9 @@
       "@typescript-eslint/eslint-plugin>typescript": "^6.0.0",
       "@typescript-eslint/parser>typescript": "^6.0.0",
       "@typescript-eslint/typescript-estree>typescript": "^6.0.0"
-    }
+    },
+    "onlyBuiltDependencies": [
+      "unrs-resolver"
+    ]
   }
 }
