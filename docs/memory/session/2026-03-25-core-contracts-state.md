@@ -25,15 +25,15 @@
 | 2 | T-ARCH-002: UrlError discriminated union (3 variants) | `done` | `13c5a5d` | TDD RED→GREEN→REFACTOR |
 | 3 | T-ARCH-003: CrawlError superset union | `done` | `13c5a5d` | TDD RED→GREEN→REFACTOR |
 | 4 | T-ARCH-004: CrawlUrl branded type | `done` | `3795aed` | TDD RED→GREEN→REFACTOR |
-| 5 | T-ARCH-005: Frontier interface | `pending` | — | — |
-| 6 | T-ARCH-006: Fetcher interface | `pending` | — | — |
-| 7 | T-ARCH-007: Logger interface | `pending` | — | — |
-| 8 | T-ARCH-008: CrawlMetrics interface | `pending` | — | — |
-| 9 | T-ARCH-009: JobConsumer interface | `pending` | — | — |
-| 10 | T-ARCH-010: JobEventSource interface | `pending` | — | — |
-| 11 | T-ARCH-011: LinkExtractor interface | `pending` | — | — |
-| 12 | T-ARCH-012: ControlPlane interface | `pending` | — | — |
-| 13 | T-ARCH-028: Disposable interface | `pending` | — | — |
+| 5 | T-ARCH-005: Frontier interface | `done` | `bc07226` | TDD RED→GREEN→REFACTOR |
+| 6 | T-ARCH-006: Fetcher interface | `done` | `bc07226` | TDD RED→GREEN→REFACTOR |
+| 7 | T-ARCH-007: Logger interface | `done` | `bc07226` | TDD RED→GREEN→REFACTOR |
+| 8 | T-ARCH-008: CrawlMetrics interface | `done` | `bc07226` | TDD RED→GREEN→REFACTOR |
+| 9 | T-ARCH-009: JobConsumer interface | `done` | `bc07226` | TDD RED→GREEN→REFACTOR |
+| 10 | T-ARCH-010: JobEventSource interface | `done` | `bc07226` | TDD RED→GREEN→REFACTOR |
+| 11 | T-ARCH-011: LinkExtractor interface | `done` | `bc07226` | TDD RED→GREEN→REFACTOR |
+| 12 | T-ARCH-012: ControlPlane interface | `done` | `bc07226` | TDD RED→GREEN→REFACTOR |
+| 13 | T-ARCH-028: Disposable interface | `done` | `bc07226` | TDD RED→GREEN→REFACTOR |
 | 14 | T-ARCH-013: Zod config schema | `pending` | — | — |
 | 15 | T-ARCH-014: loadConfig() with Result | `pending` | — | — |
 | 16 | T-ARCH-015: Narrow config slice types | `pending` | — | — |
@@ -44,11 +44,11 @@
 
 | Field | Value |
 | --- | --- |
-| Current task # | 5 (T-ARCH-005..012, T-ARCH-028: Contract interfaces + Disposable) |
-| Last completed gate | G7 (state tracker updated after CrawlUrl commit) |
+| Current task # | 14 (T-ARCH-013..015: Config schema + loadConfig + slices) |
+| Last completed gate | G7 (state tracker updated after contracts commit) |
 | Guard function status | PASS — typecheck ✅ lint ✅ test ✅ |
-| Commits on branch | 3 (`b0a34c0` scaffold, `13c5a5d` errors, `3795aed` CrawlUrl) |
-| Tests passing | yes (28 tests in 5 files) |
+| Commits on branch | 4 (`b0a34c0`, `13c5a5d`, `3795aed`, `bc07226`) |
+| Tests passing | yes (38 tests in 7 files) |
 | Blockers | None |
 
 ## Recovery Plan
