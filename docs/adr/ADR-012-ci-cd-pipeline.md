@@ -7,12 +7,10 @@
 | **Last Updated** | 2026-03-25 |
 | **Author(s)** | Architecture Council |
 | **Reviewers** | Architect, Skeptic, DevOps Advisor, SecOps Advisor, SRE |
-| **Supersedes** | N/A |
-| **Superseded By** | N/A |
 
 ## Context
 
-We need a CI/CD pipeline that builds, tests, scans, and publishes container images for the distributed crawler. The pipeline must support the monorepo structure (only build what changed), integrate with ArgoCD for deployment, and provide fast feedback on pull requests.
+Need a CI/CD pipeline for the monorepo: build only what changed, test, scan, publish containers, integrate with ArgoCD.
 
 ## Decision Drivers
 
@@ -20,65 +18,24 @@ We need a CI/CD pipeline that builds, tests, scans, and publishes container imag
 - Container build and publish performance
 - Security scanning integration
 - ArgoCD deployment integration
-- Developer feedback speed on PRs
-- Cost and resource efficiency
-- Ecosystem integration (GitHub PRs, status checks)
+- Developer feedback speed on PRs (< 5 min target)
 
 ## Considered Options
 
-### Option A: GitHub Actions
-
-**Pros:**
-
-- Native GitHub integration (PR checks, status badges, branch protection)
-- Generous free tier for open source
-- Docker layer caching via actions/cache
-- Matrix builds for parallel package testing
-- Turborepo remote cache integration
-- Reusable workflows for DRY pipeline code
-- Direct ghcr.io container registry integration
-
-**Cons:**
-
-- Runner cold starts can add 15-30s
-- Limited self-hosted runner management (mitigated: GitHub-hosted for most tasks)
-- YAML-based (no native TypeScript pipeline DSL)
-
-### Option B: GitLab CI
-
-**Pros:**
-
-- Built-in container registry
-- DAG pipeline visualization
-- More powerful pipeline DSL
-
-**Cons:**
-
-- Requires GitLab hosting or migration
-- Split ecosystem from GitHub PRs/Issues
-
-### Option C: Dagger (TypeScript CI)
-
-**Pros:**
-
-- TypeScript pipeline definitions
-- Portable: runs locally and in any CI
-- Container-native execution
-
-**Cons:**
-
-- Additional complexity layer
-- Less mature ecosystem
-- Slower adoption, fewer examples
+| Option | Pros | Cons |
+| --- | --- | --- |
+| **GitHub Actions** (chosen) | Native GitHub integration, Docker caching, Turborepo remote cache, ghcr.io registry | Runner cold starts 15-30s, YAML-based |
+| GitLab CI | Built-in registry, DAG visualization | Requires migration from GitHub |
+| Dagger (TS CI) | TypeScript pipelines, portable | Additional complexity, less mature |
 
 ## Decision
 
 Adopt **GitHub Actions** as the CI/CD platform.
 
-### Pipeline Architecture
+### PR Pipeline
 
 ```yaml
-# .github/workflows/ci.yml — Runs on every PR
+# .github/workflows/ci.yml
 name: CI
 on:
   pull_request:
@@ -138,7 +95,6 @@ jobs:
           push: false
           cache-from: type=gha
           cache-to: type=gha,mode=max
-          tags: ipf-${{ matrix.service }}:pr-${{ github.event.number }}
 
   security-scan:
     needs: [build-containers]
@@ -152,8 +108,10 @@ jobs:
           exit-code: '1'
 ```
 
+### Release Pipeline
+
 ```yaml
-# .github/workflows/release.yml — Runs on main branch merge
+# .github/workflows/release.yml
 name: Release
 on:
   push:
@@ -168,26 +126,20 @@ jobs:
       - uses: actions/setup-node@v4
       - run: pnpm install --frozen-lockfile
       - run: pnpm turbo build
-
-      # Build and push containers
       - uses: docker/login-action@v3
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-
       - uses: docker/build-push-action@v6
         with:
           push: true
           tags: ghcr.io/${{ github.repository }}/worker:${{ github.sha }}
-
-      # Update image tag in Kustomize overlay
-      - name: Update image tag
+      - name: Update Kustomize image tag
         run: |
           cd infrastructure/k8s/overlays/production
           kustomize edit set image worker=ghcr.io/${{ github.repository }}/worker:${{ github.sha }}
-
-      - name: Commit and push
+      - name: Commit tag update
         run: |
           git config user.name "github-actions"
           git config user.email "actions@github.com"
@@ -196,42 +148,30 @@ jobs:
           git push
 ```
 
-### PR Council Review Integration
+### Guard Function Chain (ADR-018)
 
-The CI pipeline triggers the AI PR Review Council (see [PR Review Council Convention](../conventions/pr-review-council.md)) as a required status check. The council must reach consensus before the PR can be merged.
+All tiers run in parallel where independent. Failure at any tier blocks the PR with structured JSON output for agent self-correction (max 3 loops).
 
-## Consequences
+| Tier | Check | Target |
+| --- | --- | --- |
+| 1 | `tsc --noEmit --strict` | < 30s |
+| 2 | `eslint --max-warnings 0` | < 30s |
+| 3 | `vitest run` (unit) | < 60s |
+| 4 | `vitest run --project integ` | < 120s |
+| 5 | ADR compliance scan | < 30s |
+| 6 | Trivy + Semgrep | < 60s |
 
-### Positive
+### Security Gates (Blocking)
 
-- PR feedback in < 5 minutes (parallel jobs + Turborepo cache)
-- Only changed packages are tested (paths-filter + matrix)
-- Container images cached via GitHub Actions cache (layer reuse)
-- Security scanning blocks PRs with critical vulnerabilities
-- ArgoCD auto-syncs when image tags are updated in git
+```bash
+pnpm audit --audit-level=high       # Dependency audit
+semgrep --config auto                # SAST scan
+trivy image --severity HIGH,CRITICAL # Container scan
+```
 
-### Negative
-
-- GitHub Actions YAML can become verbose (mitigated: reusable workflows)
-- Runner cold starts add latency (mitigated: warm cache helps)
-- ghcr.io rate limits for public packages (mitigated: authentication)
-
-### Risks
-
-- GitHub Actions outage blocks all CI/CD (mitigated: local testing with k3d)
-- Secrets exposure in workflow runs (mitigated: environment protection rules, OIDC)
-
-## Validation
-
-- PR CI feedback time: < 5 minutes
-- Turborepo cache hit rate: > 80% for incremental PRs
-- Zero critical/high CVEs in published container images
-- ArgoCD sync triggered within 1 minute of image tag update
-
-## Turborepo CI Optimization
+### Turborepo CI Config
 
 ```jsonc
-// turbo.json — only rebuild what changed
 {
   "pipeline": {
     "build": { "dependsOn": ["^build"], "outputs": ["dist/**"], "cache": true },
@@ -243,76 +183,40 @@ The CI pipeline triggers the AI PR Review Council (see [PR Review Council Conven
 }
 ```
 
-Remote caching (Vercel or self-hosted) means repeated CI runs on the same code skip build/test entirely.
+### Deployment Strategy
 
-## Docker Multi-Architecture Builds
+- **Canary**: 5% → 25% → 100% traffic based on error rate SLO
+- **Rollback**: ArgoCD auto-rollback if health checks fail within 5 min
+- **Feature flags**: Decouple deploy from release (LaunchDarkly/Unleash)
+- **Multi-arch**: All images built for amd64 + arm64 via `docker buildx`
 
-All container images are built for both `amd64` and `arm64` using `docker buildx`, enabling deployment on both x86 CI runners and ARM-based production nodes (e.g., Graviton).
+### Automated Versioning
 
-## Guard Function CI Pipeline (ADR-018)
+Changesets handles semantic versioning: developers add changeset files (`pnpm changeset`), bot creates "Version Packages" PR on merge, bumps versions + `CHANGELOG.md`.
 
-The CI pipeline implements the deterministic verification half of the Atomic Action Pair pattern. Every PR must pass the full Guard Function chain:
+## Consequences
 
-```text
-Guard Chain (per PR):
-  Tier 1: tsc --noEmit --strict       → Type safety (< 30s)
-  Tier 2: eslint --max-warnings 0      → Style + architecture rules (< 30s)
-  Tier 3: vitest run --reporter=json   → Unit tests (< 60s)
-  Tier 4: vitest run --project integ   → Integration tests (< 120s)
-  Tier 5: ADR compliance scan          → Architecture verification (< 30s)
-  Tier 6: Trivy + Semgrep              → Security scan (< 60s)
+**Positive**: PR feedback < 5 min, only changed packages tested, container layer caching, security scanning blocks critical CVEs, ArgoCD auto-syncs on tag update.
 
-All tiers run in parallel where independent.
-Failure at any tier: PR is blocked, structured error report generated.
-Agent tasks: structured error output enables automatic retry (max 3 loops).
-```
+**Negative**: YAML verbosity (mitigated: reusable workflows), runner cold starts (mitigated: warm cache), ghcr.io rate limits (mitigated: auth).
 
-Guard Function output is JSON-structured so agents can parse failures and self-correct without human intervention. The CI pipeline reports:
-- Exact file and line of each failure
-- Expected vs actual for test failures
-- ADR reference for compliance violations
-- Actionable fix suggestion for each violation
+**Risks**: GitHub Actions outage blocks CI (mitigated: local testing with k3d), secrets exposure (mitigated: environment protection rules, OIDC).
 
-## Spec-Driven Development Integration
+## Validation
 
-The CI pipeline validates the Spec-Driven Development workflow (ADR-018 §3):
-
-- PRs that add new features must include or reference a `spec.md` with acceptance criteria
-- Acceptance criteria in `spec.md` must have corresponding test coverage
-- `tasks.md` completion status is tracked alongside PR progress
-
-## Automated Versioning (Changesets)
-
-Changesets handles semantic versioning automatically:
-
-1. Developers add changeset files describing changes (`pnpm changeset`)
-2. On merge to main, Changesets bot creates a "Version Packages" PR
-3. Merging the version PR bumps versions, updates `CHANGELOG.md`, and triggers the release pipeline
-
-## Security Scanning Pipeline
-
-```yaml
-# Security gates (blocking)
-- pnpm audit --audit-level=high           # Dependency audit
-- semgrep --config auto                    # SAST scan
-- trivy image --severity HIGH,CRITICAL     # Container scan
-```
-
-## Deployment Strategy (Zero-Downtime)
-
-- **Canary**: Route 5% → 25% → 100% of traffic to new version based on error rate SLO
-- **Rollback**: ArgoCD auto-rollback if health checks fail within 5 minutes of deploy
-- **Feature Flags**: Decouple deploy from release using LaunchDarkly or Unleash
+- PR CI feedback: < 5 min
+- Turborepo cache hit rate: > 80% for incremental PRs
+- Zero critical/high CVEs in published images
+- ArgoCD sync within 1 min of tag update
 
 ## Related
 
-- [ADR-001: Monorepo Tooling](ADR-001-monorepo-tooling.md) — Turborepo caching in CI, Changesets versioning
-- [ADR-004: GitOps Deployment](ADR-004-gitops-deployment.md) — ArgoCD syncs on image tag commits
-- [ADR-007: Testing Strategy](ADR-007-testing-strategy.md) — Test stages in CI pipeline
-- [PR Review Council Convention](../conventions/pr-review-council.md) — AI-based PR review process
-- [ADR-016: Coding Standards](ADR-016-coding-standards-principles.md) — ESLint config enforced in CI
-- [ADR-018: Agentic Coding](ADR-018-agentic-coding-conventions.md) — Guard Function CI pipeline, Spec-Driven Development validation
+- [ADR-001](ADR-001-monorepo-tooling.md) — Turborepo caching, Changesets
+- [ADR-004](ADR-004-gitops-deployment.md) — ArgoCD syncs on image tag commits
+- [ADR-007](ADR-007-testing-strategy.md) — Test stages in CI
+- [ADR-018](ADR-018-agentic-coding-conventions.md) — Guard Function chain, SDD validation
+- [PR Review Council](../conventions/pr-review-council.md) — AI-based PR review
 
 ---
 
-> **Provenance**: Created 2026-03-24; updated 2026-03-25 with Turborepo CI, multi-arch Docker, Changesets, security scanning, deployment strategy, Guard Function CI pipeline and SDD integration from [docs/research/ai_coding.md](../research/ai_coding.md).
+> **Provenance**: Created 2026-03-24; updated 2026-03-25. Condensed 2026-03-25: merged options to table, moved Guard Functions to table, trimmed prose.

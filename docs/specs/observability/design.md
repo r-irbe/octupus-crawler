@@ -115,9 +115,77 @@ sequenceDiagram
 ```
 
 - Auto-instrumentation of HTTP client (undici) → REQ-OBS-024
-- Job queue instrumentation (BullMQ) for cross-job propagation → REQ-OBS-024 improvement
+- Job queue instrumentation (BullMQ) for cross-job propagation → REQ-OBS-024, REQ-OBS-029
 - In-memory exporter for tests → REQ-OBS-025
 - Non-throwing shutdown → REQ-OBS-026
+
+### Trace Sampling Strategy (REQ-OBS-027)
+
+```typescript
+import { ParentBasedSampler, TraceIdRatioBasedSampler, AlwaysOnSampler } from '@opentelemetry/sdk-trace-base';
+
+const sampler = new ParentBasedSampler({
+  root: new TraceIdRatioBasedSampler(
+    parseFloat(process.env.TRACE_SAMPLING_RATE ?? '0.1')  // 10% default
+  ),
+});
+
+// Error traces: always sampled via span processor post-hoc
+// If span.status.code === ERROR, force export regardless of sampling decision
+```
+
+### OTel Buffer Overflow Mitigation (REQ-OBS-028)
+
+```typescript
+import { BatchSpanProcessor } from '@opentelemetry/sdk-trace-base';
+
+const spanProcessor = new BatchSpanProcessor(exporter, {
+  maxQueueSize: parseInt(process.env.OTEL_BSP_MAX_QUEUE_SIZE ?? '2048'),
+  maxExportBatchSize: 512,
+  scheduledDelayMillis: 5000,
+  exportTimeoutMillis: 30000,
+});
+// Monitor: otel_bsp_queue_size metric for buffer pressure alerts
+```
+
+### Job Queue Trace Propagation (REQ-OBS-029)
+
+```mermaid
+sequenceDiagram
+    participant P as Producer (Scheduler)
+    participant Q as Queue (BullMQ)
+    participant C as Consumer (Worker)
+
+    P->>P: Create span "enqueue-job"
+    P->>P: Inject traceparent into job.data
+    P->>Q: addBulk([{data: {url, traceparent}}])
+    Q->>C: Dequeue job
+    C->>C: Extract traceparent from job.data
+    C->>C: Create child span "process-job" linked to parent
+    C->>C: Process job
+```
+
+### Readiness Probe Design (REQ-OBS-030)
+
+```typescript
+async function readinessCheck(): Promise<ReadinessResult> {
+  const checks = await Promise.allSettled([
+    redis.ping(),             // Required
+    pg.query('SELECT 1'),     // Required
+    otelCollector.health(),   // Optional (non-blocking)
+  ]);
+  const required = checks.slice(0, 2);
+  const allHealthy = required.every(r => r.status === 'fulfilled');
+  return {
+    status: allHealthy ? 200 : 503,
+    components: {
+      redis: checks[0].status === 'fulfilled' ? 'ok' : 'fail',
+      postgres: checks[1].status === 'fulfilled' ? 'ok' : 'fail',
+      otel: checks[2].status === 'fulfilled' ? 'ok' : 'degraded',
+    },
+  };
+}
+```
 
 ## 6. Design Decisions
 
@@ -132,4 +200,4 @@ sequenceDiagram
 
 ---
 
-> **Provenance**: Created 2026-03-25. SRE Agent design for observability per ADR-006/020.
+> **Provenance**: Created 2026-03-25. SRE Agent design for observability per ADR-006/020. Updated 2026-03-26: added trace sampling strategy, OTel buffer overflow mitigation, job queue trace propagation, readiness probe design per PR Review Council.

@@ -130,6 +130,18 @@ A pluggable trace exporter shall be available for tests (e.g., in-memory exporte
 **REQ-OBS-026** (Ubiquitous)
 Tracer shutdown shall be non-throwing: exceptions are caught and logged at error level.
 
+**REQ-OBS-027** (Ubiquitous)
+Trace sampling shall use a tail-based or parent-based strategy. Default: sample 100% of errors and 10% of successful traces. Sampling rate shall be configurable via `TRACE_SAMPLING_RATE` and `TRACE_ERROR_SAMPLING_RATE` environment variables.
+
+**REQ-OBS-028** (Event-driven)
+When the OTel Collector export buffer exceeds 80% capacity, the system shall log a warning and switch to dropping oldest spans (not newest). Buffer size shall be configurable via `OTEL_BSP_MAX_QUEUE_SIZE` (default: 2048).
+
+**REQ-OBS-029** (Ubiquitous)
+Job queue trace propagation shall use BullMQ job data to carry trace context (`traceparent` header in W3C format). When a job is dequeued, the worker shall extract the parent trace context and create a child span linked to the producer's span.
+
+**REQ-OBS-030** (Ubiquitous)
+The `/readyz` endpoint shall verify: (a) Redis/Dragonfly connectivity (ping), (b) PostgreSQL connectivity (SELECT 1), (c) OTel Collector reachability (optional, non-blocking). If any required check fails, the endpoint shall return 503 with the failing component identified.
+
 ### Acceptance Criteria — Tracing
 
 ```gherkin
@@ -140,6 +152,23 @@ Then a span is created with the fetch URL and duration
 Given a tracer shutdown is triggered
 When the exporter throws an error
 Then the error is caught and logged, not propagated
+
+Given TRACE_SAMPLING_RATE=0.1 and TRACE_ERROR_SAMPLING_RATE=1.0
+When 100 successful fetches and 10 error fetches complete
+Then approximately 10 success spans and 10 error spans are exported
+
+Given the OTel buffer is at 80% capacity (OTEL_BSP_MAX_QUEUE_SIZE=2048)
+When new spans are produced
+Then a warning is logged
+And oldest spans are dropped (not newest)
+
+Given a job is enqueued with a traceparent header
+When the worker dequeues and processes the job
+Then a child span is created linked to the producer's span
+
+Given Redis is reachable but PostgreSQL is down
+When /readyz is called
+Then it returns 503 with "postgresql" identified as the failing component
 ```
 
 ---
@@ -177,4 +206,4 @@ Then the error is caught and logged, not propagated
 
 ---
 
-> **Provenance**: Created 2026-03-25 from REQUIREMENTS-AGNOSTIC.md §7. EARS conversion per ADR-020.
+> **Provenance**: Created 2026-03-25 from REQUIREMENTS-AGNOSTIC.md §7. EARS conversion per ADR-020. Updated 2026-03-26: added REQ-OBS-027–030 (trace sampling, OTel buffer overflow, queue trace propagation, readiness probe details) per PR Review Council.

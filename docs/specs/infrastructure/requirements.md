@@ -121,6 +121,47 @@ Environment variable names shall follow SCREAMING_SNAKE_CASE convention.
 **REQ-INFRA-019** (Ubiquitous)
 The `docker-compose.dev.yml` shall include crawler, Redis/Dragonfly, Prometheus, and Grafana services.
 
+**REQ-INFRA-020** (Ubiquitous)
+Prometheus data shall persist across container restarts via a named volume.
+
+**REQ-INFRA-021** (Ubiquitous)
+All runbook URLs referenced by alert annotations (REQ-ALERT-017) shall have corresponding runbook documents in the repository under `docs/runbooks/`.
+
+### Acceptance Criteria — Persistence & Runbooks
+
+```gherkin
+Given Prometheus is running with a named volume
+When the Prometheus container restarts
+Then previously scraped metrics data is still available
+
+Given an alert rule with runbook_url annotation
+When the URL path is resolved against the repository
+Then a corresponding runbook document exists in docs/runbooks/
+```
+
+### Environment Variable Reference Table
+
+| Variable | Type | Required | Default | Description |
+| --- | --- | --- | --- | --- |
+| `STATE_STORE_URL` | string (URL) | Yes | — | Redis/Dragonfly connection URL (redis://host:port) |
+| `METRICS_PORT` | number | Yes | — | Port for metrics/health/readyz HTTP server |
+| `SEED_URLS` | string (CSV) | Yes | — | Comma-separated list of initial crawl URLs |
+| `MAX_DEPTH` | number | Yes | — | Maximum crawl depth from seed URLs |
+| `MAX_CONCURRENT_FETCHES` | number | Yes | — | Worker concurrency (parallel jobs) |
+| `FETCH_TIMEOUT_MS` | number | Yes | — | HTTP fetch timeout in milliseconds |
+| `POLITENESS_DELAY_MS` | number | Yes | — | Minimum delay between requests to same domain |
+| `MAX_RETRIES` | number | Yes | — | Maximum retry attempts for failed jobs |
+| `NODE_ENV` | string | No | `development` | Runtime environment (development, production) |
+| `LOG_LEVEL` | string | No | `info` | Logger severity (debug, info, warn, error, fatal) |
+| `WORKER_ID` | string | No | auto-generated | Unique worker identifier for correlation |
+| `USER_AGENT` | string | No | product default | HTTP User-Agent header value |
+| `ALLOW_PRIVATE_IPS` | boolean | No | `false` | Bypass SSRF blocking (testing only) |
+| `MAX_REDIRECTS` | number | No | `5` | Maximum redirect hops |
+| `MAX_RESPONSE_BYTES` | number | No | `10485760` | Maximum response body size (10 MiB) |
+| `ALLOWED_DOMAINS` | string (CSV) | No | `null` | Domain allow-list (null = all domains) |
+| `OTEL_EXPORTER_OTLP_ENDPOINT` | string (URL) | No | — | OpenTelemetry collector endpoint |
+| `DNS_FAIL_POLICY` | string | No | `open` | DNS failure behavior: open (allow) or closed (block) |
+
 ### Acceptance Criteria — Environment
 
 ```gherkin
@@ -132,6 +173,10 @@ And the crawler connects to redis and begins processing
 Given a Kubernetes deployment
 When secrets are configured via External Secrets Operator
 Then STATE_STORE_URL is injected from K8s Secrets, not ConfigMap
+
+Given Prometheus with a named volume
+When the Prometheus container restarts
+Then previously collected metrics are still available
 ```
 
 ---
@@ -159,7 +204,9 @@ Then STATE_STORE_URL is injected from K8s Secrets, not ConfigMap
 | REQ-INFRA-017 | §10.5 | MUST | Build verification |
 | REQ-INFRA-018 | §10.5 | SHOULD | Lint |
 | REQ-INFRA-019 | §10.5 | MUST | Build verification |
+| REQ-INFRA-020 | §10.4 | MUST | Integration |
+| REQ-INFRA-021 | §10 (runbooks) | MUST | Documentation |
 
 ---
 
-> **Provenance**: Created 2026-03-25 from REQUIREMENTS-AGNOSTIC.md §10. EARS conversion per ADR-020.
+> **Provenance**: Created 2026-03-25 from REQUIREMENTS-AGNOSTIC.md §10. EARS conversion per ADR-020. Updated 2026-03-25: added REQ-INFRA-020–021, env var reference table per PR Review Council findings.

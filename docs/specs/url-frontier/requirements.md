@@ -25,6 +25,15 @@ Completed and failed job metadata shall be retained up to configurable limits (e
 **REQ-DIST-006** (Ubiquitous)
 All components shall reference a single, constant queue name.
 
+**REQ-DIST-007** (Ubiquitous)
+URL normalization shall be applied before hashing. Normalization shall include: scheme lowercasing, host lowercasing, port removal for default ports (80/443), path percent-encoding normalization (RFC 3986 §2.3), removal of default `index.html` path, removal of fragment identifiers, query parameter sorting, trailing slash normalization. The normalization function shall be idempotent: `normalize(url) === normalize(normalize(url))`.
+
+**REQ-DIST-008** (Ubiquitous)
+The SHA-256 truncation to 128 bits shall be documented as providing collision resistance of ~2^64 (birthday bound). For the expected URL corpus (≤10^9 URLs), this provides a collision probability <10^{-10}. If the corpus exceeds 10^9, the hash length shall be extended to 192 bits.
+
+**REQ-DIST-009** (Event-driven)
+When two semantically different URLs produce the same job ID (hash collision), one URL will be silently lost. The system shall log a `url_frontier_collisions_total` counter metric. Collision detection: if `addBulk()` reports fewer added than expected, and the discarded URLs have different pre-normalization forms, increment the counter.
+
 ### Acceptance Criteria
 
 ```gherkin
@@ -41,6 +50,19 @@ Given a job that fails
 When it is retried
 Then the retry uses exponential backoff (1s, 2s, 4s)
 And after 3 failures the job is moved to failed
+
+Given a URL "HTTP://Example.COM/path/../other?b=2&a=1#frag"
+When normalization is applied
+Then the result is "http://example.com/other?a=1&b=2"
+And normalize(normalize(url)) === normalize(url)
+
+Given the expected corpus is ≤10^9 URLs with 128-bit SHA-256 truncation
+When the collision probability is calculated
+Then it is documented as less than 10^{-10}
+
+Given two semantically different URLs produce the same job ID
+When addBulk reports fewer added than submitted
+Then url_frontier_collisions_total is incremented
 ```
 
 ---
@@ -55,7 +77,10 @@ And after 3 failures the job is moved to failed
 | REQ-DIST-004 | §6.1 | MUST | Integration |
 | REQ-DIST-005 | §6.1 | MUST | Distributed |
 | REQ-DIST-006 | §6.1 | MUST | Static analysis |
+| REQ-DIST-007 | Cross-validation | MUST | Property (fast-check) |
+| REQ-DIST-008 | Cross-validation | SHOULD | Unit |
+| REQ-DIST-009 | Cross-validation | SHOULD | Integration |
 
 ---
 
-> **Provenance**: Created 2026-03-25 from REQUIREMENTS-AGNOSTIC.md §6.1. EARS conversion per ADR-020.
+> **Provenance**: Created 2026-03-25 from REQUIREMENTS-AGNOSTIC.md §6.1. EARS conversion per ADR-020. Updated 2026-03-26: added REQ-DIST-007–009 (URL normalization spec, collision analysis, collision metric) per PR Review Council.

@@ -8,7 +8,7 @@
 ## 1. Test Structure
 
 **REQ-TEST-001** (Ubiquitous)
-The test suite shall be organized into three tiers: unit tests, integration tests, and end-to-end tests.
+The test suite shall be organized into five tiers: unit tests, integration tests, property-based tests, contract tests, and end-to-end tests.
 
 **REQ-TEST-002** (Ubiquitous)
 Unit tests shall use Vitest as the test runner.
@@ -31,6 +31,12 @@ Unit tests shall cover all domain logic: URL validation, normalization, crawl pi
 **REQ-TEST-008** (Ubiquitous)
 Integration tests shall cover: frontier operations (enqueue, dequeue, dedup), worker job processing with a real Redis queue, graceful shutdown with real connections, and metrics endpoint scrapeability.
 
+**REQ-TEST-021** (Ubiquitous)
+Property-based tests shall use fast-check to verify invariants for: URL normalization (idempotency, determinism), SSRF IP range checking (no false negatives for known private ranges), error classification (exhaustive variant coverage), and politeness delay (serialization guarantee).
+
+**REQ-TEST-022** (Ubiquitous)
+Contract tests shall use Pact to verify inter-service contracts: state-store API compatibility (Redis command set used by BullMQ), metrics endpoint format (Prometheus exposition), and health/readiness endpoint schemas.
+
 ### Acceptance Criteria — Test Structure
 
 ```gherkin
@@ -43,6 +49,14 @@ Given an integration test for frontier
 When the test runs
 Then a real Redis container is started via Testcontainers
 And no redis mock is used
+
+Given a property-based test for URL normalization
+When fast-check generates 1000 random URLs
+Then normalize(normalize(url)) === normalize(url) for all inputs
+
+Given a Pact contract test for the metrics endpoint
+When the provider verification runs
+Then the response matches the Prometheus exposition format
 ```
 
 ## 2. Coverage Thresholds
@@ -115,6 +129,12 @@ Unit tests shall complete within 30 seconds total.
 **REQ-TEST-020** (Ubiquitous)
 Integration tests shall complete within 120 seconds total (including container startup).
 
+**REQ-TEST-023** (Ubiquitous)
+Performance baselines shall be established and tracked in CI: unit test suite ≤30s, integration test suite ≤120s, Testcontainer startup ≤15s. Regressions exceeding 20% shall generate a CI warning.
+
+**REQ-TEST-024** (Ubiquitous)
+Testcontainer cleanup shall be deterministic: all started containers shall be stopped and removed in the `afterAll` hook, even if tests fail. A global timeout shall kill orphaned containers.
+
 ### Acceptance Criteria — Performance
 
 ```gherkin
@@ -125,6 +145,15 @@ Then it completes in under 30 seconds
 Given the full integration test suite
 When it runs (including Testcontainer startup)
 Then it completes in under 120 seconds
+
+Given a CI run records unit test duration of 25s
+When the next run takes 32s (28% regression)
+Then a CI warning is generated because 28% exceeds the 20% threshold
+
+Given an integration test starts a Testcontainer
+When the test fails mid-execution
+Then the afterAll hook stops and removes the container
+And no orphaned containers remain
 ```
 
 ---
@@ -153,7 +182,11 @@ Then it completes in under 120 seconds
 | REQ-TEST-018 | §11.5 | MUST | Config review |
 | REQ-TEST-019 | §11.6 | SHOULD | CI timing |
 | REQ-TEST-020 | §11.6 | SHOULD | CI timing |
+| REQ-TEST-021 | §11 (fast-check) | MUST | Property tests |
+| REQ-TEST-022 | §11 (Pact) | MUST | Contract tests |
+| REQ-TEST-023 | §11.6 (baseline) | MUST | CI timing |
+| REQ-TEST-024 | §11 (cleanup) | MUST | Meta-test |
 
 ---
 
-> **Provenance**: Created 2026-03-25 from REQUIREMENTS-AGNOSTIC.md §11. EARS conversion per ADR-020.
+> **Provenance**: Created 2026-03-25 from REQUIREMENTS-AGNOSTIC.md §11. EARS conversion per ADR-020. Updated 2026-03-25: added REQ-TEST-021–024 (fast-check, Pact, baselines, cleanup) per PR Review Council findings and ADR-007 updates.

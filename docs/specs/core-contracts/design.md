@@ -252,6 +252,70 @@ Covers: REQ-ARCH-006
 | Cleanup pattern | `using` keyword (TC39 `Symbol.dispose`) | AGENTS.md SHOULD rule #8 |
 | Configuration | Zod schema-first validation | ADR-013, REQ-ARCH-014 |
 | Dependency injection | Constructor injection via composition root | No DI container overhead for this scale |
+| Singleton guard | Module-level boolean + throw | REQ-ARCH-016; prevents double-wiring |
+
+## 7. Singleton Composition Root Guard
+
+```typescript
+// Enforces exactly-once instantiation
+let initialized = false
+
+function createCompositionRoot(env: ProcessEnv): CompositionRoot {
+  if (initialized) {
+    throw new Error('Composition root already initialized — singleton violation')
+  }
+  initialized = true
+
+  const disposables: Array<{ name: string; close: () => Promise<void> }> = []
+
+  try {
+    const config = loadConfig(env).match(
+      (c) => c,
+      (e) => { throw new StartupError('Config validation failed', e) }
+    )
+
+    const logger = createLogger(config)
+    disposables.push({ name: 'logger', close: () => Promise.resolve() })
+
+    const tracer = startTracer(config)
+    disposables.push({ name: 'tracer', close: () => tracer.shutdown() })
+
+    // ... continue initialization, pushing each to disposables
+
+    return { config, logger, tracer, /* ... */ shutdown: () => cleanupAll(disposables) }
+  } catch (error) {
+    // Cleanup already-initialized resources in reverse order (REQ-ARCH-017)
+    await cleanupReverse(disposables)
+    throw error
+  }
+}
+
+async function cleanupReverse(
+  disposables: Array<{ name: string; close: () => Promise<void> }>
+): Promise<void> {
+  for (const d of disposables.reverse()) {
+    try { await d.close() } catch (e) { /* log cleanup error */ }
+  }
+}
+```
+
+Covers: REQ-ARCH-016, REQ-ARCH-017, REQ-ARCH-018
+
+## 8. Disposable Interface
+
+```typescript
+interface Disposable {
+  close(): Promise<void>
+}
+
+// Contracts that hold resources implement Disposable
+interface Frontier extends Disposable {
+  enqueue(entries: FrontierEntry[]): AsyncResult<number, QueueError>
+  size(): AsyncResult<FrontierSize, QueueError>
+}
+```
+
+Covers: REQ-ARCH-018
 
 ## 6. Package Mapping
 

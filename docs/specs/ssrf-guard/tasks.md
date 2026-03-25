@@ -31,7 +31,16 @@
 - [ ] **T-SEC-013**: Configure Dockerfile for non-root execution → REQ-SEC-012
 - [ ] **T-SEC-014**: Configure production install (no dev deps, no install scripts) → REQ-SEC-013
 
-## Phase 5: Tests
+## Phase 5: SSRF Metrics & DNS Enhancements
+
+- [ ] **T-SEC-023**: Implement `ssrf_checks_total` counter with `result` and `reason` labels → REQ-SEC-014
+- [ ] **T-SEC-024**: Implement `ssrf_dns_resolution_seconds` histogram → REQ-SEC-015
+- [ ] **T-SEC-025**: Implement multi-IP DNS validation (all resolved IPs checked against blocked ranges) → REQ-SEC-016
+- [ ] **T-SEC-026**: Implement configurable DNS resolution timeout (default: 5s) with fail-policy integration → REQ-SEC-017
+- [ ] **T-SEC-027**: Implement `SsrfValidationResult` interface returning pinned IP → REQ-SEC-018, REQ-SEC-019
+- [ ] **T-SEC-028**: Expose `pinnedIp` and `originalHost` in validation result for Fetcher consumption → REQ-SEC-019
+
+## Phase 6: Tests
 
 - [ ] **T-SEC-015**: Property tests for IPv4 range checking (all private ranges blocked) → REQ-SEC-001
 - [ ] **T-SEC-016**: Unit tests for IPv6 blocking → REQ-SEC-002
@@ -41,6 +50,11 @@
 - [ ] **T-SEC-020**: Unit test for ALLOW_PRIVATE_IPS bypass → REQ-SEC-007
 - [ ] **T-SEC-021**: Scenario test: body size limit with streaming response → REQ-SEC-009
 - [ ] **T-SEC-022**: Container test: verify non-root execution → REQ-SEC-012
+- [ ] **T-SEC-029**: Unit test for `ssrf_checks_total` counter labels → REQ-SEC-014
+- [ ] **T-SEC-030**: Unit test for DNS resolution histogram recording → REQ-SEC-015
+- [ ] **T-SEC-031**: Property test for multi-IP DNS validation (no false negatives) → REQ-SEC-016
+- [ ] **T-SEC-032**: Unit test for DNS timeout and fail-policy behavior → REQ-SEC-017
+- [ ] **T-SEC-033**: Integration test for pinned IP returned in validation result → REQ-SEC-018, REQ-SEC-019
 
 ---
 
@@ -52,8 +66,9 @@
 | Phase 2 (DNS + validation) | Phase 1 | Phase 3, http-fetching |
 | Phase 3 (fetch hardening) | Phase 2 | http-fetching |
 | Phase 4 (container) | — | infrastructure |
-| Phase 5 (tests) | Phases 1-3 | — |
+| Phase 5 (metrics/DNS) | Phase 2 | http-fetching (pinned IP) |
+| Phase 6 (tests) | Phases 1-5 | — |
 
 ---
 
-> **Provenance**: Created 2026-03-25. Security Agent task decomposition per ADR-020.
+> **Provenance**: Created 2026-03-25. Security Agent task decomposition per ADR-020. Updated 2026-03-25: added Phase 5 (REQ-SEC-014–019 metrics, multi-IP DNS, DNS pinning).

@@ -39,11 +39,18 @@
 - [ ] **T-INFRA-018**: Create environment variable reference table → REQ-INFRA-015
 - [ ] **T-INFRA-019**: Add Kustomize overlays (dev, staging, prod) → ADR-004
 
-## Phase 6: Verification
+## Phase 6: Persistence & Documentation
+
+- [ ] **T-INFRA-023**: Configure Prometheus named volume for data persistence across container restarts → REQ-INFRA-020
+- [ ] **T-INFRA-024**: Create runbook documents in `docs/runbooks/` for all alert annotations → REQ-INFRA-021
+
+## Phase 7: Verification
 
 - [ ] **T-INFRA-020**: Build image, verify non-root user, check size → REQ-INFRA-001, 002
 - [ ] **T-INFRA-021**: Test docker compose up end-to-end → REQ-INFRA-017
 - [ ] **T-INFRA-022**: Verify Prometheus scrapes crawler metrics → REQ-INFRA-012
+- [ ] **T-INFRA-025**: Verify Prometheus data persists after container restart → REQ-INFRA-020
+- [ ] **T-INFRA-026**: Verify all runbook URLs resolve to existing documents → REQ-INFRA-021
 
 ---
 
@@ -56,8 +63,9 @@
 | Phase 3 (monitoring) | observability (metric names), alerting (rules) | Phase 4 |
 | Phase 4 (K8s) | Phase 1, Phase 3 | Phase 6 |
 | Phase 5 (docs) | Phase 2, Phase 4 | — |
-| Phase 6 (verify) | Phases 1-4 | — |
+| Phase 6 (persistence/docs) | Phase 3, alerting (annotations) | Phase 7 |
+| Phase 7 (verify) | Phases 1-6 | — |
 
 ---
 
-> **Provenance**: Created 2026-03-25. Implementation Agent task decomposition per ADR-020.
+> **Provenance**: Created 2026-03-25. Implementation Agent task decomposition per ADR-020. Updated 2026-03-25: added Phase 6 (REQ-INFRA-020–021 Prometheus persistence, runbooks).

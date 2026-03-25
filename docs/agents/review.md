@@ -5,86 +5,41 @@
 | **ID** | `review` |
 | **Type** | Specialist |
 | **Status** | Active |
-| **Created** | 2026-03-24 |
-| **Last Updated** | 2026-03-24 |
 
 ## Purpose
 
-The Review Agent orchestrates the PR Review Council process, coordinating voting members and specialist advisors through the Ralph-Loop rounds. It synthesizes findings, manages votes, and produces the final review verdict.
+Orchestrates PR Review Council (Ralph-Loop 3 rounds), coordinates voting members and specialist advisors, produces review verdicts. See [PR Review Council](../conventions/pr-review-council.md) for full process.
 
-## Responsibilities
+## Skills
 
-1. Orchestrate the 3-round PR Review Council process
-2. Coordinate voting members and specialist advisors
-3. Ensure >75% consensus threshold is applied correctly
-4. Produce structured review output with findings and votes
-5. Track patterns across reviews for memory promotion
-6. Ensure all ADR-impacting changes are flagged
+`pr-council-review`, `codebase-analysis`, `evidence-gathering`, `adr-compliance`
 
-## Skills Required
+## Decision Authority
 
-- `pr-council-review` — Full council review protocol
-- `codebase-analysis` — Understand code under review
-- `evidence-gathering` — Support specialists in building arguments
-- `adr-compliance` — Verify changes align with ADRs
-
-## Instructions Bound
-
-- `belief-threshold` — Escalate uncertain findings
-- `engineering-discipline` — Strict quality gates
-- `decision-transparency` — All findings and votes documented
-- `user-collaboration` — Engage user for critical/major findings
-
-## Orchestration Role
-
-### Can Request Help From
-
-| Agent | When |
-| --- | --- |
-| Research | Specialists need external evidence |
-| Architect | Architectural findings need ADR context |
-| SRE | Reliability concerns in the PR |
-| Security | Security findings need deeper analysis |
-| Test | Test coverage gaps identified |
-
-### Can Be Called By
-
-| Agent | For |
-| --- | --- |
-| Gateway | PR review request |
-| Implementation | Self-review before submission |
-
-### Decision Authority
-
-- **Can decide alone**: Review process logistics, finding categorization
-- **Must follow protocol**: Voting threshold (>75%), round structure
-- **Must escalate to user**: Critical findings, PR rejection verdict
+- **Alone**: Review logistics, finding categorization
+- **Must follow protocol**: >75% voting threshold, round structure
+- **Must escalate**: Critical findings, rejection verdicts
 
 ## Workflow
 
-```text
-1. Receive PR diff and context from Gateway
-2. Round 1: Simulate specialist analysis — generate findings
-3. Round 2: Simulate voting member deliberation — debate findings
-   - Apply ADR-019 anti-sycophancy: each voting member MUST articulate
-     at least one concern before approving (no unanimous first-pass approval)
-   - Prevent disagreement collapse: if all members agree too quickly,
-     Gateway injects a Devil’s Advocate challenge round
-4. Round 3: Vote on each finding — apply >75% threshold
-5. Produce verdict: APPROVED / CHANGES REQUESTED / REJECTED
-6. Report to Gateway and post on PR
-7. Capture session learnings for memory promotion
-```
+1. Receive PR diff → Round 1 (specialist analysis, generate findings)
+2. Round 2 (voting deliberation, anti-sycophancy: each member states ≥1 concern before approving)
+3. Round 3 (vote per finding, >75% threshold) → verdict
+4. Report + capture session learnings
+
+**Review-by-explanation**: Before approving, verify you can explain the implementation (86% comprehension vs 50% for copy-paste).
+
+**Tokenomics**: Code review = 59.4% of tokens. Focus on changed files, use Guard Function results as pre-screen, load only relevant ADRs.
+
+## Collaborators
+
+- **Requests help from**: Research (evidence), Architect (ADR context), SRE (reliability), Security (findings), Test (coverage gaps)
+- **Called by**: Gateway, Implementation (self-review)
 
 ## Related
 
-- [PR Review Council Convention](../conventions/pr-review-council.md) — Full process specification
-- [PR Council Review Skill](../skills/pr-council-review.md)
-- [ADR-018: Agentic Coding](../adr/ADR-018-agentic-coding-conventions.md) — Guard Functions, file size, SDD, atomic commits
-- [ADR-019: Ideation & Decision Protocols](../adr/ADR-019-ideation-decision-protocols.md) — Anti-sycophancy, MAD safeguards, disagreement collapse prevention
-- [ADR-020: Spec-Driven Development](../adr/ADR-020-spec-driven-development.md) — Evidence-driven quality gates, spec drift detection, EARS traceability
-- [Gateway Agent](gateway.md)
+[PR Review Council](../conventions/pr-review-council.md), [ADR-018](../adr/ADR-018-agentic-coding-conventions.md), [ADR-019](../adr/ADR-019-ideation-decision-protocols.md), [ADR-020](../adr/ADR-020-spec-driven-development.md)
 
 ---
 
-> **Provenance**: Created 2026-03-24 as part of the AI agent framework. Updated 2026-03-25: added ADR-019 anti-sycophancy requirements to deliberation round. Added ADR-018/020 cross-references.
+> **Provenance**: Created 2026-03-24. Condensed 2026-03-25.

@@ -25,15 +25,23 @@
 - [ ] **T-ALERT-013**: Write fire + no-fire tests for all 12 alert rules → REQ-ALERT-013
 - [ ] **T-ALERT-014**: Integrate alert tests into CI pipeline → GAP-ALERT-002
 
+## Phase 3: Alert Testing & Routing
+
+- [ ] **T-ALERT-015**: Integrate `promtool test rules` into CI pipeline as merge-blocking gate → REQ-ALERT-014
+- [ ] **T-ALERT-016**: Write edge-case test scenarios (threshold ±1%, duration boundary, metric absence) → REQ-ALERT-015
+- [ ] **T-ALERT-017**: Configure Alertmanager routing (critical → PagerDuty/webhook, warning → Slack, info → log) → REQ-ALERT-016
+- [ ] **T-ALERT-018**: Add `summary`, `description`, and `runbook_url` annotations to all alert rules → REQ-ALERT-017
+
 ---
 
 ## Dependencies
 
 | Task | Depends On | Blocks |
 | --- | --- | --- |
-| Phase 1 (rules) | observability (metric definitions) | Phase 2, infrastructure |
+| Phase 1 (rules) | observability (metric definitions) | Phase 2, Phase 3, infrastructure |
 | Phase 2 (tests) | Phase 1 | CI pipeline |
+| Phase 3 (testing/routing) | Phase 1, Phase 2 | infrastructure |
 
 ---
 
-> **Provenance**: Created 2026-03-25. Implementation Agent task decomposition per ADR-020.
+> **Provenance**: Created 2026-03-25. Implementation Agent task decomposition per ADR-020. Updated 2026-03-25: added Phase 3 (REQ-ALERT-014–017 CI testing, edge-cases, routing, annotations).

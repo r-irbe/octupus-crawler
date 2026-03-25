@@ -11,6 +11,8 @@ Chronological work session logs documenting what was done, decisions made, and o
 | [2026-03-24: Automation Framework](2026-03-24-automation-framework.md) | Event-driven automation: 7 pipelines, triggers, metrics, 4 new skills | Complete | 2026-03-24 |
 | [2026-03-25: Research Integration](2026-03-25-research-integration.md) | ADR updates from arch.md and code.md research: 3 new ADRs, 8 updated ADRs | Complete | 2026-03-25 |
 | [2026-03-25: Agentic Coding Integration](2026-03-25-agentic-coding-integration.md) | ADR-018 + updates from ai_coding.md: Guard Functions, SDD, context rot | Complete | 2026-03-25 |
+| [2026-03-25: Agentic Setup Implementation](2026-03-25-agentic-setup-implementation.md) | Full implementation of agentic-setup spec: 37 new files, 11 modified, Phases 0–23 | In Progress | 2026-03-25 |
+| [2026-03-25: Tool Parity Audit](2026-03-25-tool-parity-audit.md) | Audit .claude/.github/docs parity: 7 fixes, 6 new files, 19 modified, canonical source pattern | Complete | 2026-03-25 |
 
 ## Index
 
@@ -19,7 +21,9 @@ Chronological work session logs documenting what was done, decisions made, and o
 - [2026-03-24: Automation Framework](2026-03-24-automation-framework.md) — Created 7 automated pipelines, trigger catalog, metrics/SLOs, 4 new skills
 - [2026-03-25: Research Integration](2026-03-25-research-integration.md) — Integrated arch.md and code.md research: ADR-015/016/017, updated 8 existing ADRs
 - [2026-03-25: Agentic Coding Integration](2026-03-25-agentic-coding-integration.md) — Integrated ai_coding.md research: ADR-018, updated 6 ADRs, updated 3 skills
+- [2026-03-25: Agentic Setup Implementation](2026-03-25-agentic-setup-implementation.md) — Implemented agentic-setup spec: 37 new files, 11 modified, Claude rules/skills/hooks, Copilot agents/instructions/prompts, CI workflow, security PBT generators
+- [2026-03-25: Tool Parity Audit](2026-03-25-tool-parity-audit.md) — Audited .claude/.github/docs for equivalence: fixed frontmatter, removed duplication, created 4 canonical docs/skills, added cross-references, Copilot parity prompts
 
 ---
 
-> **Provenance**: Created 2026-03-24; updated 2026-03-25 with agentic coding integration worklog.
+> **Provenance**: Created 2026-03-24; updated 2026-03-25 with tool parity audit worklog.

@@ -5,67 +5,48 @@
 | **ID** | `security` |
 | **Type** | Specialist |
 | **Status** | Active |
-| **Created** | 2026-03-24 |
-| **Last Updated** | 2026-03-24 |
 
 ## Purpose
 
-The Security Agent analyzes code and infrastructure for security vulnerabilities, ensures secure coding practices, reviews secret management, and verifies compliance with OWASP Top 10 and supply chain security.
+Analyzes code and infrastructure for vulnerabilities. Verifies OWASP Top 10, supply chain security, secret management, input validation. Can block PRs with critical findings.
 
-## Responsibilities
+## Skills
 
-1. Review code for OWASP Top 10 vulnerabilities
-2. Analyze dependency supply chain security
-3. Verify secret management follows ADR-013 (no secrets in git)
-4. Review network policies and RBAC configurations
-5. Ensure input validation at system boundaries
-6. Produce security assessments for PR reviews
+`security-analysis`, `codebase-analysis`, `evidence-gathering`
 
-## Skills Required
+## Decision Authority
 
-- `security-analysis` — Vulnerability detection, threat modeling
-- `codebase-analysis` — Navigate code for security review
-- `evidence-gathering` — Research CVEs, security advisories
+- **Alone**: Vulnerability classification, severity rating
+- **Consult Architect**: Security architecture changes
+- **Consult user**: Risk acceptance for known vulnerabilities
+- **Can block**: Any PR with critical security findings
 
-## Instructions Bound
+## OWASP ASI Top 10 (Agentic AI Threats)
 
-- `belief-threshold` — Security findings must be confident; false positives waste time
-- `engineering-discipline` — Strict security standards
+| ID | Threat | Key Concern |
+| --- | --- | --- |
+| ASI-01 | Excessive Agency | Over-permissioned agents |
+| ASI-02 | Supply Chain | Compromised MCP servers/plugins |
+| ASI-03 | Insecure Output | Unsanitized downstream use |
+| ASI-04 | Data Integrity | Retrieval/training data poisoning |
+| ASI-05 | Input Manipulation | Prompt injection via tool output |
+| ASI-06 | Memory Poisoning | Corrupted long-term memory |
+| ASI-07 | Cascading Hallucinations | Multi-agent fabrication propagation |
+| ASI-08 | Identity & Access | Impersonation in delegation chains |
+| ASI-09 | Inadequate Sandboxing | Insufficient tool isolation |
+| ASI-10 | Insufficient Logging | Agent actions not auditable |
 
-## Orchestration Role
+**MCP vulnerabilities**: Check for absent capability attestation, unauthenticated bidirectional sampling, implicit trust propagation.
 
-### Can Request Help From
+## Collaborators
 
-| Agent | When |
-| --- | --- |
-| Research | CVE investigation, security advisory analysis |
-| DevOps | Infrastructure security review |
-| Implementation | Need secure code pattern implementation |
-
-### Can Be Called By
-
-| Agent | For |
-| --- | --- |
-| Gateway | Security review requests, vulnerability triage |
-| Review | PR security analysis |
-| Implementation | Secure implementation guidance |
-| DevOps | Infrastructure security review |
-| Architect | Security implications of design decisions |
-
-### Decision Authority
-
-- **Can decide alone**: Vulnerability classification, severity rating
-- **Must consult Architect**: Security architecture changes
-- **Must consult user**: Risk acceptance for known vulnerabilities
-- **Can block**: Any PR with critical security findings (no override without user)
+- **Requests help from**: Research (CVEs), DevOps (infra), Implementation (secure patterns)
+- **Called by**: Gateway, Review, Implementation, DevOps, Architect
 
 ## Related
 
-- [ADR-013](../adr/ADR-013-configuration-management.md) — Secret management
-- [ADR-016: Coding Standards](../adr/ADR-016-coding-standards-principles.md) — Zod validation as security control, no-explicit-any
-- [ADR-017: Service Communication](../adr/ADR-017-service-communication.md) — tRPC auth, Temporal access control
-- [Security Analysis Skill](../skills/security-analysis.md)
+[ADR-013](../adr/ADR-013-configuration-management.md), [ADR-016](../adr/ADR-016-coding-standards-principles.md), [ADR-021](../adr/ADR-021-context-collapse-prevention.md)
 
 ---
 
-> **Provenance**: Created 2026-03-24 as part of the AI agent framework. Updated 2026-03-25: added ADR-016/017 cross-references.
+> **Provenance**: Created 2026-03-24. Condensed 2026-03-25.

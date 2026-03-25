@@ -108,6 +108,30 @@ Then a Result.err is returned with a human-readable validation message
 And the application does not throw during config loading
 ```
 
+## 6. Composition Root Safety
+
+**REQ-ARCH-016** (Ubiquitous)
+The composition root shall enforce singleton instantiation. Calling the composition root factory more than once shall throw a fatal error. This prevents double-wiring of infrastructure resources that would cause port conflicts, duplicate event listeners, or resource leaks.
+
+**REQ-ARCH-017** (Unwanted behaviour)
+If composition root startup fails after partial initialization, then all already-initialized resources shall be cleaned up in reverse initialization order before the process exits. The exit code shall be `1`.
+
+**REQ-ARCH-018** (Ubiquitous)
+Contract interfaces that require async cleanup shall extend a `Disposable` interface with a `close(): Promise<void>` method. The composition root shall track all disposable resources and close them during shutdown.
+
+### Acceptance Criteria — Composition Root Safety
+
+```gherkin
+Given the composition root has been instantiated once
+When a second instantiation is attempted
+Then a fatal error is thrown
+
+Given composition root startup fails at step 4 (frontier creation)
+When the failure occurs
+Then steps 1-3 (config, logger, tracer) are cleaned up in reverse order
+And the process exits with code 1
+```
+
 ---
 
 ## Traceability Matrix
@@ -129,7 +153,10 @@ And the application does not throw during config loading
 | REQ-ARCH-013 | §2.4 | MUST | Unit |
 | REQ-ARCH-014 | §2.5 | MUST | Unit |
 | REQ-ARCH-015 | §2.5 | SHOULD | Unit |
+| REQ-ARCH-016 | §2.1 (singleton) | MUST | Unit |
+| REQ-ARCH-017 | §2.1 (cleanup) | MUST | Scenario |
+| REQ-ARCH-018 | §2.3 (disposable) | MUST | Unit |
 
 ---
 
-> **Provenance**: Created 2026-03-25 from REQUIREMENTS-AGNOSTIC.md §2. EARS conversion per ADR-020.
+> **Provenance**: Created 2026-03-25 from REQUIREMENTS-AGNOSTIC.md §2. EARS conversion per ADR-020. Updated 2026-03-25: added §6 (REQ-ARCH-016–018) per PR Review Council finding F-CC-013 (singleton guard), F-CC-022 (startup failure).

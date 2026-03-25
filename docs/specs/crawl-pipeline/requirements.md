@@ -60,7 +60,38 @@ Relative `href` values shall be resolved against the final URL of the fetch (aft
 Discovered URLs from a single page shall be deduplicated by their normalized form before enqueue.
 
 **REQ-CRAWL-012** (Unwanted behaviour)
-If an `href` fails URL parsing or scheme validation, then the pipeline shall silently skip it. The pipeline shall not crash due to a malformed href.
+If an `href` fails URL parsing or scheme validation, then the pipeline shall silently skip it. The following are explicitly classified as "malformed" and shall be skipped: empty strings, whitespace-only strings, `javascript:` URIs, `data:` URIs, `mailto:` links, `tel:` links, `#`-only fragment references, hrefs exceeding 2048 characters, hrefs containing null bytes or control characters. The pipeline shall not crash due to a malformed href.
+
+**REQ-CRAWL-017** (Ubiquitous)
+The system shall handle Internationalized Domain Names (IDNs) by converting them to Punycode (IDNA 2008) before normalization. Non-ASCII characters in path/query shall be percent-encoded per RFC 3986.
+
+**REQ-CRAWL-018** (Ubiquitous)
+The `FetchResult.finalUrl` shall be a full `CrawlUrl` object (not just a string) containing `raw`, `normalized`, and `domain` fields. When no redirect occurred, `finalUrl` shall be `null`. This ensures downstream consumers (link discovery, enqueue) use the normalized final URL consistently.
+
+**REQ-CRAWL-019** (Ubiquitous)
+The `LinkExtractor.extract()` shall return `Result<string[], LinkExtractError>` rather than a bare `string[]`. Parse errors in the HTML document shall be captured as a `LinkExtractError` with the partial results, not silently swallowed.
+
+### Acceptance Criteria — Malformed Hrefs & IDN
+
+```gherkin
+Given a page containing href="javascript:void(0)"
+When link discovery runs
+Then the href is silently skipped
+
+Given a page containing href="data:text/html,..." and href="mailto:user@example.com"
+When link discovery runs
+Then both hrefs are silently skipped
+
+Given a page containing href="https://éxample.com/café"
+When the URL is normalized
+Then the domain is Punycode-encoded
+And the path is percent-encoded
+
+Given a page with partially invalid HTML
+When the LinkExtractor processes it
+Then it returns Result.ok with the successfully extracted links
+And logs a warning about parse issues
+```
 
 ### Acceptance Criteria — Pipeline Composition
 
@@ -133,7 +164,10 @@ And fetchDurationMs is greater than 0
 | REQ-CRAWL-014 | §3.3 | MUST | Unit |
 | REQ-CRAWL-015 | §3.3 | MUST | Unit |
 | REQ-CRAWL-016 | §3.4 | MUST | Unit |
+| REQ-CRAWL-017 | §3.1 (IDN) | MUST | Unit + Property |
+| REQ-CRAWL-018 | §3.4 (cross-spec) | MUST | Unit |
+| REQ-CRAWL-019 | §3.2 (error) | MUST | Unit |
 
 ---
 
-> **Provenance**: Created 2026-03-25 from REQUIREMENTS-AGNOSTIC.md §3. EARS conversion per ADR-020.
+> **Provenance**: Created 2026-03-25 from REQUIREMENTS-AGNOSTIC.md §3. EARS conversion per ADR-020. Updated 2026-03-25: added REQ-CRAWL-017–019, expanded REQ-CRAWL-012 per PR Review Council findings F-CP-014 (malformed href), cross-spec coordination.

@@ -40,10 +40,12 @@
 - [ ] **T-TEST-019**: Add coverage threshold enforcement as CI gate → REQ-TEST-012
 - [ ] **T-TEST-020**: Add domain coverage threshold (90%) for domain packages → REQ-TEST-011
 
-## Phase 6: Performance Verification
+## Phase 6: Performance & Cleanup
 
 - [ ] **T-TEST-021**: Benchmark unit test suite completes in < 30s → REQ-TEST-019
 - [ ] **T-TEST-022**: Benchmark integration tests complete in < 120s → REQ-TEST-020
+- [ ] **T-TEST-023**: Establish performance baselines in CI (unit ≤30s, integration ≤120s, Testcontainer startup ≤15s) with 20% regression warning → REQ-TEST-023
+- [ ] **T-TEST-024**: Implement deterministic Testcontainer cleanup in `afterAll` with global orphan timeout → REQ-TEST-024
 
 ---
 
@@ -56,8 +58,8 @@
 | Phase 3 (unit tests) | All domain feature implementations | Phase 5 |
 | Phase 4 (integration) | url-frontier, worker-management, observability | Phase 5 |
 | Phase 5 (CI pipeline) | Phases 3-4 | Phase 6 |
-| Phase 6 (perf) | Phases 3-4 | — |
+| Phase 6 (perf/cleanup) | Phases 3-4 | — |
 
 ---
 
-> **Provenance**: Created 2026-03-25. Implementation Agent task decomposition per ADR-020.
+> **Provenance**: Created 2026-03-25. Implementation Agent task decomposition per ADR-020. Updated 2026-03-25: added T-TEST-023–024 (REQ-TEST-023–024 baselines, cleanup).

@@ -75,6 +75,12 @@ Stale domain entries shall be pruned automatically to prevent unbounded memory g
 **REQ-FETCH-013** (Ubiquitous)
 The domain tracking structure shall enforce a hard cap (e.g., 10,000 entries) with eviction of least-recently-used domains.
 
+**REQ-FETCH-020** (Ubiquitous)
+The Politeness Controller shall be concurrency-safe. Concurrent `acquire()` calls for the same domain shall be serialized via a per-domain promise chain (not a shared mutex) to prevent race conditions where two requests bypass the delay. The implementation shall use `Map<string, Promise<void>>` chaining rather than timestamp comparison.
+
+**REQ-FETCH-021** (Ubiquitous)
+"Domain" for politeness purposes shall be defined as the lowercased hostname (TLD+1 via public suffix list). Subdomains of the same registrable domain (e.g., `api.example.com` and `www.example.com`) shall share the same politeness slot.
+
 ### Acceptance Criteria — Politeness
 
 ```gherkin
@@ -85,6 +91,15 @@ Then it waits at least 1000ms after the first request completes
 Given 10,001 unique domains have been tracked and the cap is 10,000
 When the next domain is added
 Then the least-recently-used domain is evicted
+
+Given two concurrent acquire() calls for the same domain
+When both execute simultaneously
+Then one proceeds immediately and the other waits for the delay
+And the delay is never skipped
+
+Given api.example.com and www.example.com
+When both are fetched
+Then they share the same politeness delay slot
 ```
 
 ## 4. Response Processing
@@ -122,6 +137,40 @@ All fetch failures shall be classified into the 9 `FetchError` variants: `timeou
 **REQ-FETCH-019** (Ubiquitous)
 Wall-clock duration shall be tracked for every fetch (success and failure).
 
+## 6. Fetcher Metrics
+
+**REQ-FETCH-022** (Ubiquitous)
+The Fetcher shall record metrics for all fetch operations. Required metrics:
+
+- `fetches_total` counter with labels: `status` (`success`, `error`), `error_kind` (FetchError variant)
+- `fetch_duration_seconds` histogram with configurable buckets
+- `redirects_followed_total` counter
+- `body_bytes_received_total` counter
+
+**REQ-FETCH-023** (Ubiquitous)
+The Fetcher shall integrate with the SSRF guard’s pinned IP result (REQ-SEC-018–019). When connecting, the Fetcher shall use the `pinnedIp` from the SSRF validation result and set the `Host` header to the original domain.
+
+**REQ-FETCH-024** (Unwanted behaviour)
+If stream draining fails during redirect body discard (REQ-FETCH-017), then the error shall be caught and logged — not propagated as an unhandled exception. The redirect chain shall continue.
+
+### Acceptance Criteria — Metrics & Integration
+
+```gherkin
+Given a successful fetch taking 0.5s
+When metrics are recorded
+Then fetches_total{status="success"} is incremented
+And fetch_duration_seconds observes 0.5
+
+Given SSRF guard returns pinnedIp: "93.184.216.34"
+When the Fetcher connects
+Then it connects to 93.184.216.34 with Host: example.com
+
+Given a redirect body discard that throws an error
+When the Fetcher handles it
+Then the error is logged
+And the redirect chain continues
+```
+
 ---
 
 ## Traceability Matrix
@@ -147,7 +196,12 @@ Wall-clock duration shall be tracked for every fetch (success and failure).
 | REQ-FETCH-017 | §5.4 | MUST | Scenario |
 | REQ-FETCH-018 | §5.5 | MUST | Unit |
 | REQ-FETCH-019 | §5.5 | MUST | Unit |
+| REQ-FETCH-020 | §5.3 (race) | MUST | Unit |
+| REQ-FETCH-021 | §5.3 (domain) | MUST | Unit |
+| REQ-FETCH-022 | §5 (metrics) | MUST | Unit |
+| REQ-FETCH-023 | §5 (SSRF pin) | MUST | Integration |
+| REQ-FETCH-024 | §5.4 (drain) | MUST | Unit |
 
 ---
 
-> **Provenance**: Created 2026-03-25 from REQUIREMENTS-AGNOSTIC.md §5. EARS conversion per ADR-020.
+> **Provenance**: Created 2026-03-25 from REQUIREMENTS-AGNOSTIC.md §5. EARS conversion per ADR-020. Updated 2026-03-25: added REQ-FETCH-020–024 per PR Review Council findings F-HF-014 (concurrency race), F-HF-021 (missing metrics).

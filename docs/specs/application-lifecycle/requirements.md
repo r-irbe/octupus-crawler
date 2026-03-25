@@ -116,10 +116,10 @@ Then exit code is 3
 ## 5. Graceful Shutdown
 
 **REQ-LIFE-018** (Ubiquitous)
-Shutdown shall be idempotent (re-entrant guard). Multiple signals shall not trigger multiple shutdowns.
+Shutdown shall be idempotent (re-entrant guard). Multiple signals shall not trigger multiple shutdowns. A second signal received during shutdown shall be logged and ignored — not force-exit.
 
 **REQ-LIFE-019** (Ubiquitous)
-Shutdown shall have two phases: (1) Drain — close job consumer with configurable timeout (e.g., 15s); (2) Teardown — parallel infrastructure teardown with configurable timeout (e.g., 8s).
+Shutdown shall have two phases: (1) Drain — close job consumer with configurable timeout (default: 15s); (2) Teardown — parallel infrastructure teardown with configurable timeout (default: 8s). Total shutdown time shall not exceed K8s `terminationGracePeriodSeconds` minus a 5s safety buffer.
 
 **REQ-LIFE-020** (Ubiquitous)
 Teardown shall use settle-all semantics: one component failure does not block others.
@@ -136,17 +136,36 @@ When the coordinator is closed, it shall clear the poll interval and settle any 
 **REQ-LIFE-024** (Ubiquitous)
 The coordinator shall not close shared resources it does not own (composition root ownership).
 
+**REQ-LIFE-029** (Ubiquitous)
+The readiness probe shall return unhealthy (`503`) immediately when shutdown begins, before drain starts. This prevents the orchestrator from routing new traffic during shutdown.
+
+**REQ-LIFE-030** (Ubiquitous)
+The state-store abort handler shall trigger shutdown within 1 second of the abort decision. The abort timing shall be deterministic: abort at exactly N consecutive failures, not "approximately N failures".
+
+**REQ-LIFE-031** (Ubiquitous)
+When the drain phase timeout is reached, in-flight jobs shall be abandoned (not waited for indefinitely). The system shall log each abandoned job's ID.
+
 ### Acceptance Criteria — Shutdown
 
 ```gherkin
 Given SIGTERM followed by SIGINT within 1 second
 When shutdown is triggered
 Then only one shutdown sequence runs (idempotent)
+And the second signal is logged and ignored
 
 Given a shutdown with 3 components (consumer, frontier, tracer)
 When the frontier.close() throws an error
 Then the error is logged
 And consumer.close() and tracer.close() still execute
+
+Given shutdown initiated
+When the readiness probe is checked
+Then it returns 503 before drain starts
+
+Given drain timeout of 15s and a stuck job
+When 15s elapses
+Then the stuck job is abandoned and its ID is logged
+And teardown proceeds
 ```
 
 ## 6. Worker Processing
@@ -173,6 +192,30 @@ Then the validation check rejects it before pipeline execution
 Given a pipeline that returns a queue_error
 When the worker handles the result
 Then the error is re-thrown for queue retry
+```
+
+## 7. Resource Ownership & Startup Ordering
+
+**REQ-LIFE-032** (Ubiquitous)
+The system shall define an explicit resource ownership matrix. Each infrastructure resource (state-store connection, queue, frontier, metrics server, tracer) shall have exactly one owner responsible for its creation and destruction. The composition root is the sole owner of all infrastructure resources.
+
+**REQ-LIFE-033** (Ubiquitous)
+Startup ordering shall be enforced sequentially with explicit dependency declarations: (1) Config validation, (2) Observability (logger → tracer → metrics → metrics server), (3) State-store connection, (4) Frontier + Control Plane, (5) Job Consumer, (6) Seeding, (7) Completion wait. Each step shall fail-fast if its predecessor failed.
+
+**REQ-LIFE-034** (Ubiquitous)
+The startup exit behavior on failure shall be: config validation failure → exit(1), observability failure → exit(1), state-store connection failure → exit(1) after observability teardown. Each failure path shall ensure already-initialized resources are cleaned up before exit.
+
+### Acceptance Criteria — Resource Ownership
+
+```gherkin
+Given the resource ownership matrix
+When shutdown is executed
+Then each resource is closed by its owner (composition root)
+And no resource is closed by a non-owner
+
+Given a state-store connection failure during startup
+When the failure occurs after logger and tracer are initialized
+Then the logger and tracer are cleaned up before exit(1)
 ```
 
 ---
@@ -212,7 +255,13 @@ Then the error is re-thrown for queue retry
 | REQ-LIFE-026 | §8.5 | MUST | Unit |
 | REQ-LIFE-027 | §8.5 | MUST | Unit |
 | REQ-LIFE-028 | §8.5 | MUST | Integration |
+| REQ-LIFE-029 | §8.4 | MUST | Integration |
+| REQ-LIFE-030 | §8.4 | MUST | Unit |
+| REQ-LIFE-031 | §8.4 | MUST | Scenario |
+| REQ-LIFE-032 | §8.1 | MUST | Code review |
+| REQ-LIFE-033 | §8.1 | MUST | Integration |
+| REQ-LIFE-034 | §8.1 | MUST | Scenario |
 
 ---
 
-> **Provenance**: Created 2026-03-25 from REQUIREMENTS-AGNOSTIC.md §2.5, §8, §10.5. EARS conversion per ADR-020.
+> **Provenance**: Created 2026-03-25 from REQUIREMENTS-AGNOSTIC.md §2.5, §8, §10.5. EARS conversion per ADR-020. Updated 2026-03-25: added REQ-LIFE-029–034 per PR Review Council findings (resource ownership, shutdown semantics, K8s interaction, startup ordering).

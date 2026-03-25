@@ -150,7 +150,25 @@ describe('BullMQ job processing', () => {
 
 ### Additional Test Types
 
-**Property-based testing** (fast-check): Used for domain logic where input space is large — URL normalization, pagination, retry backoff calculations. fast-check generates random inputs and verifies invariants hold across all cases.
+**Property-based testing** (fast-check): Used for domain logic where input space is large — URL normalization, pagination, retry backoff calculations. fast-check generates random inputs and verifies invariants hold across all cases. Deterministic reproduction with fixed seed enables CI reproducibility; shrinking reduces counterexamples to minimal failing cases.
+
+**EARS-derived property testing** (ADR-020 §6): Every EARS requirement has a corresponding fast-check property. The derivation is direct:
+
+```text
+EARS: "When <trigger>, the <system> shall <response>"
+  → fc.assert(fc.property(triggerArbitrary, (input) => satisfiesResponse(system(input))))
+```
+
+Property coverage — what fraction of EARS requirements have corresponding property tests — is tracked alongside line coverage. LLM-generated property tests are acceptable but must be human-reviewed for property correctness (LLMs generate valid properties but coverage varies by model).
+
+**Consumer-driven contract testing** (Pact): Combines with Dredd and Schemathesis to prevent the 47% backward-compatibility failure rate (arXiv 2410.13070). Pact workflow:
+
+1. Consumer defines expected request/response interactions
+2. Pact broker records contracts
+3. Provider CI verifies all consumer contracts pass against live API
+4. New provider versions must satisfy all existing consumer contracts before merge
+
+Hybrid approach: OpenAPI (provider-side documentation) + Pact (consumer-side expectations) + Schemathesis (property-based API fuzzing from schema) is the 2026 contract testing best practice.
 
 **Mutation testing** (Stryker): Applied to critical domain modules — Stryker modifies source code and verifies tests catch the mutation. Ensures test suite quality, not just coverage percentage.
 
@@ -239,8 +257,8 @@ Guard Function test conventions:
 - [ADR-002: Job Queue System](ADR-002-job-queue-system.md) — BullMQ tested via Testcontainers Redis
 - [ADR-016: Coding Standards](ADR-016-coding-standards-principles.md) — neverthrow Result types simplify error path testing
 - [ADR-018: Agentic Coding](ADR-018-agentic-coding-conventions.md) — Tests as Guard Functions in the agentic code loop
-- [ADR-020: Spec-Driven Development](ADR-020-spec-driven-development.md) — EARS → property-based test derivation, Pact contract-first, Schemathesis
+- [ADR-020: Spec-Driven Development](ADR-020-spec-driven-development.md) — EARS → property-based test derivation, Pact contract-first, Schemathesis, PromptPex for prompt testing
 
 ---
 
-> **Provenance**: Created 2026-03-24; updated 2026-03-25 with testing pyramid, Pact, fast-check, Stryker, k6, coverage thresholds, golden rules, and Guard Function integration from [docs/research/ai_coding.md](../research/ai_coding.md). Added ADR-020 cross-reference for EARS-derived property testing.
+> **Provenance**: Created 2026-03-24; updated 2026-03-25 with testing pyramid, Pact, fast-check, Stryker, k6, coverage thresholds, golden rules, and Guard Function integration from [docs/research/ai_coding.md](../research/ai_coding.md). Added ADR-020 cross-reference for EARS-derived property testing. Updated 2026-03-25: expanded EARS-derived PBT workflow, Pact consumer-driven contract elaboration, LLM-generated property test guidance, 47% backward-compatibility citation from [docs/research/spec.md](../research/spec.md).

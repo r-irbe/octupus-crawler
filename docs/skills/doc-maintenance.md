@@ -1,40 +1,42 @@
 # Skill: Doc Maintenance
 
-| Field | Value |
-| --- | --- |
-| **ID** | `doc-maintenance` |
-| **Status** | Active |
-| **Created** | 2026-03-24 |
-| **Used By** | Documentation |
+**Agent**: Documentation
 
-## Purpose
-
-Keep all project documentation current: indexes, provenance, cross-references, and lifecycle states.
+Keep project documentation current: indexes, provenance, cross-references, lifecycle states. Triggered after every task set (Gate G9) and after memory promotion.
 
 ## Capabilities
 
-- Update index.md files when documents are added/removed/changed
-- Verify and fix cross-references between documents
-- Update provenance (Last Updated date, reviewer info)
-- Maintain document lifecycle states (Draft → Active → Deprecated)
+- Update index.md files on document add/remove/change
+- Verify and fix cross-references
+- Update provenance (dates, reviewer)
+- Maintain lifecycle states (Draft → Active → Deprecated)
 - Verify documentation standards compliance
+- Detect stale documentation via temporal decay (ADR-022)
+- Feed validated learnings back into rules, skills, and instructions
 
-## Checklist
+## Post-Change Checklist
 
-After any documentation change:
+- [ ] index.md in same directory updated
+- [ ] Parent index.md updated if new entry
+- [ ] Provenance block updated with date
+- [ ] Cross-references valid (no broken links)
+- [ ] Table formatting correct
+- [ ] Worklog entry exists for the task set (`docs/worklogs/YYYY-MM-DD-topic.md`)
+- [ ] Worklog index updated
+- [ ] Learnings from worklog assessed for memory promotion
 
-- [ ] Index.md in the same directory updated
-- [ ] Parent index.md updated if new directory entry
-- [ ] Provenance block updated with new date
-- [ ] Cross-references still valid (no broken links)
-- [ ] Table formatting correct (no pipe alignment issues)
+## Learning Integration
+
+After doc maintenance, check for improvements to feed back:
+
+- **Rules** (`.claude/rules/`): Did a new anti-pattern emerge? Add it.
+- **Skills** (`.claude/skills/`): Did a workflow improve? Update the skill.
+- **Instructions** (`.github/instructions/`): Did a convention solidify? Codify it.
+- **ADRs**: Did a decision prove wrong or right? Update the ADR consequences.
 
 ## Related
 
-- [Documentation Standards](../guidelines/documentation-standards.md)
-- [Documentation Agent](../agents/documentation.md)
-- [ADR-018: Agentic Coding](../adr/ADR-018-agentic-coding-conventions.md) — Context engineering, context file size limits, ghost convention pruning
-
----
-
-> **Provenance**: Created 2026-03-24 as part of the AI agent framework. Updated 2026-03-25: added ADR-018 context engineering reference.
+- [Documentation Standards](../guidelines/documentation-standards.md), [Documentation Agent](../agents/documentation.md)
+- [Memory Promotion Workflow](../guidelines/memory-promotion-workflow.md) — learnings flow from session to project docs
+- [ADR-018](../adr/ADR-018-agentic-coding-conventions.md) — context file size limits
+- [ADR-022](../adr/ADR-022-memory-governance.md) — temporal decay drives staleness checks

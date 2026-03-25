@@ -9,7 +9,7 @@
 
 ## Context
 
-AI agents and human collaborators in this project must make architectural decisions, evaluate alternatives, and generate creative solutions. Research on brainstorming science, AI reasoning frameworks, multi-agent debate pathologies, and human–AI complementarity (see [docs/research/ideating.md](../research/ideating.md)) reveals that classic group brainstorming is empirically inferior to structured alternatives, that AI reasoning architectures have measurable trade-offs, and that human–AI complementarity is large in theory but underrealized due to sycophancy, overconfidence, and poor role design.
+AI agents and human collaborators in this project must make architectural decisions, evaluate alternatives, and generate creative solutions. Research on brainstorming science, AI reasoning frameworks, multi-agent debate pathologies, and human–AI complementarity (see [docs/research/ideating.md](../research/ideating.md)) reveals that classic group brainstorming is empirically inferior to structured alternatives, that AI reasoning architectures have measurable trade-offs, and that human–AI complementarity is large in theory but underrealized due to sycophancy, overconfidence, and poor role design. Research on context collapse (see [docs/research/collapse.md](../research/collapse.md)) provides the mechanistic basis for persona drift during extended sessions.
 
 ## Decision Drivers
 
@@ -37,13 +37,13 @@ The PR Review Council's Devil's Advocate and Skeptic voting roles operationalize
 
 Agents must select the appropriate reasoning framework based on task characteristics:
 
-| Task Type | Framework | Rationale |
-| --- | --- | --- |
-| Questions with clear answers | Chain-of-Thought (CoT) | Fast, low cost, sufficient accuracy |
-| Architectural comparisons with branching | Tree of Thoughts (ToT) | Explores alternatives explicitly, enables backtracking |
-| Complex multi-step problems with feedback | Graph of Thoughts (GoT) | Merges, reinforces, and revises reasoning nodes |
-| Extended autonomous research | SPIRAL/MCTS-style | Planner + Critic + Simulator tri-agent search |
-| High-stakes design decisions | Multi-agent debate with role diversity | Counters Degeneration of Thought via structured opposition |
+| Task Type | Framework | Accuracy | Rationale |
+| --- | --- | --- | --- |
+| Questions with clear answers | Chain-of-Thought (CoT) | ~74% | Fast, low cost, sufficient accuracy |
+| Architectural comparisons with branching | Tree of Thoughts (ToT) | ~90% | Explores alternatives explicitly, enables backtracking |
+| Complex multi-step problems with feedback | Graph of Thoughts (GoT) | ~91% | Merges, reinforces, and revises reasoning nodes |
+| Extended autonomous research | SPIRAL/MCTS-style | ~84% (+16pp over next best) | Planner + Critic + Simulator tri-agent search |
+| High-stakes design decisions | Multi-agent debate with role diversity | — | Counters Degeneration of Thought via structured opposition |
 
 Key constraint: ToT does **not** consistently outperform simpler methods after controlling for compute budget. Larger models excel at generating thoughts but not at discriminating which branches are worth pursuing. Use ToT only when the evaluation function is well-defined (e.g., "does this pattern satisfy all ADR-009 resilience requirements?").
 
@@ -57,24 +57,39 @@ Multi-agent debate (MAD) suffers from "disagreement collapse" — agents converg
 - **Confidence-weighted voting**: Final synthesis uses confidence-weighted votes, not majority rule
 - **Bounded debate depth**: Extended rounds entrench initial errors; cap at 3 rounds matching ADR-018's retry semantics
 - **Minority correction asymmetry**: Agents are more likely to maintain a correct minority position than to correct an incorrect consensus — design for this by giving minority positions explicit protected time
+- **CONSENSAGENT framework**: Dynamic prompt refinement sustains productive disagreement; achieves state-of-the-art across 6 reasoning benchmarks (ACL 2025). Adopt its principle: disagreement is a feature, not a bug — when agents converge too quickly, inject explicit divergence prompts
 
 ### 4. Structured Ideation Methods
+
+Classic verbal brainstorming suffers from four empirically-validated pathologies: **production blocking** (one speaker at a time, ideas lost while waiting), **evaluation apprehension** (fear of judgment suppresses novel ideas), **social loafing** (group membership diffuses effort), and **design fixation** (early ideas anchor subsequent thinking). Decades of controlled studies confirm nominal groups (individuals working independently then pooling) consistently outperform interactive brainstorming.
 
 Replace unstructured brainstorming with evidence-based alternatives:
 
 | Method | When to Use | Key Mechanism |
 | --- | --- | --- |
 | Brainwriting 6-3-5 | Any group ideation, especially distributed | Parallel written rotation eliminates production blocking and evaluation apprehension |
-| Six Thinking Hats | Architecture reviews, ADR deliberation | Parallel perspective switching; Green Hat for creativity, Black Hat for critique |
+| Electronic Brainstorming (EBS) | Large distributed groups (12–50) | Anonymity + parallel input; advantage over nominal groups grows with group size |
+| Six Thinking Hats | Architecture reviews, ADR deliberation | Parallel perspective switching; Green Hat for creativity (highest originality), Black Hat for critique |
 | SCAMPER | Feature generation, API design | Structured attribute manipulation (Substitute, Combine, Adapt, Modify, Put to use, Eliminate, Reverse) |
 | Pre-mortem | High-stakes decisions (K8s, IaC, data layer) | Working backward from imagined failure to surface hidden risks |
-| Opportunity Solution Tree | Ongoing product discovery | Outcome → Opportunities → Solutions → Experiments hierarchy |
+| Opportunity Solution Tree | Ongoing product discovery | Outcome → Opportunities → Solutions → Experiments hierarchy (Teresa Torres) |
+| Quiet Brainstorming | Solo researcher/developer | Extract (diverse input) → Expose (unusual connections) → Evaluate (new possibilities) (UChicago) |
 
 For the PR Review Council: Round 1 (Analysis) is analogous to Brainwriting — specialists generate findings in parallel without influencing each other. Round 2 (Deliberation) applies Six Thinking Hats implicitly through the voting roles.
 
 ### 5. Human–AI Collaboration Design
 
-Complementarity potential is rarely realized because humans rely on their own judgment where AI is superior, and vice versa. Design explicit role boundaries:
+The gap between **Complementarity Potential** (theoretical maximum) and **Complementarity Effect** (realized benefit) is typically large (EJIS 2025). Humans are overconfident exactly in domains where AI is superior. The **five complementarity dimensions** guide role assignment:
+
+| Dimension | AI Strength | Human Strength |
+| --- | --- | --- |
+| Reasoning | Consistency, exhaustive enumeration | Contextual judgment, common sense |
+| Memory | Scale, exact recall | Tacit knowledge, embodied experience |
+| Attention | Parallel scanning, no fatigue | Novelty detection, salience judgment |
+| Coordination | Deterministic sequencing | Improvisation, social dynamics |
+| Governance | Full audit trail, traceability | Accountability, ethical judgment |
+
+**Distributed Cognition Theory** (Hollan 2000): Cognition is distributed across humans, artifacts, and media. The human-AI-spec triad forms a distributed cognitive system that outperforms the sum of individual components when role boundaries are explicit.
 
 **Assign to AI**:
 - Generating exhaustive option spaces (combinatorial breadth)
@@ -99,7 +114,9 @@ Complementarity potential is rarely realized because humans rely on their own ju
 
 ### 6. Mandatory Incubation
 
-Neuroscience research confirms DMN (Default Mode Network) activity during disengagement produces qualitatively different idea connections than sustained focused work. REM sleep provides the most powerful incubation.
+The neuroscience of creative ideation involves three networks: the **Default Mode Network** (DMN — generates candidate ideas through spontaneous, associative thought), the **Salience Network** (SN — filters which ideas reach conscious attention), and the **Executive Control Network** (ECN — refines and evaluates). High-creativity individuals show stronger functional coupling between prefrontal cortex (ECN) and DMN regions. Conditions that force continuous evaluation (like competitive brainstorming) dysregulate DMN activity and shrink the idea space.
+
+REM sleep provides the most powerful incubation, linking associative network activity to insight-problem solving. fMRI research demonstrates that cognitive stimulation — exposure to others’ ideas — activates DMN regions (right TPJ, mPFC, PCC), and this activation correlates with the originality of subsequent divergent thinking.
 
 **Rule**: Never conduct evaluation and selection in the same session as generation. Generate options in session N; evaluate in session N+1. This applies to:
 - ADR creation: generate alternatives in one session, decide in the next
@@ -165,9 +182,10 @@ This maps to the ADR template's "Alternatives Considered" section and the PR Cou
 
 - [ADR-014: Automation Strategy](ADR-014-automation-strategy.md) — Pipeline orchestration, event-driven architecture
 - [ADR-015: Application Architecture](ADR-015-application-architecture-patterns.md) — Architectural decision context
-- [ADR-018: Agentic Coding](ADR-018-agentic-coding-conventions.md) — Guard Functions, Atomic Action Pairs, retry semantics
+- [ADR-018: Agentic Coding](ADR-018-agentic-coding-conventions.md) — Guard Functions, Atomic Action Pairs, retry semantics, persona drift detection (§11)
 - [ADR-020: Spec-Driven Development](ADR-020-spec-driven-development.md) — Structured ideation as specification input, human-AI collaboration model
+- [docs/research/collapse.md](../research/collapse.md) — Persona drift mechanism (Assistant Axis), context collapse as collaboration risk
 
 ---
 
-> **Provenance**: Created 2026-03-25 from analysis of [docs/research/ideating.md](../research/ideating.md). Synthesizes brainstorming science, AI reasoning frameworks, multi-agent debate pathologies, and human–AI complementarity research into enforceable decision-making protocols. Added ADR-020 cross-reference.
+> **Provenance**: Created 2026-03-25 from analysis of [docs/research/ideating.md](../research/ideating.md). Synthesizes brainstorming science, AI reasoning frameworks, multi-agent debate pathologies, and human–AI complementarity research into enforceable decision-making protocols. Added ADR-020 cross-reference. Updated 2026-03-25: added neuroscience foundations (DMN/SN/ECN), four brainstorming pathologies, EBS at scale, CONSENSAGENT framework, five complementarity dimensions, Distributed Cognition Theory, reasoning framework accuracy metrics, collapse.md cross-reference.

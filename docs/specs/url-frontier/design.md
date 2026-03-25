@@ -39,7 +39,40 @@ function deriveJobId(normalizedUrl: NormalizedUrl): string {
 
 The job queue silently discards duplicate job IDs, making enqueue idempotent.
 
-Covers: REQ-DIST-001
+**Collision risk analysis**: Truncating SHA-256 to 128 bits gives birthday-bound collision at ~2^64 operations. For a 10^9 URL corpus, collision probability is ~10^{-10} (negligible). If the crawler scales to >10^9 URLs, extend to `.slice(0, 48)` (192 bits).
+
+Covers: REQ-DIST-001, REQ-DIST-008
+
+### URL Normalization Pipeline
+
+```typescript
+function normalizeUrl(raw: string): Result<NormalizedUrl, NormalizationError> {
+  // 1. Parse URL
+  // 2. Lowercase scheme and host
+  // 3. Remove default port (80 for http, 443 for https)
+  // 4. Normalize percent-encoding (RFC 3986 §2.3: unreserved chars decoded)
+  // 5. Remove fragment identifier
+  // 6. Sort query parameters alphabetically
+  // 7. Remove trailing slash (except root path)
+  // 8. Remove default index.html
+  // 9. IDN: convert to Punycode (IDNA 2008)
+}
+```
+
+**Idempotency property** (fast-check verification):
+
+```typescript
+// Property for REQ-DIST-007: normalization is idempotent
+fc.assert(
+  fc.property(fc.webUrl(), (url) => {
+    const once = normalizeUrl(url);
+    const twice = normalizeUrl(normalizeUrl(url));
+    return once === twice;
+  })
+);
+```
+
+Covers: REQ-DIST-007, REQ-DIST-009
 
 ## 3. BFS Priority Mapping
 
@@ -102,7 +135,9 @@ Covers: REQ-DIST-005
 | Priority scheme | `priority = depth` | BFS order; BullMQ native priority |
 | Batch API | `addBulk()` | Single round-trip (REQ-DIST-004) |
 | Queue name | Constant shared across all components | REQ-DIST-006 |
+| URL normalization | 9-step pipeline + Punycode | Deterministic dedup; REQ-DIST-007 |
+| Collision monitoring | Counter metric on unexpected discards | Early warning; REQ-DIST-009 |
 
 ---
 
-> **Provenance**: Created 2026-03-25. Architect Agent design for URL frontier per ADR-002/020.
+> **Provenance**: Created 2026-03-25. Architect Agent design for URL frontier per ADR-002/020. Updated 2026-03-26: added URL normalization pipeline, collision risk analysis, idempotency property test per PR Review Council.

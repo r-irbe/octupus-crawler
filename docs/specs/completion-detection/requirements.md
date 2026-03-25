@@ -87,6 +87,43 @@ Then an error handler is attached before any other operation
 
 ---
 
+## 4. Coordinator High Availability
+
+**REQ-DIST-023** (Ubiquitous)
+The coordinator shall use a leader-election mechanism via the state store (e.g., Redis SETNX with TTL) to ensure exactly one active coordinator per crawl. Only the elected leader shall poll for completion or execute control plane commands.
+
+**REQ-DIST-024** (Ubiquitous)
+When the active coordinator loses its leadership lease (lease expires without renewal), a standby coordinator shall acquire the lease within one lease TTL period and resume polling.
+
+**REQ-DIST-025** (Event-driven)
+When a coordinator failover occurs, the new leader shall re-derive crawl state from the state store (live query) rather than relying on in-memory state from the failed leader.
+
+**REQ-DIST-026** (Ubiquitous)
+The leadership lease shall be renewable. The active coordinator shall renew the lease at `lease_ttl / 3` intervals to prevent unnecessary failovers.
+
+**REQ-DIST-027** (Unwanted behaviour)
+If a coordinator fails to renew its lease (e.g., network partition), then it shall stop polling and yield to a standby within the current lease TTL. The failed coordinator shall not issue commands after losing the lease.
+
+### Acceptance Criteria — High Availability
+
+```gherkin
+Given two coordinator instances
+When both attempt to acquire the leadership lease
+Then exactly one succeeds and becomes the active coordinator
+
+Given the active coordinator loses connectivity for > lease_ttl
+When the lease expires
+Then a standby coordinator acquires the lease within one TTL period
+And the new leader re-derives state from the state store
+
+Given a coordinator that lost its lease
+When it detects lease loss
+Then it stops polling immediately
+And does not issue any control plane commands
+```
+
+---
+
 ## Traceability Matrix
 
 | Requirement | Source | Priority | Test Type |
@@ -102,7 +139,12 @@ Then an error handler is attached before any other operation
 | REQ-DIST-020 | §6.4 | MUST | Distributed |
 | REQ-DIST-021 | §6.5 | MUST | Integration |
 | REQ-DIST-022 | §6.5 | MUST | Unit |
+| REQ-DIST-023 | §6.3 (HA) | MUST | Distributed |
+| REQ-DIST-024 | §6.3 (HA) | MUST | Distributed |
+| REQ-DIST-025 | §6.3 (HA) | MUST | Distributed |
+| REQ-DIST-026 | §6.3 (HA) | MUST | Unit |
+| REQ-DIST-027 | §6.3 (HA) | MUST | Distributed |
 
 ---
 
-> **Provenance**: Created 2026-03-25 from REQUIREMENTS-AGNOSTIC.md §6.3–6.5. EARS conversion per ADR-020.
+> **Provenance**: Created 2026-03-25 from REQUIREMENTS-AGNOSTIC.md §6.3–6.5. EARS conversion per ADR-020. Updated 2026-03-25: added §4 HA requirements (REQ-DIST-023–027) per PR Review Council finding F-CD-003/F-CD-014.

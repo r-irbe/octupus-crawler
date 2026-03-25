@@ -183,8 +183,13 @@ services:
     volumes:
       - ./infra/monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
       - ./infra/monitoring/alert-rules.yml:/etc/prometheus/alert-rules.yml
+      - prometheus-data:/prometheus
     ports:
       - "9091:9090"
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention.time=7d'
 
   grafana:
     image: grafana/grafana:10
@@ -196,11 +201,27 @@ services:
 
 volumes:
   dragonfly-data:
+  prometheus-data:
 ```
 
-Covers: REQ-INFRA-017, REQ-INFRA-019
+Covers: REQ-INFRA-017, REQ-INFRA-019, REQ-INFRA-020
 
-## 6. Design Decisions
+## 6. SRE Runbooks
+
+Runbook documents shall be maintained under `docs/runbooks/` and linked from alert annotations (REQ-ALERT-017, REQ-INFRA-021):
+
+| Runbook | Alert(s) | Content |
+| --- | --- | --- |
+| `high-error-rate.md` | HighErrorRate | Check logs for error patterns, verify DNS, check target availability |
+| `zero-fetch-rate.md` | ZeroFetchRate | Check state-store connectivity, worker health, queue state |
+| `stalled-jobs.md` | StalledJobs | Check worker heartbeat config, lock duration, network latency |
+| `high-latency.md` | P95/P99 Latency | Check target response times, network, DNS resolution |
+| `frontier-capacity.md` | FrontierCapacity, FrontierGrowth | Check crawl scope, max depth, allowed domains |
+| `worker-utilization.md` | High/LowUtilization | Scale workers up/down, check queue depth |
+| `worker-down.md` | WorkerDown | Check pod status, node health, resource limits |
+| `coordinator-restart.md` | CoordinatorRestart | Check OOM kills, state-store connectivity, leader election |
+
+## 7. Design Decisions
 
 | Decision | Choice | Rationale |
 | --- | --- | --- |

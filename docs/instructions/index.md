@@ -1,38 +1,20 @@
 # Instructions Index
 
-Instruction sets that ALL AI agents must follow at all times when working on the IPF distributed crawler project. Instructions are always active — they are never selectively loaded.
+Always-active instruction sets for ALL AI agents.
 
-## Instructions
-
-| Instruction | Category | Summary |
+| Instruction | Priority | Summary |
 | --- | --- | --- |
-| [Belief Threshold](belief-threshold.md) | Safety | STOP and ask user when confidence < 80%. Calibrated levels: High (80-100%), Medium (60-79%), Low (40-59%), Very Low (0-39%) |
-| [Engineering Discipline](engineering-discipline.md) | Quality | 8 core principles: understand before changing, small steps, test everything, fail fast, follow ADRs, keep simple, document decisions, leave it better |
-| [Decision Transparency](decision-transparency.md) | Trust | Show work, present alternatives, proactive uncertainty disclosure, no hidden decisions |
-| [User Collaboration](user-collaboration.md) | Communication | 10-point collaboration contract, when/how to engage user, question quality standards |
-| [Git Safety Protocol](git-safety-protocol.md) | Safety | Branch naming, lifecycle, forbidden actions (force push, reset --hard, direct main commits) |
-| [Parallel Work Protocol](parallel-work-protocol.md) | Coordination | Multi-agent parallel execution, conflict prevention, merge strategy, max 5 parallel agents |
+| [Belief Threshold](belief-threshold.md) | Critical | STOP at <80% belief. Levels: High/Medium/Low/Very Low. Anti-sycophancy guard. |
+| [Git Safety Protocol](git-safety-protocol.md) | Critical | Isolated branches, forbidden actions, Gateway manages lifecycle. |
+| [Engineering Discipline](engineering-discipline.md) | High | 10 principles. Hallucination guard. Anti-patterns table. |
+| [User Collaboration](user-collaboration.md) | High | Collaboration contract, autonomy tiers, AMBIG-SWE. |
+| [Decision Transparency](decision-transparency.md) | High | Show work, alternatives, decision logging (ADR-019). |
+| [Parallel Work Protocol](parallel-work-protocol.md) | High | Conflict prevention, merge strategy, max 5 parallel agents. |
+| [Pre-Flight Checklist](pre-flight-checklist.md) | Gate | G1–G4: Plan, Branch, Spec, State Tracker. |
+| [Post-Task Checklist](post-task-checklist.md) | Gate | G5–G10: Guard Functions, Commit, Review, Worklog, Report. |
 
-## Priority Order
-
-When instructions conflict (rare), resolve in this order:
-
-1. **Belief Threshold** — safety first, always ask when unsure
-2. **Git Safety Protocol** — protect the repo, never lose work
-3. **Engineering Discipline** — maintain quality standards
-4. **User Collaboration** — keep user informed and in control
-5. **Decision Transparency** — explain reasoning
-6. **Parallel Work Protocol** — coordinate efficiently
-
-## Index
-
-- [Belief Threshold](belief-threshold.md) — Confidence calibration and user escalation
-- [Decision Transparency](decision-transparency.md) — Show work and disclose uncertainty
-- [Engineering Discipline](engineering-discipline.md) — Core quality principles
-- [Git Safety Protocol](git-safety-protocol.md) — Branch safety and forbidden actions
-- [Parallel Work Protocol](parallel-work-protocol.md) — Multi-agent coordination
-- [User Collaboration](user-collaboration.md) — Communication and engagement standards
+**Conflict resolution** (priority order): Belief Threshold > Git Safety > Engineering Discipline > User Collaboration > Decision Transparency > Parallel Work.
 
 ---
 
-> **Provenance**: Created 2026-03-24 as the instructions directory index for the IPF distributed crawler project.
+> **Provenance**: Created 2026-03-24. Condensed 2026-03-25.

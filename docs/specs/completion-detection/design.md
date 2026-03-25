@@ -114,6 +114,83 @@ Covers: REQ-DIST-019
 | Abort threshold | 25 failures | ~12 min tolerance for transient outages |
 | Cancel idempotency | Promise deduplication | Thread-safe convergence (REQ-DIST-019) |
 | Once guard | Boolean flag | Prevents overlapping polls (REQ-DIST-016) |
+| Leader election | Redis SETNX with TTL | Simple, state-store-native HA (REQ-DIST-023) |
+| Lease renewal | lease_ttl / 3 interval | Prevents unnecessary failover (REQ-DIST-026) |
+
+## 7. Coordinator High Availability
+
+### Leader Election Model
+
+```mermaid
+sequenceDiagram
+    participant C1 as Coordinator 1
+    participant C2 as Coordinator 2 (standby)
+    participant Redis as State Store
+
+    C1->>Redis: SETNX coordinator:leader {id: C1} EX 30
+    Redis-->>C1: OK (acquired)
+    C2->>Redis: SETNX coordinator:leader {id: C2} EX 30
+    Redis-->>C2: FAIL (already held)
+
+    loop Every 10s (TTL/3)
+        C1->>Redis: SET coordinator:leader {id: C1} EX 30 XX
+        Redis-->>C1: OK (renewed)
+    end
+
+    Note over C1: C1 crashes / network partition
+    Note over Redis: Lease expires after 30s
+
+    C2->>Redis: SETNX coordinator:leader {id: C2} EX 30
+    Redis-->>C2: OK (acquired)
+    C2->>Redis: Live query: derive state
+    C2->>C2: Resume polling from live state
+```
+
+### Election Protocol
+
+```typescript
+interface LeaderElection {
+  readonly coordinatorId: string
+  readonly leaseTtlMs: number        // Default: 30_000ms
+  readonly renewIntervalMs: number   // leaseTtlMs / 3
+
+  tryAcquire(): AsyncResult<boolean, QueueError>
+  renew(): AsyncResult<boolean, QueueError>
+  release(): AsyncResult<void, QueueError>
+  isLeader(): boolean
+}
+```
+
+**Key invariants:**
+
+- **Lease key**: `coordinator:leader` in the state store
+- **SETNX semantics**: Only one coordinator acquires; others fail safely
+- **Lease auto-expiry**: TTL ensures crashed leaders are eventually replaced
+- **Renewal at TTL/3**: Renew at 10s for 30s TTL — allows 2 missed renewals before expiry
+- **State re-derivation**: New leader queries live queue state (REQ-DIST-025), never trusts in-memory state from predecessor
+- **Fencing**: Coordinator checks `isLeader()` before every poll tick and every control plane command (REQ-DIST-027)
+
+### Failover State Machine
+
+```mermaid
+stateDiagram-v2
+    [*] --> Standby
+    Standby --> AcquiringLease : tryAcquire()
+    AcquiringLease --> Leader : lease acquired
+    AcquiringLease --> Standby : lease held by other
+
+    Leader --> Renewing : renewal interval
+    Renewing --> Leader : renewed OK
+    Renewing --> LeaseLost : renewal failed
+
+    LeaseLost --> Standby : stop polling, yield
+    Leader --> Standby : explicit release
+
+    Leader --> Polling : isLeader() check
+    Polling --> Leader : poll complete
+```
+
+Covers: REQ-DIST-023 to 027
 
 ---
 

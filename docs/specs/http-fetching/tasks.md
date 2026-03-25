@@ -34,7 +34,17 @@
 - [ ] **T-FETCH-016**: Implement error classifier mapping exceptions to 9 FetchError variants → REQ-FETCH-018
 - [ ] **T-FETCH-017**: Track wall-clock duration for every fetch → REQ-FETCH-019
 
-## Phase 5: Tests
+## Phase 5: Metrics & Integration
+
+- [ ] **T-FETCH-025**: Implement `fetches_total` counter with `status` and `error_kind` labels → REQ-FETCH-022
+- [ ] **T-FETCH-026**: Implement `fetch_duration_seconds` histogram with configurable buckets → REQ-FETCH-022
+- [ ] **T-FETCH-027**: Implement `redirects_followed_total` counter and `body_bytes_received_total` counter → REQ-FETCH-022
+- [ ] **T-FETCH-028**: Implement per-domain promise-chain serialization for concurrency safety → REQ-FETCH-020
+- [ ] **T-FETCH-029**: Implement TLD+1 domain grouping via public suffix list → REQ-FETCH-021
+- [ ] **T-FETCH-030**: Integrate SSRF guard pinned IP result (use `pinnedIp` + `Host` header) → REQ-FETCH-023
+- [ ] **T-FETCH-031**: Implement stream drain error handling (catch + log, continue redirect chain) → REQ-FETCH-024
+
+## Phase 6: Tests
 
 - [ ] **T-FETCH-018**: Unit tests for politeness delay enforcement and LRU eviction → REQ-FETCH-009 to 013
 - [ ] **T-FETCH-019**: Scenario tests for redirect chain following (success, limit exceeded) → REQ-FETCH-004, REQ-FETCH-008
@@ -43,6 +53,11 @@
 - [ ] **T-FETCH-022**: Scenario test for body size limit (Content-Length pre-flight + streaming) → REQ-FETCH-014, REQ-FETCH-015
 - [ ] **T-FETCH-023**: Unit tests for all 9 error classification variants → REQ-FETCH-018
 - [ ] **T-FETCH-024**: Unit test for duration tracking → REQ-FETCH-019
+- [ ] **T-FETCH-032**: Unit test for per-domain promise-chain concurrency safety → REQ-FETCH-020
+- [ ] **T-FETCH-033**: Unit test for TLD+1 domain grouping → REQ-FETCH-021
+- [ ] **T-FETCH-034**: Unit test for all fetcher metric recording → REQ-FETCH-022
+- [ ] **T-FETCH-035**: Integration test for SSRF pinned IP connection → REQ-FETCH-023
+- [ ] **T-FETCH-036**: Unit test for stream drain error handling during redirect → REQ-FETCH-024
 
 ---
 
@@ -54,8 +69,9 @@
 | Phase 2 (HTTP client) | ssrf-guard, Phase 1 | crawl-pipeline integration |
 | Phase 3 (response) | Phase 2 | crawl-pipeline integration |
 | Phase 4 (errors) | core-contracts: error types | — |
-| Phase 5 (tests) | Phases 1-4 | — |
+| Phase 5 (metrics/integration) | Phase 2, ssrf-guard (pinned IP) | — |
+| Phase 6 (tests) | Phases 1-5 | — |
 
 ---
 
-> **Provenance**: Created 2026-03-25. Implementation Agent task decomposition per ADR-020.
+> **Provenance**: Created 2026-03-25. Implementation Agent task decomposition per ADR-020. Updated 2026-03-25: added Phase 5 (REQ-FETCH-020–024 concurrency safety, TLD+1, metrics, SSRF integration, drain handling).

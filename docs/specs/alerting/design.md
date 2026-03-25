@@ -69,7 +69,13 @@ graph LR
 
 ## 3. Alert Testing Strategy
 
-Each alert rule gets two unit tests:
+Each alert rule gets three unit tests using `promtool test rules`:
+
+| Test Type | Purpose | Example |
+| --- | --- | --- |
+| **Should fire** | Metric values exceed threshold for required duration | Error rate 60% for 2m |
+| **Should not fire** | Metric values below threshold | Error rate 40% for 2m |
+| **Edge case** | Boundary values (±1%), duration boundary, no data | Error rate 50.1% for exactly 2m |
 
 ```yaml
 # Test structure per alert rule
@@ -90,9 +96,71 @@ Each alert rule gets two unit tests:
         - series: 'fetches_total{status="success"}'
           values: '0+1x120'
       expected: not_firing
+
+    - name: "edge: should not fire at exactly 50%"
+      input_series:
+        - series: 'fetches_total{status="error"}'
+          values: '0+1x120'
+        - series: 'fetches_total{status="success"}'
+          values: '0+1x120'
+      expected: not_firing  # Alert is > 50%, not >= 50%
 ```
 
-Uses Prometheus unit testing framework (`promtool test rules`).
+Uses Prometheus unit testing framework (`promtool test rules`). Integrated into CI via `pnpm turbo test:alerts` (REQ-ALERT-014).
+
+## 4. Alert Routing Configuration
+
+```yaml
+# Alertmanager routing configuration (REQ-ALERT-016)
+route:
+  receiver: 'default'
+  group_by: ['alertname']
+  group_wait: 30s
+  group_interval: 5m
+  repeat_interval: 4h
+  routes:
+    - match:
+        severity: critical
+      receiver: 'pagerduty'
+      repeat_interval: 15m
+    - match:
+        severity: warning
+      receiver: 'slack-alerts'
+      repeat_interval: 1h
+    - match:
+        severity: info
+      receiver: 'log-only'
+
+receivers:
+  - name: 'pagerduty'
+    pagerduty_configs:
+      - service_key: '$PAGERDUTY_SERVICE_KEY'
+  - name: 'slack-alerts'
+    slack_configs:
+      - api_url: '$SLACK_WEBHOOK_URL'
+        channel: '#ipf-alerts'
+  - name: 'log-only'
+    webhook_configs: []
+  - name: 'default'
+    slack_configs:
+      - api_url: '$SLACK_WEBHOOK_URL'
+        channel: '#ipf-alerts'
+```
+
+All alerts include annotations (REQ-ALERT-017):
+
+```yaml
+# Example alert with annotations
+- alert: HighErrorRate
+  expr: rate(fetches_total{status="error"}[2m]) / rate(fetches_total[2m]) > 0.5
+  for: 2m
+  labels:
+    severity: warning
+  annotations:
+    summary: "High fetch error rate ({{ $value | humanizePercentage }})"
+    description: "Error rate is {{ $value | humanizePercentage }} over the last 2 minutes. Threshold: 50%."
+    runbook_url: "https://github.com/ipf/ipf/wiki/Runbooks#high-error-rate"
+```
 
 ## 4. Design Decisions
 

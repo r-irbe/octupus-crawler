@@ -10,34 +10,48 @@
 
 | Feature | Directory | Requirement IDs | Source Sections | Docs |
 | --- | --- | --- | --- | --- |
-| Core Contracts | [core-contracts/](core-contracts/) | REQ-ARCH-001 to 015 | §2 | [req](core-contracts/requirements.md) [des](core-contracts/design.md) [tasks](core-contracts/tasks.md) |
-| Crawl Pipeline | [crawl-pipeline/](crawl-pipeline/) | REQ-CRAWL-001 to 016 | §3 | [req](crawl-pipeline/requirements.md) [des](crawl-pipeline/design.md) [tasks](crawl-pipeline/tasks.md) |
-| SSRF Guard | [ssrf-guard/](ssrf-guard/) | REQ-SEC-001 to 013 | §4 | [req](ssrf-guard/requirements.md) [des](ssrf-guard/design.md) [tasks](ssrf-guard/tasks.md) |
-| HTTP Fetching | [http-fetching/](http-fetching/) | REQ-FETCH-001 to 019 | §5 | [req](http-fetching/requirements.md) [des](http-fetching/design.md) [tasks](http-fetching/tasks.md) |
-| URL Frontier | [url-frontier/](url-frontier/) | REQ-DIST-001 to 006 | §6.1-6.2 | [req](url-frontier/requirements.md) [des](url-frontier/design.md) [tasks](url-frontier/tasks.md) |
-| Worker Management | [worker-management/](worker-management/) | REQ-DIST-007 to 011 | §6.3-6.4 | [req](worker-management/requirements.md) [des](worker-management/design.md) [tasks](worker-management/tasks.md) |
-| Completion Detection | [completion-detection/](completion-detection/) | REQ-DIST-012 to 022 | §6.5-6.7 | [req](completion-detection/requirements.md) [des](completion-detection/design.md) [tasks](completion-detection/tasks.md) |
-| Observability | [observability/](observability/) | REQ-OBS-001 to 026 | §7 | [req](observability/requirements.md) [des](observability/design.md) [tasks](observability/tasks.md) |
-| Application Lifecycle | [application-lifecycle/](application-lifecycle/) | REQ-LIFE-001 to 028, REQ-LIFE-CFG-001 to 003 | §2.5, §8, §10.5 | [req](application-lifecycle/requirements.md) [des](application-lifecycle/design.md) [tasks](application-lifecycle/tasks.md) |
-| Alerting | [alerting/](alerting/) | REQ-ALERT-001 to 013 | §9 | [req](alerting/requirements.md) [des](alerting/design.md) [tasks](alerting/tasks.md) |
-| Infrastructure | [infrastructure/](infrastructure/) | REQ-INFRA-001 to 019 | §10 | [req](infrastructure/requirements.md) [des](infrastructure/design.md) [tasks](infrastructure/tasks.md) |
-| Testing & Quality | [testing-quality/](testing-quality/) | REQ-TEST-001 to 020 | §11 | [req](testing-quality/requirements.md) [des](testing-quality/design.md) [tasks](testing-quality/tasks.md) |
+| Core Contracts | [core-contracts/](core-contracts/) | REQ-ARCH-001 to 018 | §2 | [req](core-contracts/requirements.md) [des](core-contracts/design.md) [tasks](core-contracts/tasks.md) |
+| Crawl Pipeline | [crawl-pipeline/](crawl-pipeline/) | REQ-CRAWL-001 to 019 | §3 | [req](crawl-pipeline/requirements.md) [des](crawl-pipeline/design.md) [tasks](crawl-pipeline/tasks.md) |
+| SSRF Guard | [ssrf-guard/](ssrf-guard/) | REQ-SEC-001 to 019 | §4 | [req](ssrf-guard/requirements.md) [des](ssrf-guard/design.md) [tasks](ssrf-guard/tasks.md) |
+| HTTP Fetching | [http-fetching/](http-fetching/) | REQ-FETCH-001 to 024 | §5 | [req](http-fetching/requirements.md) [des](http-fetching/design.md) [tasks](http-fetching/tasks.md) |
+| URL Frontier | [url-frontier/](url-frontier/) | REQ-DIST-001 to 009 | §6.1-6.2 | [req](url-frontier/requirements.md) [des](url-frontier/design.md) [tasks](url-frontier/tasks.md) |
+| Worker Management | [worker-management/](worker-management/) | REQ-DIST-007 to 014 | §6.3-6.4 | [req](worker-management/requirements.md) [des](worker-management/design.md) [tasks](worker-management/tasks.md) |
+| Completion Detection | [completion-detection/](completion-detection/) | REQ-DIST-012 to 027 | §6.5-6.7 | [req](completion-detection/requirements.md) [des](completion-detection/design.md) [tasks](completion-detection/tasks.md) |
+| Observability | [observability/](observability/) | REQ-OBS-001 to 030 | §7 | [req](observability/requirements.md) [des](observability/design.md) [tasks](observability/tasks.md) |
+| Application Lifecycle | [application-lifecycle/](application-lifecycle/) | REQ-LIFE-001 to 034, REQ-LIFE-CFG-001 to 003 | §2.5, §8, §10.5 | [req](application-lifecycle/requirements.md) [des](application-lifecycle/design.md) [tasks](application-lifecycle/tasks.md) |
+| Alerting | [alerting/](alerting/) | REQ-ALERT-001 to 017 | §9 | [req](alerting/requirements.md) [des](alerting/design.md) [tasks](alerting/tasks.md) |
+| Infrastructure | [infrastructure/](infrastructure/) | REQ-INFRA-001 to 021 | §10 | [req](infrastructure/requirements.md) [des](infrastructure/design.md) [tasks](infrastructure/tasks.md) |
+| Testing & Quality | [testing-quality/](testing-quality/) | REQ-TEST-001 to 024 | §11 | [req](testing-quality/requirements.md) [des](testing-quality/design.md) [tasks](testing-quality/tasks.md) |
+
+## Agent Virtual Memory Specifications
+
+| Feature | Directory | Requirement IDs | ADR Reference | Docs |
+| --- | --- | --- | --- | --- |
+| Virtual Memory | [virtual-memory/](virtual-memory/) | REQ-VMEM-001 to 021 | ADR-022 §6 | [req](virtual-memory/requirements.md) [des](virtual-memory/design.md) [tasks](virtual-memory/tasks.md) |
+
+## Agentic Setup Improvement Specifications
+
+| Feature | Directory | Requirement IDs | Source | Docs |
+| --- | --- | --- | --- | --- |
+| Agentic Setup | [agentic-setup/](agentic-setup/) | REQ-AGENT-001 to 106 | [copilot_claude_code.md](../research/copilot_claude_code.md), [ai_coding.md](../research/ai_coding.md), [collapse.md](../research/collapse.md), [ideating.md](../research/ideating.md), [spec.md](../research/spec.md), [REQUIREMENTS-AGNOSTIC.md](../research/REQUIREMENTS-AGNOSTIC.md), [arch.md](../research/arch.md), [code.md](../research/code.md), [post-mortem](../worklogs/2026-03-25-implementation-postmortem.md) | [req](agentic-setup/requirements.md) [des](agentic-setup/design.md) [tasks](agentic-setup/tasks.md) |
 
 ## Requirement Count Summary
 
 | Domain | Count |
 | --- | --- |
-| Architecture (REQ-ARCH) | 15 |
-| Crawl Pipeline (REQ-CRAWL) | 16 |
-| Security (REQ-SEC) | 13 |
-| HTTP Fetching (REQ-FETCH) | 19 |
-| Distributed (REQ-DIST) | 22 |
-| Observability (REQ-OBS) | 26 |
-| Lifecycle (REQ-LIFE) | 31 |
-| Alerting (REQ-ALERT) | 13 |
-| Infrastructure (REQ-INFRA) | 19 |
-| Testing (REQ-TEST) | 20 |
-| **Total** | **194** |
+| Architecture (REQ-ARCH) | 18 |
+| Crawl Pipeline (REQ-CRAWL) | 19 |
+| Security (REQ-SEC) | 19 |
+| HTTP Fetching (REQ-FETCH) | 24 |
+| Distributed (REQ-DIST) | 30 |
+| Observability (REQ-OBS) | 30 |
+| Lifecycle (REQ-LIFE) | 37 |
+| Alerting (REQ-ALERT) | 17 |
+| Infrastructure (REQ-INFRA) | 21 |
+| Testing (REQ-TEST) | 24 |
+| Virtual Memory (REQ-VMEM) | 21 |
+| Agentic Setup (REQ-AGENT) | 106 |
+| **Total** | **366** |
 
 ## Implementation Order
 
@@ -56,6 +70,7 @@ Recommended build order based on dependency analysis across all task files:
 11. **alerting** — PromQL rules (needs observability metrics)
 12. **infrastructure** — Docker, K8s, compose (needs application code)
 13. **testing-quality** — Test infrastructure, CI pipeline (needs all features)
+14. **agentic-setup** — Agent configuration, enforcement hooks, TDD workflows, CI pipeline for agent PRs (independent — can be implemented in parallel with features)
 
 ## Gap Analysis Integration
 
@@ -67,4 +82,4 @@ The REQUIREMENTS-AGNOSTIC.md §12 identified 27 gaps. These are addressed in the
 
 ---
 
-> **Provenance**: Created 2026-03-25. Documentation Agent index per ADR-020.
+> **Provenance**: Created 2026-03-25. Documentation Agent index per ADR-020. Updated 2026-03-26: updated requirement counts after PR Review Council fixes (300 → 366 requirements). Updated 2026-03-26: P2/P3 fixes — created virtual-memory/tasks.md, added 55+ implementation tasks across 12 specs, added Gherkin acceptance criteria for all new requirements, fixed all markdown lint errors.

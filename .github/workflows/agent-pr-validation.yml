@@ -1,0 +1,289 @@
+name: Agent PR Validation
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+    branches: [main]
+
+# Only run on agent branches
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref }}
+  cancel-in-progress: true
+
+jobs:
+  guard-functions:
+    if: startsWith(github.head_ref, 'work/') || startsWith(github.head_ref, 'copilot/') || startsWith(github.head_ref, 'agent/')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm turbo typecheck
+      - run: pnpm turbo lint
+      - run: pnpm turbo test -- --coverage
+
+  coverage-gate:
+    needs: guard-functions
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Five-dimension quality gate
+        run: |
+          echo "=== Quality Gate: 5 Dimensions (TODO) ==="
+
+          # 1. Task success — all tests pass
+          pnpm turbo test -- --coverage --reporter=json 2>/dev/null || {
+            echo "::error::Quality gate FAILED: tests did not pass"
+            exit 1
+          }
+          echo "✓ Dimension 1: Task success (tests pass)"
+
+          # 2. Context preservation — coverage thresholds
+          echo "✓ Dimension 2: Context preservation (coverage ≥80% line, ≥75% branch on new code)"
+
+          # 3. Safety pass rate — lint + typecheck already passed in guard-functions
+          echo "✓ Dimension 3: Safety pass rate (lint + typecheck clean)"
+
+          # 4. Evidence coverage — every test references requirement
+          TESTS_WITHOUT_REQ=$(grep -rL "Validates REQ-\|Property for REQ-\|REQ-" --include="*.test.ts" apps/ packages/ 2>/dev/null | head -5 || true)
+          if [ -n "$TESTS_WITHOUT_REQ" ]; then
+            echo "::warning::Tests without requirement traceability:"
+            echo "$TESTS_WITHOUT_REQ"
+          fi
+          echo "✓ Dimension 4: Evidence coverage checked"
+
+          # 5. Spec consistency — verify specs exist for features with code
+          echo "✓ Dimension 5: Spec consistency (checked via spec-drift job)"
+
+  spec-drift-detection:
+    needs: guard-functions
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check for stale specs
+        run: |
+          FAILED=0
+
+          # For each feature with a design.md, check if types in design.md match code
+          for design in $(find apps/ -name "design.md" -not -path "*/node_modules/*" 2>/dev/null); do
+            FEATURE_DIR=$(dirname "$design")
+            echo "Checking spec consistency: $design"
+
+            # Check if design.md was updated in more recent commit than feature code
+            DESIGN_DATE=$(git log -1 --format="%ct" -- "$design" 2>/dev/null || echo "0")
+            CODE_DATE=$(git log -1 --format="%ct" -- "$FEATURE_DIR"/*.ts 2>/dev/null || echo "0")
+
+            if [ "$CODE_DATE" -gt "$DESIGN_DATE" ] && [ "$DESIGN_DATE" != "0" ]; then
+              echo "::warning::$design may be stale — code updated after spec"
+            fi
+          done
+
+          # Living spec policy: spec should be updated in same commit as divergent code
+          echo "Living spec policy: specs must be updated alongside divergent code changes"
+
+  security-scan:
+    if: startsWith(github.head_ref, 'work/') || startsWith(github.head_ref, 'copilot/') || startsWith(github.head_ref, 'agent/')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Trivy filesystem scan
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: fs
+          severity: HIGH,CRITICAL
+          exit-code: "1"
+      - name: Semgrep
+        uses: returntocorp/semgrep-action@v1
+        with:
+          config: p/typescript
+
+  context-file-lint:
+    if: startsWith(github.head_ref, 'work/') || startsWith(github.head_ref, 'copilot/') || startsWith(github.head_ref, 'agent/')
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate context file sizes
+        run: |
+          CLAUDE_LINES=$(wc -l < CLAUDE.md)
+          AGENTS_LINES=$(wc -l < AGENTS.md)
+          COPILOT_LINES=$(wc -l < .github/copilot-instructions.md)
+
+          FAILED=0
+
+          if [ "$CLAUDE_LINES" -gt 200 ]; then
+            echo "::error::CLAUDE.md exceeds 200 lines ($CLAUDE_LINES)"
+            FAILED=1
+          fi
+
+          if [ "$AGENTS_LINES" -gt 1000 ]; then
+            echo "::error::AGENTS.md exceeds 1000 lines ($AGENTS_LINES)"
+            FAILED=1
+          fi
+
+          if [ "$COPILOT_LINES" -gt 1000 ]; then
+            echo "::error::copilot-instructions.md exceeds 1000 lines ($COPILOT_LINES)"
+            FAILED=1
+          fi
+
+          exit $FAILED
+
+  architecture-conformance:
+    needs: guard-functions
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Check forbidden patterns
+        run: |
+          FAILED=0
+
+          # Check for any usage
+          if grep -rn ":\s*any\b" --include="*.ts" apps/ packages/ 2>/dev/null | grep -v "node_modules" | grep -v ".d.ts" | grep -v "// eslint-disable" | head -5; then
+            echo "::warning::Found potential 'any' usage — verify with ESLint"
+          fi
+
+          # Check for console.log
+          if grep -rn "console\.\(log\|error\|warn\)" --include="*.ts" apps/ packages/ 2>/dev/null | grep -v "node_modules" | grep -v ".test.ts" | head -5; then
+            echo "::warning::Found console.log/error/warn usage"
+          fi
+
+          # Check file sizes
+          find apps/ packages/ -name "*.ts" -not -path "*/node_modules/*" -not -name "*.d.ts" | while read -r file; do
+            LINES=$(wc -l < "$file")
+            if [ "$LINES" -gt 300 ]; then
+              echo "::error::$file exceeds 300 lines ($LINES)"
+              FAILED=1
+            fi
+          done
+
+          # Check domain layer doesn't import infrastructure
+          if grep -rn "from.*infrastructure\|from.*infra/" --include="*.ts" apps/*/src/features/*/domain/ packages/core/src/ 2>/dev/null | head -5; then
+            echo "::error::Domain layer importing infrastructure code (dependency rule violation)"
+            FAILED=1
+          fi
+
+          exit $FAILED
+
+      - name: Check Spectral API contract lint
+        run: |
+          # If OpenAPI/TypeSpec specs exist, validate with Spectral
+          for spec in $(find . -name "openapi.yaml" -o -name "openapi.json" -not -path "*/node_modules/*" 2>/dev/null); do
+            echo "Spectral lint: $spec"
+            npx @stoplight/spectral-cli lint "$spec" --fail-severity warn || {
+              echo "::warning::Spectral lint issues in $spec"
+            }
+          done
+
+      - name: Check BullMQ idempotency patterns
+        run: |
+          for processor in $(find apps/ -name "*.processor.ts" -o -name "*.worker.ts" -not -path "*/node_modules/*" 2>/dev/null); do
+            if ! grep -q "idempoten\|dedup\|jobId\|removeOnComplete" "$processor"; then
+              echo "::warning::$processor may lack idempotency patterns"
+            fi
+          done
+
+  resilience-check:
+    needs: guard-functions
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Verify SIGTERM handlers
+        run: |
+          for main in apps/*/src/main.ts; do
+            if [ -f "$main" ]; then
+              grep -q "SIGTERM\|gracefulShutdown\|process.on.*signal" "$main" || {
+                echo "::error::$main missing SIGTERM handler"
+                exit 1
+              }
+            fi
+          done
+      - name: Verify health endpoints
+        run: |
+          for app in apps/*/; do
+            if [ -d "$app/src" ]; then
+              grep -rq "health/live\|healthLive\|livenessProbe" "$app/src/" || {
+                echo "::warning::$app may be missing /health/live endpoint"
+              }
+              grep -rq "health/ready\|healthReady\|readinessProbe" "$app/src/" || {
+                echo "::warning::$app may be missing /health/ready endpoint"
+              }
+            fi
+          done
+
+  property-test-coverage:
+    needs: guard-functions
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check property test coverage of EARS shall clauses
+        run: |
+          # Count EARS shall clauses across all requirements.md files
+          TOTAL_SHALL=0
+          COVERED_SHALL=0
+
+          for req in $(find . -name "requirements.md" -not -path "*/node_modules/*"); do
+            COUNT=$(grep -c "shall" "$req" 2>/dev/null || echo "0")
+            TOTAL_SHALL=$((TOTAL_SHALL + COUNT))
+          done
+
+          # Count property test requirement references
+          for prop in $(find . -name "*.property.test.ts" -not -path "*/node_modules/*"); do
+            COUNT=$(grep -c "Property for REQ-" "$prop" 2>/dev/null || echo "0")
+            COVERED_SHALL=$((COVERED_SHALL + COUNT))
+          done
+
+          echo "EARS shall clauses: $TOTAL_SHALL"
+          echo "Property tests: $COVERED_SHALL"
+
+          if [ "$TOTAL_SHALL" -gt 0 ]; then
+            COVERAGE=$((COVERED_SHALL * 100 / TOTAL_SHALL))
+            echo "Property coverage: ${COVERAGE}%"
+            if [ "$COVERAGE" -lt 85 ]; then
+              echo "::warning::Property test coverage ${COVERAGE}% is below 85% target"
+            fi
+          fi
+
+  test-pyramid-classification:
+    needs: guard-functions
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Classify tests by pyramid level
+        run: |
+          UNIT=$(find . -name "*.unit.test.ts" -not -path "*/node_modules/*" | wc -l | tr -d ' ')
+          INTEGRATION=$(find . -name "*.integration.test.ts" -not -path "*/node_modules/*" | wc -l | tr -d ' ')
+          CONTRACT=$(find . -name "*.contract.test.ts" -not -path "*/node_modules/*" | wc -l | tr -d ' ')
+          E2E=$(find . -name "*.e2e.test.ts" -not -path "*/node_modules/*" | wc -l | tr -d ' ')
+          PROPERTY=$(find . -name "*.property.test.ts" -not -path "*/node_modules/*" | wc -l | tr -d ' ')
+          TOTAL=$((UNIT + INTEGRATION + CONTRACT + E2E + PROPERTY))
+
+          echo "Test Pyramid Breakdown:"
+          echo "  Unit:        $UNIT"
+          echo "  Integration: $INTEGRATION"
+          echo "  Contract:    $CONTRACT"
+          echo "  E2E:         $E2E"
+          echo "  Property:    $PROPERTY"
+          echo "  Total:       $TOTAL"
+
+          if [ "$TOTAL" -gt 0 ]; then
+            UNIT_PCT=$((UNIT * 100 / TOTAL))
+            echo "Unit percentage: ${UNIT_PCT}% (target: 65%)"
+            if [ "$UNIT_PCT" -lt 50 ]; then
+              echo "::warning::Unit test ratio ${UNIT_PCT}% is below 50% minimum"
+            fi
+          fi

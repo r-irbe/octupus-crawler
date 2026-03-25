@@ -79,15 +79,76 @@ The production container image shall run as a non-root user.
 **REQ-SEC-013** (Ubiquitous)
 The production install shall exclude dev dependencies and disable install scripts.
 
-## 4. Known Security Gaps
+## 4. SSRF Metrics
 
-| Gap ID | Description | Risk | Recommended Fix |
+**REQ-SEC-014** (Ubiquitous)
+The SSRF guard shall record a `ssrf_checks_total` counter with labels: `result` (`allowed`, `blocked`, `dns_failed`) and `reason` (e.g., `private_ipv4`, `private_ipv6`, `ipv4_mapped`, `dns_rebinding`, `scheme_disallowed`).
+
+**REQ-SEC-015** (Ubiquitous)
+The SSRF guard shall record a `ssrf_dns_resolution_seconds` histogram for DNS resolution latency.
+
+**REQ-SEC-016** (Ubiquitous)
+When a DNS query returns multiple IP addresses, the SSRF guard shall validate every resolved IP against blocked ranges — not just the first address. If any resolved IP is in a blocked range, the request shall be blocked.
+
+**REQ-SEC-017** (Ubiquitous)
+DNS resolution shall have a configurable timeout (default: 5s). Timeout behavior shall follow the configured DNS fail policy (REQ-SEC-006).
+
+### Acceptance Criteria — SSRF Metrics
+
+```gherkin
+Given a URL resolving to a private IP
+When the SSRF guard blocks it
+Then ssrf_checks_total{result="blocked",reason="private_ipv4"} is incremented
+
+Given a DNS query returning [1.2.3.4, 10.0.0.1]
+When the SSRF guard validates all IPs
+Then the request is blocked because 10.0.0.1 is private
+
+Given a DNS resolution completing in 200ms
+When the histogram is checked
+Then ssrf_dns_resolution_seconds records 0.2
+
+Given DNS_TIMEOUT_MS=5000 and a DNS query taking 6 seconds
+When the timeout fires
+Then the request follows the configured DNS fail policy (block or allow)
+```
+
+## 5. DNS Pinning Coordination Protocol
+
+**REQ-SEC-018** (Ubiquitous)
+The SSRF guard shall return the validated and pinned IP address alongside the validation result. The callingFetcher shall use this pinned IP for the HTTP connection (setting the `Host` header to the original domain). This eliminates the TOCTOU window between DNS validation and HTTP connect.
+
+**REQ-SEC-019** (Ubiquitous)
+The coordination interface between SSRF guard and Fetcher shall be:
+
+```typescript
+interface SsrfValidationResult {
+  readonly allowed: boolean
+  readonly pinnedIp: string | null   // Resolved IP to use for connection
+  readonly originalHost: string       // Original domain for Host header
+  readonly reason?: string            // Block reason if not allowed
+}
+```
+
+### Acceptance Criteria — DNS Pinning
+
+```gherkin
+Given a URL "https://example.com/page"
+When the SSRF guard validates and resolves DNS to 93.184.216.34
+Then the result includes pinnedIp: "93.184.216.34"
+And the Fetcher connects to 93.184.216.34 with Host: example.com
+And no second DNS query is issued
+```
+
+## 6. Known Security Gaps (Resolved)
+
+| Gap ID | Description | Status | Resolution |
 | --- | --- | --- | --- |
-| GAP-SEC-001 | IPv4-mapped IPv6 (`::ffff:127.0.0.1`) not blocked | High | Normalize IPv4-mapped IPv6 to IPv4 before validation |
-| GAP-SEC-002 | Missing CGNAT `100.64.0.0/10`, multicast `224.0.0.0/4`, broadcast `255.255.255.255/32` | Medium | Extend per RFC 6890 |
-| GAP-SEC-003 | DNS rebinding TOCTOU between validation and HTTP connect | High | Pin resolved IP for HTTP connection |
-| GAP-SEC-004 | DNS fail-open allows bypass when DNS is unreachable | Medium | Configurable DNS fail policy |
-| GAP-SEC-005 | Metrics server leaks internal error details | Low | Generic error body; log details server-side |
+| GAP-SEC-001 | IPv4-mapped IPv6 (`::ffff:127.0.0.1`) not blocked | **RESOLVED** | REQ-SEC-002 + design §3 normalization |
+| GAP-SEC-002 | Missing CGNAT, multicast, broadcast | **RESOLVED** | Extended blocked ranges in design §2 |
+| GAP-SEC-003 | DNS rebinding TOCTOU | **RESOLVED** | REQ-SEC-018–019 DNS pinning protocol |
+| GAP-SEC-004 | DNS fail-open bypass | **RESOLVED** | REQ-SEC-006 + REQ-SEC-017 configurable policy |
+| GAP-SEC-005 | Metrics server leaks details | **RESOLVED** | REQ-OBS-022 generic error body |
 
 ---
 
@@ -108,7 +169,13 @@ The production install shall exclude dev dependencies and disable install script
 | REQ-SEC-011 | §4.2 | MUST | Unit |
 | REQ-SEC-012 | §4.3 | MUST | Container test |
 | REQ-SEC-013 | §4.3 | MUST | Container test |
+| REQ-SEC-014 | §4 (metrics) | MUST | Unit |
+| REQ-SEC-015 | §4 (metrics) | MUST | Unit |
+| REQ-SEC-016 | §4 (multi-IP) | MUST | Unit + Property |
+| REQ-SEC-017 | §4 (DNS) | MUST | Unit |
+| REQ-SEC-018 | §4 (TOCTOU) | MUST | Integration |
+| REQ-SEC-019 | §4 (TOCTOU) | MUST | Unit |
 
 ---
 
-> **Provenance**: Created 2026-03-25 from REQUIREMENTS-AGNOSTIC.md §4. EARS conversion per ADR-020.
+> **Provenance**: Created 2026-03-25 from REQUIREMENTS-AGNOSTIC.md §4. EARS conversion per ADR-020. Updated 2026-03-25: added §4–5 (SSRF metrics, DNS pinning coordination) per PR Review Council findings F-SG-015/F-SG-022.

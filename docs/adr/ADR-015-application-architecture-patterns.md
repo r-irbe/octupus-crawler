@@ -135,7 +135,7 @@ A vertical slice maps naturally to an agent task scope. An agent implementing or
 ### DDD Bounded Contexts as Agent Scope
 
 Bounded contexts prevent "prompt spaghetti" — agents modifying unrelated files across domain boundaries. When a codebase is organized into explicit bounded contexts with consistent ubiquitous language, an agent given a task scoped to one context will predictably stay within that boundary. Each bounded context becomes a workspace package with `@domain/[context]` imports, and cross-boundary violations are detectable by module boundary linting.
-
+**DDD-Enforcer** (IEEE 2026): Achieves 100% detection accuracy across 15 architectural violation cases; provides hard boundaries agents cannot violate. The linting-based approach catches coupling violations at the Guard Function stage (ADR-018 §2) before they reach code review.
 ### Modular Monolith vs Microservices (Agentic Comparison)
 
 | Dimension | Modular Monolith | Microservices |
@@ -177,6 +177,8 @@ The microservice extraction decision gate becomes: "Can this service boundary be
 - Amazon Prime Video achieved 90% cost reduction migrating from microservices back to monolith ([research/code.md](../research/code.md) Part III §3.1)
 - Teams < 30–40 developers should default to modular monolith; microservices coordination overhead only decreases at 50+ developers
 - Hexagonal Architecture with NestJS DI provides natural adapter wiring via `@Module()` boundaries
+- DDD-Enforcer: 100% detection accuracy across 15 architectural violation cases (IEEE 2026, [research/ai_coding.md](../research/ai_coding.md) §4.1)
+- File size and context rot: 500-line file ≈ 9k–10k tokens; 50-line ≈ 900–1k tokens — VSA co-location directly reduces token consumption per agent task ([research/ai_coding.md](../research/ai_coding.md) §2.2)
 
 ## Related
 
@@ -192,4 +194,4 @@ The microservice extraction decision gate becomes: "Can this service boundary be
 
 ---
 
-> **Provenance**: Created 2026-03-25 from analysis of [docs/research/arch.md](../research/arch.md) Phase 3, [docs/research/code.md](../research/code.md) Parts I–III, and [docs/research/ai_coding.md](../research/ai_coding.md) §4. Synthesizes architecture patterns and agentic architecture analysis into actionable project decisions. Updated 2026-03-25: added Related section with cross-references to ADR-001/008/009/010/011/014/016/017/018.
+> **Provenance**: Created 2026-03-25 from analysis of [docs/research/arch.md](../research/arch.md) Phase 3, [docs/research/code.md](../research/code.md) Parts I–III, and [docs/research/ai_coding.md](../research/ai_coding.md) §4. Synthesizes architecture patterns and agentic architecture analysis into actionable project decisions. Updated 2026-03-25: added Related section with cross-references to ADR-001/008/009/010/011/014/016/017/018. Updated 2026-03-25: added DDD-Enforcer evidence, token consumption metrics for VSA co-location.

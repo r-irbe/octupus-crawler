@@ -38,13 +38,24 @@
 - [ ] **T-OBS-020**: Implement in-memory trace exporter for tests → REQ-OBS-025
 - [ ] **T-OBS-021**: Implement non-throwing tracer shutdown → REQ-OBS-026
 
-## Phase 5: Tests
+## Phase 5: Tracing Enhancements
+
+- [ ] **T-OBS-027**: Implement tail-based/parent-based trace sampling with configurable rates (`TRACE_SAMPLING_RATE`, `TRACE_ERROR_SAMPLING_RATE`) → REQ-OBS-027
+- [ ] **T-OBS-028**: Implement OTel buffer overflow handling (log warning, drop oldest spans) with configurable `OTEL_BSP_MAX_QUEUE_SIZE` → REQ-OBS-028
+- [ ] **T-OBS-029**: Implement BullMQ job data trace propagation (W3C `traceparent` inject/extract) → REQ-OBS-029
+- [ ] **T-OBS-030**: Implement enhanced `/readyz` with Redis ping + PostgreSQL SELECT 1 + optional OTel check → REQ-OBS-030
+
+## Phase 6: Tests
 
 - [ ] **T-OBS-022**: Unit tests for Logger (levels, child chaining, bindings) → REQ-OBS-001 to 004
 - [ ] **T-OBS-023**: Unit tests for all metric recording (counters, gauges, histogram) → REQ-OBS-009 to 016
 - [ ] **T-OBS-024**: Unit test for registry isolation → REQ-OBS-017
 - [ ] **T-OBS-025**: Integration test for metrics server routes → REQ-OBS-019 to 022
 - [ ] **T-OBS-026**: Unit test for non-throwing tracer shutdown → REQ-OBS-026
+- [ ] **T-OBS-031**: Unit test for trace sampling configuration (error vs success rates) → REQ-OBS-027
+- [ ] **T-OBS-032**: Unit test for OTel buffer overflow warning and drop-oldest behavior → REQ-OBS-028
+- [ ] **T-OBS-033**: Integration test for job queue trace propagation (producer→consumer span link) → REQ-OBS-029
+- [ ] **T-OBS-034**: Integration test for `/readyz` with Redis/PG/OTel checks → REQ-OBS-030
 
 ---
 
@@ -56,8 +67,9 @@
 | Phase 2 (metrics) | core-contracts (CrawlMetrics interface) | metrics server |
 | Phase 3 (server) | Phase 2 | infrastructure (health checks) |
 | Phase 4 (tracing) | Phase 1 | — |
-| Phase 5 (tests) | Phases 1-4 | — |
+| Phase 5 (enhancements) | Phase 4, url-frontier (job queue) | infrastructure |
+| Phase 6 (tests) | Phases 1-5 | — |
 
 ---
 
-> **Provenance**: Created 2026-03-25. Implementation Agent task decomposition per ADR-020.
+> **Provenance**: Created 2026-03-25. Implementation Agent task decomposition per ADR-020. Updated 2026-03-25: added Phase 5 (REQ-OBS-027–030 trace sampling, buffer overflow, queue propagation, readiness probe).

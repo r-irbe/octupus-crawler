@@ -9,11 +9,12 @@
 
 ```mermaid
 graph TD
-    subgraph "Test Pyramid"
+    subgraph "Test Pyramid (ADR-007)"
         E2E["E2E Tests (5%)"]
-        CONTRACT["Contract Tests (10%)"]
-        INTEGRATION["Integration Tests (20%)"]
-        UNIT["Unit Tests (65%)"]
+        CONTRACT["Contract Tests (10%) — Pact"]
+        PROPERTY["Property Tests — fast-check"]
+        INTEGRATION["Integration Tests (20%) — Testcontainers"]
+        UNIT["Unit Tests (65%) — Vitest"]
     end
 
     subgraph "Unit (Vitest)"
@@ -24,6 +25,13 @@ graph TD
         U5[Completion detection math]
     end
 
+    subgraph "Property (fast-check)"
+        P1[URL normalization idempotency]
+        P2[SSRF IP range coverage]
+        P3[Error variant exhaustiveness]
+        P4[Politeness serialization]
+    end
+
     subgraph "Integration (Vitest + Testcontainers)"
         I1[Frontier ops with real Redis]
         I2[Worker processing with real queue]
@@ -32,7 +40,9 @@ graph TD
     end
 
     subgraph "Contract (Pact)"
-        C1[Inter-service contracts]
+        C1[State-store Redis command set]
+        C2[Metrics /metrics Prometheus format]
+        C3[Health /health + /readyz schemas]
     end
 
     UNIT --> U1
@@ -40,14 +50,20 @@ graph TD
     UNIT --> U3
     UNIT --> U4
     UNIT --> U5
+    PROPERTY --> P1
+    PROPERTY --> P2
+    PROPERTY --> P3
+    PROPERTY --> P4
     INTEGRATION --> I1
     INTEGRATION --> I2
     INTEGRATION --> I3
     INTEGRATION --> I4
     CONTRACT --> C1
+    CONTRACT --> C2
+    CONTRACT --> C3
 ```
 
-Covers: REQ-TEST-001 to 008
+Covers: REQ-TEST-001 to 008, REQ-TEST-021, REQ-TEST-022
 
 ## 2. Vitest Configuration
 
@@ -117,27 +133,43 @@ Covers: REQ-TEST-005, REQ-TEST-006
 graph LR
     TC[Typecheck] -->|pass| LINT[Lint]
     LINT -->|pass| UT[Unit Tests]
-    UT -->|pass| IT[Integration Tests]
-    IT -->|pass| COV[Coverage Check]
+    UT -->|pass| PROP[Property Tests]
+    PROP -->|pass| IT[Integration Tests]
+    IT -->|pass| CT[Contract Tests]
+    CT -->|pass| COV[Coverage Check]
     COV -->|pass| ALERT[Alert Rule Tests]
+    ALERT -->|pass| PERF[Performance Baseline Check]
 
     TC -->|fail| STOP1[Fail fast]
     LINT -->|fail| STOP2[Fail fast]
 ```
 
 ```yaml
-# GitHub Actions pipeline (excerpt)
+# GitHub Actions pipeline (REQ-TEST-013 to 016)
+name: Quality Gate
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
 jobs:
   quality-gate:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     services:
       redis:
         image: redis:7-alpine
         ports:
           - 6379:6379
+        options: --health-cmd "redis-cli ping" --health-interval 10s --health-timeout 5s --health-retries 5
     steps:
       - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v2
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: 'pnpm'
       - run: pnpm install --frozen-lockfile
 
       # Fail-fast chain (REQ-TEST-013, 014)
@@ -148,18 +180,41 @@ jobs:
         run: pnpm turbo lint
 
       - name: Unit Tests
-        run: pnpm turbo test -- --reporter=junit
+        run: pnpm turbo test -- --reporter=junit --outputFile=test-results/junit.xml
+
+      - name: Property Tests (fast-check)
+        run: pnpm turbo test:property
 
       - name: Integration Tests
         run: pnpm turbo test:integration
         env:
           STATE_STORE_URL: redis://localhost:6379
 
+      - name: Contract Tests (Pact)
+        run: pnpm turbo test:contract
+
       - name: Coverage Gate
         run: pnpm turbo test -- --coverage --coverage.thresholds
+
+      - name: Alert Rule Tests
+        run: promtool test rules infra/monitoring/alert-rules-test.yml
+
+      - name: Upload Test Results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-results
+          path: '**/test-results/'
+
+      - name: Performance Baseline Check
+        run: |
+          echo "Checking test duration baselines..."
+          # Unit tests: ≤30s (REQ-TEST-019)
+          # Integration tests: ≤120s (REQ-TEST-020)
+          # Alert on >20% regression (REQ-TEST-023)
 ```
 
-Covers: REQ-TEST-013 to 016
+Covers: REQ-TEST-013 to 016, REQ-TEST-023
 
 ## 5. TypeScript Strict Configuration
 
@@ -205,9 +260,93 @@ Covers: REQ-TEST-004, REQ-TEST-018
 | Test runner | Vitest | ADR-007, fast, ESM-first |
 | Coverage tool | v8 provider | Built into Vitest, fast |
 | Container testing | Testcontainers for Node | ADR-007, real infra |
+| Property testing | fast-check | ADR-007 §Consequences; composable arbitraries |
+| Contract testing | Pact | ADR-007 §Consequences; consumer-driven contracts |
 | CI containers | GitHub Actions services | ADR-012, native integration |
 | Import enforcement | ESLint import-x/no-restricted-paths | Static analysis, no runtime cost |
 | Test co-location | `.test.ts` next to source | ADR-015 VSA co-location |
+| Container cleanup | afterAll + global timeout | REQ-TEST-024; prevents orphaned containers |
+
+## 8. Property-Based Test Examples
+
+```typescript
+import { fc } from '@fast-check/vitest'
+import { describe, it, expect } from 'vitest'
+
+describe('URL normalization properties', () => {
+  it('is idempotent', () => {
+    fc.assert(
+      fc.property(fc.webUrl(), (url) => {
+        const once = normalizeUrl(url)
+        const twice = normalizeUrl(once)
+        expect(twice).toBe(once)
+      })
+    )
+  })
+
+  it('is deterministic', () => {
+    fc.assert(
+      fc.property(fc.webUrl(), (url) => {
+        expect(normalizeUrl(url)).toBe(normalizeUrl(url))
+      })
+    )
+  })
+})
+
+describe('SSRF IP range properties', () => {
+  it('blocks all RFC 1918 addresses', () => {
+    fc.assert(
+      fc.property(
+        fc.integer({ min: 0, max: 255 }).chain((a) =>
+          fc.integer({ min: 0, max: 255 }).chain((b) =>
+            fc.integer({ min: 0, max: 255 }).map((c) =>
+              `10.${a}.${b}.${c}`
+            )
+          )
+        ),
+        (ip) => {
+          expect(isPrivateIp(ip)).toBe(true)
+        }
+      )
+    )
+  })
+})
+```
+
+Covers: REQ-TEST-021
+
+## 9. Contract Test Examples
+
+```typescript
+import { PactV4, MatchersV3 } from '@pact-foundation/pact'
+
+describe('Metrics Endpoint Contract', () => {
+  const provider = new PactV4({
+    consumer: 'prometheus',
+    provider: 'crawler-metrics',
+  })
+
+  it('returns Prometheus exposition format', async () => {
+    await provider
+      .addInteraction()
+      .uponReceiving('a metrics scrape request')
+      .withRequest('GET', '/metrics')
+      .willRespondWith(200, (builder) => {
+        builder.headers({ 'Content-Type': 'text/plain; version=0.0.4' })
+        builder.body(MatchersV3.regex(
+          /# HELP fetches_total.*\n# TYPE fetches_total counter/,
+          '# HELP fetches_total Total fetches\n# TYPE fetches_total counter'
+        ))
+      })
+      .executeTest(async (mockServer) => {
+        const response = await fetch(`${mockServer.url}/metrics`)
+        expect(response.status).toBe(200)
+      })
+  })
+})
+```
+
+Covers: REQ-TEST-022
 
 ---
 

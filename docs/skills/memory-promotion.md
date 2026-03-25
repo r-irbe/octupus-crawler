@@ -1,56 +1,57 @@
 # Skill: Memory Promotion
 
-| Field | Value |
-| --- | --- |
-| **ID** | `memory-promotion` |
-| **Status** | Active |
-| **Created** | 2026-03-24 |
-| **Used By** | Documentation, Gateway |
+**Agents**: Documentation, Gateway
 
-## Purpose
+Execute memory promotion workflow: capture session learnings → validate → promote through tiers → integrate into docs. This is the mechanism by which the agent system improves over time.
 
-Execute the memory promotion workflow: capture session learnings, validate and promote to short-term, collate into long-term, and integrate into project documentation.
+## Flow
 
-## Process Reference
+`Session` → validate → `Short-Term` → collate → `Long-Term` → integrate → ADRs/Guidelines/Rules/Skills
 
-Full specification: [Memory Promotion Workflow](../guidelines/memory-promotion-workflow.md)
+Full spec: [Memory Promotion Workflow](../guidelines/memory-promotion-workflow.md)
 
-## Quick Reference
-
-```text
-Session → validate → Short-Term → collate → Long-Term → integrate → ADRs/Guidelines
-```
-
-### Trigger Points
+## Triggers
 
 | Trigger | Action |
 | --- | --- |
 | Major task set completed | Gateway triggers Documentation Agent |
-| PR review completed | Review Agent captures session learnings |
+| PR review completed | Review Agent captures learnings |
 | Debug session completed | Debug Agent captures findings |
-| Architecture decision made | Architect Agent captures reasoning |
+| Architecture decision | Architect Agent captures reasoning |
+| Worklog written (Gate G9) | Documentation Agent reviews for promotable learnings |
 
-### Validation Criteria
+## SSGM Gates
 
-- Confirmed by test: test case exists
-- Confirmed by review: PR council sustained the finding
-- Confirmed by production: metrics/logs show the pattern
-- Confirmed by reproduction: independently verified
+Before promoting ANY learning, it must pass all three gates:
 
-## Rules
+- **Relevance**: Directly useful for future tasks in this project?
+- **Evidence**: Concrete evidence (test, metric, incident, reproduction)?
+- **Coherence**: Aligns with existing ADRs and long-term memory? No contradictions?
 
-1. Don't promote unvalidated hypotheses
-2. Don't skip tiers (session must go through short-term before long-term)
-3. Always check for existing entries before creating new memory files
-4. Clearly mark confidence level on all promoted memories
-5. Update indexes after any memory file change
+If any gate fails → reject with logged reason in SSGM Rejection Log.
+
+## Integration Targets
+
+Validated learnings don't just sit in memory — they improve the system:
+
+| Learning Type | Integration Target | Example |
+| --- | --- | --- |
+| Anti-pattern discovered | `.claude/rules/` | "Never use X because Y" |
+| Workflow improvement | `.claude/skills/` | Better TDD cycle step |
+| Convention solidified | `.github/instructions/` | New naming pattern |
+| Architecture insight | `docs/adr/` | ADR consequence update |
+| Tool discovery | Worklog + short-term | Copilot format change |
+
+## Validation
+
+- Confirmed by test, review, production metrics, or independent reproduction
+- Don't promote unvalidated hypotheses
+- Don't skip tiers (session → short-term → long-term)
+- Check for existing entries before creating new files
+- Mark confidence level on all promoted memories
 
 ## Related
 
 - [Memory Promotion Workflow](../guidelines/memory-promotion-workflow.md)
-- [Documentation Agent](../agents/documentation.md)
-- [Memory Index](../memory/index.md)
-
----
-
-> **Provenance**: Created 2026-03-24 as part of the AI agent framework.
+- [Doc Maintenance](doc-maintenance.md) — indexes, cross-references, provenance
+- [ADR-022](../adr/ADR-022-memory-governance.md) — SSGM gates, temporal decay, poisoning prevention

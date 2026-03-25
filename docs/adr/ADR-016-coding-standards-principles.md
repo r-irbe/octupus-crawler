@@ -56,7 +56,7 @@ type AppError =
   | { _tag: 'InfraFailure'; service: string; cause: unknown };
 ```
 
-`neverthrow` is chosen over `fp-ts` (deprecated, merged into Effect-TS) and over full `Effect-TS` (learning curve too high for most product feature code). The `safeTry` generator API provides Rust-like `?` error propagation.
+`neverthrow` is chosen over `fp-ts` (deprecated — founder joined the Effect-TS team, merger complete) and over full `Effect-TS` (learning curve too high for incremental adoption; avoid unless adopting the full ecosystem). Effect-TS is available as an optional infrastructure-layer tool for complex retry/resource pipelines but is NOT recommended for domain logic. The `safeTry` generator API provides Rust-like `?` error propagation.
 
 ### 4. TypeScript Strict Configuration
 
@@ -182,13 +182,16 @@ The following coding practices directly improve AI agent reliability and token e
 
 ## Evidence
 
-- TypeScript strict mode produces 30–40% fewer production bugs and 20–25% faster onboarding ([research/arch.md](../research/arch.md) Ecosystem Baseline)
+- TypeScript strict mode produces 30–40% fewer production bugs and 20–25% faster developer onboarding ([research/arch.md](../research/arch.md) Ecosystem Baseline)
+- TypeScript type-constrained decoding narrows valid LLM generation space — tighter types reduce hallucinations; TypeScript uniquely capable of expressing constraints that directly constrain generated code ([research/ai_coding.md](../research/ai_coding.md) §3.1)
 - CUPID was proposed by Dan North as a properties-based replacement for SOLID's binary rules ([research/code.md](../research/code.md) Part IV §4.2)
 - neverthrow provides `safeTry` generator API for ergonomic error propagation, closest approximation to Rust's `?` operator ([research/code.md](../research/code.md) Part V §5.3)
 - fp-ts is effectively deprecated; its founder joined the Effect-TS team ([research/code.md](../research/code.md) Part V §5.2)
-- TypeScript type-constrained decoding narrows valid LLM generation space, reducing hallucinations ([research/ai_coding.md](../research/ai_coding.md) §3.1)
+- Effect-TS: powerful but NOT suitable for incremental adoption — requires full ecosystem commitment; use neverthrow for domain, Effect selectively for infrastructure retry/resource pipelines ([research/ai_coding.md](../research/ai_coding.md) §5.6)
 - Pure functions verified by Guard Functions achieve up to +66pp task success rate improvement ([research/ai_coding.md](../research/ai_coding.md) §5.2)
 - KISS and YAGNI critical for agents: unconstrained agents systematically over-engineer ([research/ai_coding.md](../research/ai_coding.md) §5.4)
+- LLMs perform worse generating Haskell/OCaml than TypeScript; pure FP languages require explicit FP constraints but TypeScript hybrid is better for LLM generation ([research/ai_coding.md](../research/ai_coding.md) §5.1)
+- Neuroscience rationale for FOOP: pure function decomposition aligns with DMN/ECN coupling patterns that produce creative solutions ([research/ideating.md](../research/ideating.md) §1.2)
 
 ## Related
 
@@ -204,4 +207,4 @@ The following coding practices directly improve AI agent reliability and token e
 
 ---
 
-> **Provenance**: Created 2026-03-25 from analysis of [docs/research/code.md](../research/code.md) Parts IV–VII, [docs/research/arch.md](../research/arch.md) Phase 2, and [docs/research/ai_coding.md](../research/ai_coding.md) §§3,5. Synthesizes coding standards and agentic coding conventions into enforceable project decisions. Added ADR-020 cross-reference.
+> **Provenance**: Created 2026-03-25 from analysis of [docs/research/code.md](../research/code.md) Parts IV–VII, [docs/research/arch.md](../research/arch.md) Phase 2, and [docs/research/ai_coding.md](../research/ai_coding.md) §§3,5. Synthesizes coding standards and agentic coding conventions into enforceable project decisions. Added ADR-020 cross-reference. Updated 2026-03-25: expanded Effect-TS guidance (selective adoption), TypeScript empirical evidence with LLM-specific rationale, LLM FP language comparison, neuroscience rationale for FOOP from [ideating.md](../research/ideating.md).

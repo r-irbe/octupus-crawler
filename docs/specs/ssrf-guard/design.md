@@ -113,8 +113,61 @@ Covers: REQ-SEC-004
 | IP range checking | CIDR matching library | Accurate subnet math vs. string compare |
 | DNS fail policy | Configurable (default: open) | REQ-SEC-006; fail-closed optional for high-security |
 | IPv4-mapped IPv6 | Normalize before check | Closes GAP-SEC-001 |
-| DNS pinning | Resolve once, pin for connect | Closes GAP-SEC-003 |
+| DNS pinning | Resolve once, pin for connect | Closes GAP-SEC-003 (REQ-SEC-018) |
 | Stream byte counting | Transform stream with counter | Accurate; handles chunked transfer |
+| Multi-IP DNS | Validate all resolved IPs | REQ-SEC-016; prevents bypass via dual-stack |
+| DNS timeout | Configurable, 5s default | REQ-SEC-017; prevents indefinite hang |
+
+## 8. SSRF Metrics
+
+```typescript
+interface SsrfMetrics {
+  recordCheck(result: 'allowed' | 'blocked' | 'dns_failed', reason?: string): void
+  recordDnsResolution(durationSeconds: number): void
+}
+```
+
+Prometheus exposition:
+
+| Metric | Type | Labels | Covers |
+| --- | --- | --- | --- |
+| `ssrf_checks_total` | Counter | `result`, `reason` | REQ-SEC-014 |
+| `ssrf_dns_resolution_seconds` | Histogram | — | REQ-SEC-015 |
+
+Covers: REQ-SEC-014, REQ-SEC-015
+
+## 9. DNS Pinning Coordination Protocol
+
+The TOCTOU gap (GAP-SEC-003) is closed by returning the resolved IP from the SSRF guard to the Fetcher:
+
+```mermaid
+sequenceDiagram
+    participant F as Fetcher
+    participant S as SSRF Guard
+    participant DNS
+    participant H as HTTP Client
+
+    F->>S: validate(url)
+    S->>DNS: resolve(hostname)
+    DNS-->>S: [93.184.216.34, 93.184.216.35]
+    S->>S: Check ALL IPs against blocked ranges
+    S-->>F: {allowed: true, pinnedIp: "93.184.216.34", originalHost: "example.com"}
+    F->>H: GET http://93.184.216.34/path (Host: example.com)
+    Note over F,H: No second DNS query — TOCTOU eliminated
+```
+
+```typescript
+// SSRF guard returns validated result with pinned IP
+function validateUrl(url: URL, config: SsrfConfig): AsyncResult<SsrfValidationResult, SsrfError> {
+  // 1. Check literal IP → direct range check
+  // 2. DNS resolve → get ALL IPs
+  // 3. Validate ALL IPs against blocked ranges (REQ-SEC-016)
+  // 4. Return first allowed IP as pinnedIp
+  // 5. Fetcher uses pinnedIp for connection, sets Host header
+}
+```
+
+Covers: REQ-SEC-016, REQ-SEC-018, REQ-SEC-019
 
 ---
 

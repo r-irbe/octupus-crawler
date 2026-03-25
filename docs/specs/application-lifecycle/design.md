@@ -157,10 +157,74 @@ Covers: REQ-LIFE-007 to 010
 | Decision | Choice | Rationale |
 | --- | --- | --- |
 | Shutdown guard | Boolean flag (atomic in single-threaded JS) | Simple, safe (REQ-LIFE-018) |
+| Double signal | Log + ignore second signal | Prevents force-exit race (REQ-LIFE-018) |
 | Teardown strategy | Promise.allSettled | Fault-isolated (REQ-LIFE-020) |
 | Config validation | Zod schema (ADR-013) | Fail-fast with structured errors |
 | Fetcher reuse | Single instance per worker | Preserves politeness chains (REQ-LIFE-028) |
 | Payload validation | Zod parse at job entry | Catches malformed payloads early |
+| Readiness during shutdown | Return 503 immediately | K8s stops routing traffic (REQ-LIFE-029) |
+| Drain timeout | Hard cutoff, log abandoned jobs | Prevents indefinite hang (REQ-LIFE-031) |
+
+## 7. Resource Ownership Matrix
+
+| Resource | Owner | Created By | Destroyed By | Covers |
+| --- | --- | --- | --- | --- |
+| State-store connection | Composition Root | `connectStateStore()` | `shutdown() → teardown` | REQ-LIFE-032 |
+| Job Queue | Composition Root | `createQueue()` | `shutdown() → teardown` | REQ-LIFE-032 |
+| Frontier adapter | Composition Root | `createFrontier(conn)` | `shutdown() → teardown` | REQ-LIFE-032 |
+| Job Consumer | Composition Root | `createJobConsumer()` | `shutdown() → drain` | REQ-LIFE-032 |
+| Control Plane | Composition Root | `createControlPlane()` | `shutdown() → teardown` | REQ-LIFE-032 |
+| Logger | Composition Root | `createLogger()` | Flushed at shutdown end | REQ-LIFE-032 |
+| Tracer | Composition Root | `startTracer()` | `shutdown() → teardown` | REQ-LIFE-032 |
+| Metrics Registry | Composition Root | `createMetrics()` | GC (stateless) | REQ-LIFE-032 |
+| Metrics Server | Composition Root | `startMetricsServer()` | `shutdown() → teardown` | REQ-LIFE-032 |
+
+**Ownership invariant**: Only the composition root creates and destroys resources. The coordinator, worker, and pipeline borrow references but never close shared resources (REQ-LIFE-024, REQ-LIFE-032).
+
+## 8. Startup Ordering & Failure Paths
+
+```mermaid
+graph TD
+    S1[1. Config validation] -->|fail| E1[exit 1]
+    S1 -->|ok| S2[2. Logger]
+    S2 -->|fail| E2[exit 1]
+    S2 -->|ok| S3[3. Tracer]
+    S3 -->|fail| C3[cleanup: logger flush] --> E3[exit 1]
+    S3 -->|ok| S4[4. Metrics + Server]
+    S4 -->|fail| C4[cleanup: tracer + logger] --> E4[exit 1]
+    S4 -->|ok| S5[5. State-store connect]
+    S5 -->|fail| C5[cleanup: metrics + tracer + logger] --> E5[exit 1]
+    S5 -->|ok| S6[6. Frontier + ControlPlane]
+    S6 -->|fail| C6[cleanup: conn + metrics + tracer + logger] --> E6[exit 1]
+    S6 -->|ok| S7[7. Job Consumer]
+    S7 -->|fail| C7[cleanup: all above] --> E7[exit 1]
+    S7 -->|ok| S8[8. Seeding]
+    S8 -->|ok| S9[9. Completion wait]
+```
+
+Each failure path cleans up all already-initialized resources in reverse order (REQ-LIFE-034).
+
+Covers: REQ-LIFE-033, REQ-LIFE-034
+
+## 9. K8s Integration
+
+| K8s Config | Value | Rationale |
+| --- | --- | --- |
+| `terminationGracePeriodSeconds` | 30s | Default K8s; matches drain(15s) + teardown(8s) + 7s buffer |
+| Readiness probe | `/readyz` → 503 on shutdown start | REQ-LIFE-029: K8s removes pod from service endpoints |
+| Liveness probe | `/health` → continues serving during drain | Prevents premature pod kill during graceful drain |
+| `preStop` hook | `sleep 3` | Allows K8s to propagate endpoint removal before drain starts |
+
+**Shutdown timeline:**
+
+```text
+SIGTERM received
+  t=0s:   readiness → 503 (REQ-LIFE-029)
+  t=0s:   preStop sleep(3s) — K8s endpoint propagation
+  t=3s:   Phase 1 Drain starts (consumer.close, 15s timeout)
+  t=18s:  Phase 2 Teardown starts (allSettled, 8s timeout)
+  t=26s:  Exit — within 30s terminationGracePeriod
+```
 
 ---
 

@@ -26,7 +26,7 @@ graph TD
     SP -->|body| RES[FetchResult]
 ```
 
-## 2. Politeness Controller
+## 2. Politeness Controller (Concurrency-Safe)
 
 ```typescript
 interface PolitenessController {
@@ -39,11 +39,30 @@ interface PolitenessController {
 
 Internal state:
 
-- `Map<string, number>` — domain → last-request-timestamp
+- `Map<string, Promise<void>>` — domain → promise chain (NOT timestamp comparison)
 - LRU eviction when map size exceeds `MAX_DOMAINS` (default: 10,000)
 - First request to a domain proceeds immediately (REQ-FETCH-010)
 - Failed fetches call `release()` to preserve the chain (REQ-FETCH-011)
 - Background pruning of stale entries older than `STALE_THRESHOLD` (REQ-FETCH-012)
+
+**Concurrency safety** (REQ-FETCH-020): Each domain has a promise chain. New requests chain onto the previous promise with a delay, ensuring serialization without race conditions:
+
+```typescript
+// Promise-chain approach — eliminates timestamp comparison race
+class PromiseChainPoliteness implements PolitenessController {
+  private chains = new Map<string, Promise<void>>()
+
+  async acquire(domain: string): Promise<void> {
+    const registrableDomain = getRegistrableDomain(domain) // TLD+1
+    const prev = this.chains.get(registrableDomain) ?? Promise.resolve()
+    const next = prev.then(() => delay(this.delayMs))
+    this.chains.set(registrableDomain, next)
+    await next
+  }
+}
+```
+
+**Domain definition** (REQ-FETCH-021): Domain = TLD+1 via public suffix list. `api.example.com` and `www.example.com` share the same slot.
 
 ## 3. Redirect Controller
 
@@ -114,9 +133,48 @@ graph LR
 | --- | --- | --- |
 | HTTP client | undici (ADR-008) | High performance, non-blocking, HTTP/1.1+2 |
 | Redirect handling | Manual loop | SSRF validation per hop; counter control |
-| Politeness data structure | LRU Map | Bounded memory; O(1) get/set |
+| Politeness data structure | Promise-chain Map | Concurrency-safe; eliminates timestamp race (REQ-FETCH-020) |
+| Domain definition | TLD+1 via public suffix list | REQ-FETCH-021; subdomains share slot |
 | Timeout strategy | Cumulative `AbortSignal` | Covers entire redirect chain (REQ-SEC-010) |
 | Body streaming | Transform stream with byte counter | Constant memory; early abort |
+| DNS pinning | Use SSRF guard's pinnedIp | Eliminates TOCTOU (REQ-FETCH-023, REQ-SEC-018) |
+| Stream drain errors | Catch + log, continue redirect | REQ-FETCH-024; prevents unhandled exceptions |
+
+## 7. Fetcher Metrics
+
+The Fetcher records metrics via the `CrawlMetrics` contract:
+
+| Metric | Type | When Recorded | Covers |
+| --- | --- | --- | --- |
+| `fetches_total{status, error_kind}` | Counter | Every fetch (success and error) | REQ-FETCH-022 |
+| `fetch_duration_seconds` | Histogram | Every fetch (wall-clock duration) | REQ-FETCH-019, REQ-FETCH-022 |
+| `redirects_followed_total` | Counter | Each redirect hop followed | REQ-FETCH-022 |
+| `body_bytes_received_total` | Counter | Each successful body stream | REQ-FETCH-022 |
+
+## 8. Pinned IP Integration
+
+The Fetcher integrates with the SSRF guard's DNS pinning result (REQ-SEC-018):
+
+```typescript
+// Fetch flow with pinned IP
+async function fetchWithPinnedIp(
+  url: CrawlUrl,
+  ssrfResult: SsrfValidationResult,
+  config: FetchConfig,
+): AsyncResult<FetchResult, FetchError> {
+  // Use pinnedIp for the actual connection
+  const targetUrl = new URL(url.normalized)
+  if (ssrfResult.pinnedIp) {
+    targetUrl.hostname = ssrfResult.pinnedIp
+  }
+  return httpClient.request(targetUrl.toString(), {
+    headers: { Host: ssrfResult.originalHost },
+    signal: AbortSignal.timeout(config.timeoutMs),
+  })
+}
+```
+
+This eliminates the TOCTOU window: DNS resolved once in SSRF guard, IP pinned for connection.
 
 ---
 

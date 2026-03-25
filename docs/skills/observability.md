@@ -1,24 +1,12 @@
 # Skill: Observability
 
-| Field | Value |
-| --- | --- |
-| **ID** | `observability` |
-| **Status** | Active |
-| **Created** | 2026-03-24 |
-| **Used By** | SRE |
+**Agent**: SRE
 
-## Purpose
-
-Configure and maintain metrics, traces, logs, dashboards, and alerts following ADR-006.
+Configure and maintain metrics, traces, logs, dashboards, alerts per ADR-006.
 
 ## Capabilities
 
-- Define custom OTel metrics (counters, histograms, gauges)
-- Configure OTel Collector pipelines
-- Write PromQL alert rules
-- Design Grafana dashboards
-- Configure Loki log queries (LogQL)
-- Trace analysis in Tempo
+OTel metrics (counters, histograms, gauges), Collector pipelines, PromQL alerts, Grafana dashboards, Loki/LogQL, Tempo trace analysis.
 
 ## Standard Metrics
 
@@ -34,10 +22,5 @@ Configure and maintain metrics, traces, logs, dashboards, and alerts following A
 
 ## Related
 
-- [ADR-006: Observability Stack](../adr/ADR-006-observability-stack.md)
-- [SRE Agent](../agents/sre.md)
-- [ADR-018: Agentic Coding](../adr/ADR-018-agentic-coding-conventions.md) — Agentic metrics (guard pass rate, retry attempts, task completion rate)
-
----
-
-> **Provenance**: Created 2026-03-24 as part of the AI agent framework. Updated 2026-03-25: added ADR-018 agentic metrics reference.
+- [ADR-006](../adr/ADR-006-observability-stack.md), [SRE Agent](../agents/sre.md)
+- [ADR-018](../adr/ADR-018-agentic-coding-conventions.md) — agentic metrics (guard pass rate, retry attempts)

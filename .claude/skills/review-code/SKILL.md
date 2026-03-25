@@ -1,0 +1,62 @@
+---
+name: review-code
+description: Multi-perspective code review with anti-sycophancy and dissent requirement
+---
+
+# Code Review Skill
+
+> **Canonical**: [docs/skills/automated-review.md](../../../docs/skills/automated-review.md), [docs/conventions/pr-review-council.md](../../../docs/conventions/pr-review-council.md) | Claude Code implementation
+
+Structured multi-perspective review with anti-sycophancy safeguards. Run each perspective sequentially.
+
+## Review Perspectives
+
+### 1. Security Auditor
+
+- Check for injection vulnerabilities (SQL, XSS, command injection)
+- Verify all external input is Zod-validated
+- Check error messages don't leak internals
+- Verify SSRF protection on URL fetching
+- Check for hardcoded secrets or credentials
+- Verify `using` keyword for resource cleanup
+
+### 2. Performance Reviewer
+
+- Check for N+1 queries, unbounded loops, memory leaks
+- Verify connection pooling and resource cleanup
+- Check async patterns (no blocking I/O in hot paths)
+- Verify circuit breaker usage for external calls
+- Check for proper stream handling and backpressure
+
+### 3. API Consistency Checker
+
+- Verify naming follows domain ubiquitous language
+- Check interface contracts match `design.md`
+- Verify error types use discriminated unions with `_tag`
+- Check Zod schema-first ordering in API handlers
+- Verify OpenAPI/TypeSpec contract alignment
+
+### 4. Architecture Auditor
+
+- Verify layer boundaries (domain never imports infra)
+- Check import paths (no barrel imports)
+- Verify feature co-location (VSA pattern)
+- Check file sizes (≤200 target, 300 hard limit)
+- Verify OTel first import in service entry points
+
+## Dissent Requirement
+
+- You MUST find at least one genuine concern before approving
+- Unanimous approval on first pass triggers additional scrutiny
+- Record all concerns in structured format:
+  ```
+  ## Findings
+  | # | Severity | File | Line | Finding | Recommendation |
+  ```
+
+## Anti-Sycophancy Protocol
+
+- Blind evaluation: do not read the implementing agent's rationale
+- Each reviewer has an explicitly different perspective (not generic)
+- At least one reviewer is explicitly adversarial
+- Human makes the final approval decision

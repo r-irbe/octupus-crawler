@@ -26,6 +26,23 @@ This ADR establishes the comprehensive SDD methodology for IPF, extending ADR-01
 
 ## Decision
 
+### 0. SDD vs. Prior Methodologies
+
+SDD does not replace TDD or BDD — it subsumes them. Positioning in the methodology landscape:
+
+| Dimension | TDD | BDD | SDD |
+| --- | --- | --- | --- |
+| Primary artifact | Test | Gherkin scenario | Multi-document specification |
+| Scope | Unit/function behavior | System behavior | Behavior + design rationale + rejected alternatives + constraints |
+| AI agent guidance | Weak (tests don’t capture intent) | Moderate (scenarios capture behavior) | Strong (spec captures intent, context, constraints) |
+| Maintenance trigger | Code change | Scenario change | Spec change → code regeneration |
+| Decision record | None | None | Embedded in spec (design.md) |
+| Evidence | Up to 40% defect reduction | Strong cross-functional alignment | No controlled study yet (2026 frontier) |
+
+SDD’s **asymmetric reading model** is the key differentiator: specs are structured for AI-total / human-partial consumption. AI reads the full spec (including rejected alternatives, performance reasoning, edge case catalogues); humans reference only relevant parts. This asymmetric design — identified in January 2026 practitioner analysis — allows specs to be far more verbose than traditional docs because AI bears the cognitive load.
+
+The relationship is hierarchical: **Spec → Acceptance Tests (BDD/ATDD) → Unit Tests (TDD) → Code**.
+
 ### 1. Specification Level: Spec-Anchored
 
 IPF adopts the **spec-anchored** level from Martin Fowler's taxonomy: specifications are maintained throughout the feature lifecycle; changes start in the spec, and code is updated accordingly. Specs are committed alongside code in git.
@@ -91,7 +108,7 @@ Each tier is authoritative for its scope. Conflicts resolve upward: Zod schemas 
 
 ### 5. Contract-First API Development
 
-All external APIs follow the contract-first pattern (extending ADR-017 TypeSpec decision):
+All external APIs follow the contract-first pattern (extending ADR-017 TypeSpec decision). The 47% backward-compatibility failure rate (arXiv 2410.13070) is addressed by combining provider-side documentation (OpenAPI) with consumer-side expectations (Pact) — the 2026 best practice for contract testing at scale.
 
 ```text
 1. Design   → TypeSpec definition (endpoints, schemas, errors, auth)
@@ -100,6 +117,7 @@ All external APIs follow the contract-first pattern (extending ADR-017 TypeSpec 
 4. Parallel → Frontend builds against mock server (from spec); backend implements
 5. Verify   → Dredd validates live API against OpenAPI spec in CI
 6. Contract → Pact consumer-driven tests prevent backward-compatibility breaks
+7. Fuzz     → Schemathesis generates property-based API tests from OpenAPI schema
 ```
 
 Tooling:
@@ -133,6 +151,8 @@ The derivation workflow:
 4. CI runs properties with deterministic seed for reproducibility
 
 Property coverage — measuring what fraction of possible property violations are tested — is tracked alongside line coverage.
+
+**PromptPex** (arXiv 2503.05070, Feb 2026 update): Automated unit test generation for prompts. Extracts Input Specifications and Output Rules from prompt text, then generates property-based tests that find more invalid outputs than baseline LLM test generators. Applied to CI validation of agent prompt definitions.
 
 ### 7. Evidence-Driven Quality Gates
 
@@ -170,7 +190,9 @@ For critical algorithms, natural-language specs are insufficient. Formal specifi
 | Authentication flows | Security-critical state machine | TLA+ |
 | Redis Cluster coordination | Distributed consensus | TLA+ |
 
-TLA+ specs live in `docs/specs/<topic>/model.tla`. LLM-assisted proof generation is acceptable (Claude achieves 52.9% automated TLA+ theorem proving) but all proofs must be human-reviewed.
+TLA+ specs live in `docs/specs/<topic>/model.tla`. LLM-assisted proof generation is acceptable (Claude 3.7 achieves 52.9% automated TLA+ theorem proving; Cobblestone achieves 58% for Coq proofs; Lean Dojo enables interactive proof completion) but all proofs must be human-reviewed.
+
+Formal specification case study: Scania embedded systems achieved spec-to-code generation without iteration using formal specs (arXiv 2411.13269). Amazon, Intel, and Microsoft use TLA+ for distributed systems verification in production.
 
 ### 10. Human-AI Collaboration Model
 
@@ -184,11 +206,26 @@ SDD operates on an asymmetric collaboration model:
 
 The asymmetric reading design: specs are structured for **AI-total / human-partial** consumption. Specs may include rejected alternatives, performance reasoning, edge case catalogues, and implicit assumptions — because AI consumes the full spec without cognitive overload while humans reference only the parts relevant to their review.
 
+### 11. SDD Tooling Landscape (Reference)
+
+The 2026 SDD tooling ecosystem provides reference implementations for the patterns adopted in this ADR:
+
+| Tool | Approach | Key Mechanism | IPF Relevance |
+| --- | --- | --- | --- |
+| **Kiro** (AWS) | EARS-native steering files | Constitutional layer from codebase analysis + Hooks system for ambient enforcement (auto-update docs on file change, validate component rules on save) | EARS syntax (§2), hooks pattern informs ambient enforcement (future) |
+| **GitHub Spec Kit** | 6-stage workflow | Constitution → Specify → Clarify → Plan → Tasks → Implement; Always/Ask/Never constitutional boundaries | Three-document structure (§3), spec hierarchy (§4) |
+| **BMAD Method** | 12+ role agents | Story file contains complete implementation context (requirement refs, architecture constraints, test criteria); YAML quality gates | Agent delegation (ADR-018 §12), story as spec slice |
+| **Tessl** | Spec-as-source | Code fully generated, marked `// GENERATED FROM SPEC — DO NOT EDIT` | Not adopted (insufficient maturity) |
+| **MetaGPT** | 5-role multi-agent | Product Manager → Architect → PM → Engineer → QA with SOPs encoded in role specs | Agent framework (CLAUDE.md) |
+| **Agent Trace** (Cursor RFC, Feb 2026) | AI code attribution | JSON spec identifying human/AI/mixed/unknown code at line level with conversation linking | Future: provenance tracking |
+| **AgentSpec** (arXiv 2503.18666) | Runtime constraint DSL | `IF <trigger> THEN <action>` rules; >90% unsafe execution prevention at millisecond overhead | Future: runtime spec enforcement |
+
 ## Consequences
 
 ### Positive
 
 - EARS requirements eliminate the seven most common requirement problems (ambiguity, vagueness, omission, duplication, complexity, wordiness, untestability)
+- SDD subsumes TDD and BDD — the three-document structure is a superset of both
 - Contract-first API design prevents 47% backward-compatibility failure rate
 - Property-based test derivation from EARS provides stronger correctness guarantees than example-based tests alone
 - Evidence-driven quality gates provide measurable, multi-dimensional release confidence
@@ -224,4 +261,4 @@ The asymmetric reading design: specs are structured for **AI-total / human-parti
 
 ---
 
-> **Provenance**: Created 2026-03-25 from analysis of [docs/research/spec.md](../research/spec.md). Extends ADR-018 §3 with comprehensive SDD methodology: EARS syntax, three-document structure, specification hierarchy, contract-first API, property-based test derivation, evidence-driven quality gates, formal methods tier, and human-AI collaboration model.
+> **Provenance**: Created 2026-03-25 from analysis of [docs/research/spec.md](../research/spec.md). Extends ADR-018 §3 with comprehensive SDD methodology: EARS syntax, three-document structure, specification hierarchy, contract-first API, property-based test derivation, evidence-driven quality gates, formal methods tier, and human-AI collaboration model. Updated 2026-03-25: added §0 SDD vs TDD/BDD comparison, §11 tooling landscape (Kiro/Spec Kit/BMAD/Agent Trace/AgentSpec), PromptPex for prompt testing, expanded formal methods evidence (Cobblestone, Lean Dojo, Scania), contract testing elaboration with 47% failure rate citation.

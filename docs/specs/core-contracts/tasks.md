@@ -38,12 +38,21 @@
 - [ ] **T-ARCH-020**: Implement composition root with phased wiring sequence → REQ-ARCH-006
 - [ ] **T-ARCH-021**: Register signal handlers in composition root → REQ-ARCH-006 (step 4)
 
-## Phase 5: Tests
+## Phase 5: Composition Root Safety
+
+- [ ] **T-ARCH-026**: Implement singleton guard (throw on second composition root instantiation) → REQ-ARCH-016
+- [ ] **T-ARCH-027**: Implement reverse-order cleanup on partial startup failure → REQ-ARCH-017
+- [ ] **T-ARCH-028**: Define `Disposable` interface with `close(): Promise<void>` and track all disposables → REQ-ARCH-018
+
+## Phase 6: Tests
 
 - [ ] **T-ARCH-022**: Unit tests for all error constructors (compile-time + runtime validation) → REQ-ARCH-012, REQ-ARCH-013
 - [ ] **T-ARCH-023**: Unit tests for config loading (valid, invalid, missing cases) → REQ-ARCH-014
 - [ ] **T-ARCH-024**: Static analysis test verifying zero circular deps → REQ-ARCH-007
 - [ ] **T-ARCH-025**: Static analysis test verifying layer boundary compliance → REQ-ARCH-001 to 005
+- [ ] **T-ARCH-029**: Unit test for singleton guard (second call throws) → REQ-ARCH-016
+- [ ] **T-ARCH-030**: Scenario test for partial startup failure cleanup → REQ-ARCH-017
+- [ ] **T-ARCH-031**: Unit test for Disposable interface and close() tracking → REQ-ARCH-018
 
 ---
 
@@ -55,8 +64,9 @@
 | Phase 2 (config) | T-ARCH-001 to 003 (error types) | application-lifecycle, infrastructure |
 | Phase 3 (lint rules) | Phase 1 | CI pipeline |
 | Phase 4 (composition root) | Phase 1, Phase 2 | application-lifecycle |
-| Phase 5 (tests) | Phases 1-4 | — |
+| Phase 5 (safety) | Phase 4 | application-lifecycle |
+| Phase 6 (tests) | Phases 1-5 | — |
 
 ---
 
-> **Provenance**: Created 2026-03-25. Implementation Agent task decomposition per ADR-020.
+> **Provenance**: Created 2026-03-25. Implementation Agent task decomposition per ADR-020. Updated 2026-03-25: added Phase 5 (REQ-ARCH-016–018 singleton guard, cleanup, Disposable).

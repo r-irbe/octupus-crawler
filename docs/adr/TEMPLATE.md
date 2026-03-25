@@ -30,6 +30,8 @@ What is the issue that we're seeing that motivates this decision or change?
 **Cons:**
 - ...
 
+**Pre-mortem**: If this option fails, it will be because...
+
 ### Option B: [Name]
 
 **Pros:**
@@ -37,6 +39,17 @@ What is the issue that we're seeing that motivates this decision or change?
 
 **Cons:**
 - ...
+
+**Pre-mortem**: If this option fails, it will be because...
+
+## Idea Space Log
+
+_Record the full exploration space. Rejected options are as valuable as the selected one._
+
+| Option | Status | Key Assumption | Rejection Reason |
+| --- | --- | --- | --- |
+| A | Selected / Rejected | _What must hold_ | _Why rejected (if applicable)_ |
+| B | Selected / Rejected | _What must hold_ | _Why rejected (if applicable)_ |
 
 ## Decision
 

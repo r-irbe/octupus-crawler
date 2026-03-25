@@ -54,7 +54,16 @@
 - [ ] **T-LIFE-030**: Record metrics for success and failure → REQ-LIFE-027
 - [ ] **T-LIFE-031**: Create single fetcher instance, reused across jobs → REQ-LIFE-028
 
-## Phase 7: Tests
+## Phase 7: Resource Ownership & Startup Ordering
+
+- [ ] **T-LIFE-039**: Implement readiness probe returning 503 immediately on shutdown start (before drain) → REQ-LIFE-029
+- [ ] **T-LIFE-040**: Implement deterministic abort timing (exactly N consecutive failures, within 1s) → REQ-LIFE-030
+- [ ] **T-LIFE-041**: Implement drain timeout with abandoned job logging → REQ-LIFE-031
+- [ ] **T-LIFE-042**: Define explicit resource ownership matrix (composition root owns all infra resources) → REQ-LIFE-032
+- [ ] **T-LIFE-043**: Implement sequential startup with fail-fast dependency chain → REQ-LIFE-033
+- [ ] **T-LIFE-044**: Implement failure cleanup (reverse init order teardown on partial startup failure) → REQ-LIFE-034
+
+## Phase 8: Tests
 
 - [ ] **T-LIFE-032**: Unit tests for config loading (valid, invalid, missing) → REQ-LIFE-CFG-001 to 003
 - [ ] **T-LIFE-033**: Unit test for seed validation and invalid URL skipping → REQ-LIFE-007
@@ -62,7 +71,12 @@
 - [ ] **T-LIFE-035**: Unit test for idempotent shutdown → REQ-LIFE-018
 - [ ] **T-LIFE-036**: Unit test for settle-all teardown with partial failure → REQ-LIFE-020, 021
 - [ ] **T-LIFE-037**: Unit test for queue_error re-throw → REQ-LIFE-026
-- [ ] **T-LIFE-038**: Scenario test for full startup → completion → shutdown → REQ-LIFE-001 to 017
+- [ ] **T-LIFE-038**: Scenario test for full startup → completion → shutdown → REQ-LIFE-001 to 017- [ ] **T-LIFE-045**: Integration test for readiness probe 503 during shutdown → REQ-LIFE-029
+- [ ] **T-LIFE-046**: Unit test for deterministic abort timing → REQ-LIFE-030
+- [ ] **T-LIFE-047**: Scenario test for drain timeout with job abandonment → REQ-LIFE-031
+- [ ] **T-LIFE-048**: Code review verification of resource ownership matrix → REQ-LIFE-032
+- [ ] **T-LIFE-049**: Integration test for sequential startup ordering → REQ-LIFE-033
+- [ ] **T-LIFE-050**: Scenario test for partial startup failure with reverse teardown → REQ-LIFE-034
 
 ---
 
@@ -76,8 +90,9 @@
 | Phase 4 (signals) | — | Phase 5 |
 | Phase 5 (shutdown) | Phase 4 | — |
 | Phase 6 (worker) | crawl-pipeline, http-fetching | — |
-| Phase 7 (tests) | Phases 1-6 | — |
+| Phase 7 (ownership) | Phase 5 (shutdown), core-contracts | Phase 8 |
+| Phase 8 (tests) | Phases 1-7 | — |
 
 ---
 
-> **Provenance**: Created 2026-03-25. Implementation Agent task decomposition per ADR-020.
+> **Provenance**: Created 2026-03-25. Implementation Agent task decomposition per ADR-020. Updated 2026-03-25: added Phase 7 (REQ-LIFE-029–034 resource ownership, startup ordering, shutdown semantics).
