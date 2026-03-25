@@ -49,16 +49,17 @@
 | 26 | T-ARCH-021: Signal handlers (SIGTERM/SIGINT) | `done` | `78f0c4a` | once-only shutdown, cleanup fn |
 | 27 | T-ARCH-026: Singleton guard | `done` | `78f0c4a` | Module-level boolean + throw |
 | 28 | T-ARCH-027: Reverse-order cleanup on partial failure | `done` | `78f0c4a` | cleanupReverse with swallowed errors |
+| 29 | Fix all G8 review findings (phases 1-5) | `done` | `f120892` | AR-6, S-1, AC-1, AR-2, T-ARCH-032, T-ARCH-033, unbound-method lint fix. +13 tests. |
 
 ## Current State
 
 | Field | Value |
 | --- | --- |
-| Current task # | Phase 4+5 COMPLETE. Next: G8 review, then Phase 6 (remaining tests) |
-| Last completed gate | G6 (commit `78f0c4a` — Phase 4+5 composition root + safety) |
-| Guard function status | PASS — typecheck ✅ lint ✅ test ✅ (70 tests) |
-| Commits on branch | 14 (`b0a34c0`..`5fbe2ec`, `78f0c4a`) |
-| Tests passing | yes (70 tests in 12 files: 53 core + 17 config) |
+| Current task # | G8 findings fix COMPLETE. Next: Phase 6 (remaining tests) |
+| Last completed gate | G6 (commit `f120892` — all G8 review findings fixed) |
+| Guard function status | PASS — typecheck ✅ lint ✅ test ✅ (83 tests) |
+| Commits on branch | 16 (`b0a34c0`..`f120892`) |
+| Tests passing | yes (83 tests in 14 files: 60 core + 23 config) |
 | Blockers | None |
 | Versions | TS 6.0.2, ESLint 10, Zod 4.3.6 (zod/v4), Vitest 4.x, pnpm 10.33.0, Node 22+ |
 | New deps | eslint-plugin-import-x ^4.16.2, @types/node ^25.5.0 |
