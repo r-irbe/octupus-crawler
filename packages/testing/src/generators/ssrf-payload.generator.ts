@@ -8,7 +8,7 @@
  */
 
 import { fc } from '@fast-check/vitest';
-import { arbReservedIPv4, arbIPv4MappedIPv6 } from './rfc6890.generator';
+import { arbReservedIPv4, arbIPv4MappedIPv6 } from './rfc6890.generator.js';
 
 /** URL-encoded representations of reserved IPs */
 export const arbURLEncodedReservedIP = arbReservedIPv4.map((ip: string) =>
@@ -21,8 +21,12 @@ export const arbURLEncodedReservedIP = arbReservedIPv4.map((ip: string) =>
 /** Decimal IP representation (e.g., 127.0.0.1 = 2130706433) */
 export const arbDecimalIP = arbReservedIPv4.map((ip: string) => {
   const parts = ip.split('.').map(Number);
-  const decimal = ((parts[0]! << 24) | (parts[1]! << 16) | (parts[2]! << 8) | parts[3]!) >>> 0;
-  return `http://${decimal}/`;
+  const p0 = parts[0] ?? 0;
+  const p1 = parts[1] ?? 0;
+  const p2 = parts[2] ?? 0;
+  const p3 = parts[3] ?? 0;
+  const decimal = ((p0 << 24) | (p1 << 16) | (p2 << 8) | p3) >>> 0;
+  return `http://${String(decimal)}/`;
 });
 
 /** Octal IP representation */

@@ -1,0 +1,15 @@
+{
+  "name": "@ipf/eslint-config",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./eslint.config.js"
+  },
+  "dependencies": {
+    "@typescript-eslint/eslint-plugin": "^8.20.0",
+    "@typescript-eslint/parser": "^8.20.0",
+    "eslint": "^9.18.0",
+    "typescript-eslint": "^8.20.0"
+  }
+}

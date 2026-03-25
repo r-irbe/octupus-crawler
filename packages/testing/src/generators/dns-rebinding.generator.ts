@@ -9,13 +9,13 @@
  */
 
 import { fc } from '@fast-check/vitest';
-import { arbReservedIPv4 } from './rfc6890.generator';
+import { arbReservedIPv4 } from './rfc6890.generator.js';
 
 /** Domains that could resolve to different IPs on subsequent lookups */
 export const arbRebindingDomain = fc.oneof(
   fc.constant('rebind.network'),
   fc.constant('1u.ms'),
-  fc.hexaString({ minLength: 8, maxLength: 8 }).map(
+  fc.stringMatching(/^[0-9a-f]{8}$/).map(
     (hex: string) => `${hex}.rebind.it`,
   ),
 );
@@ -33,11 +33,11 @@ export const arbRedirectChain = fc.tuple(
   fc.webUrl(),
   fc.integer({ min: 1, max: 5 }),
   arbReservedIPv4,
-).map(([startUrl, hops, targetIP]: [string, number, string]) => ({
+).map(([startUrl, hops, targetIP]) => ({
   startUrl,
   hops,
   finalTarget: `http://${targetIP}/`,
-  description: `Redirect chain: ${hops} hops from ${startUrl} to reserved ${targetIP}`,
+  description: `Redirect chain: ${String(hops)} hops from ${startUrl} to reserved ${targetIP}`,
 }));
 
 /** Scheme abuse payloads */

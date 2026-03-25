@@ -18,40 +18,28 @@ import { fc, test as fcTest } from '@fast-check/vitest';
 
 describe('Feature: <feature-name> properties', () => {
   // Property for REQ-XXX-NNN: <paste EARS shall clause here>
-  fcTest.prop(
-    'property description matching the shall clause',
-    [fc.string()],
-    (input: string): boolean => {
-      // Replace with actual property assertion
-      // const result = myFunction(input);
-      // return result.isOk();
-      return input === input; // placeholder
-    },
-  );
+  fcTest.prop([fc.string()])('property description matching the shall clause', (input) => {
+    // Replace with actual property assertion
+    // const result = myFunction(input);
+    // return result.isOk();
+    return input === input; // placeholder
+  });
 
   // Roundtrip property example:
   // Property for REQ-XXX-NNN: encode/decode roundtrip
-  fcTest.prop(
-    'roundtrip: decode(encode(x)) === x',
-    [fc.string()],
-    (input: string): void => {
-      // const encoded = encode(input);
-      // const decoded = decode(encoded);
-      // expect(decoded).toEqual(input);
-      expect(input).toEqual(input); // placeholder
-    },
-  );
+  fcTest.prop([fc.string()])('roundtrip: decode(encode(x)) === x', (input) => {
+    // const encoded = encode(input);
+    // const decoded = decode(encoded);
+    // expect(decoded).toEqual(input);
+    expect(input).toEqual(input); // placeholder
+  });
 
   // Idempotency property example:
   // Property for REQ-XXX-NNN: normalization is idempotent
-  fcTest.prop(
-    'idempotent: normalize(normalize(x)) === normalize(x)',
-    [fc.string()],
-    (input: string): void => {
-      // const once = normalize(input);
-      // const twice = normalize(once);
-      // expect(twice).toEqual(once);
-      expect(input).toEqual(input); // placeholder
-    },
-  );
+  fcTest.prop([fc.string()])('idempotent: normalize(normalize(x)) === normalize(x)', (input) => {
+    // const once = normalize(input);
+    // const twice = normalize(once);
+    // expect(twice).toEqual(once);
+    expect(input).toEqual(input); // placeholder
+  });
 });

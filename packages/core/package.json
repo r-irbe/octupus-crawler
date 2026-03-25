@@ -1,0 +1,38 @@
+{
+  "name": "@ipf/core",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./errors/fetch-error": "./src/errors/fetch-error.ts",
+    "./errors/url-error": "./src/errors/url-error.ts",
+    "./errors/crawl-error": "./src/errors/crawl-error.ts",
+    "./types/crawl-url": "./src/types/crawl-url.ts",
+    "./types/result": "./src/types/result.ts",
+    "./contracts/frontier": "./src/contracts/frontier.ts",
+    "./contracts/fetcher": "./src/contracts/fetcher.ts",
+    "./contracts/logger": "./src/contracts/logger.ts",
+    "./contracts/crawl-metrics": "./src/contracts/crawl-metrics.ts",
+    "./contracts/job-consumer": "./src/contracts/job-consumer.ts",
+    "./contracts/job-event-source": "./src/contracts/job-event-source.ts",
+    "./contracts/link-extractor": "./src/contracts/link-extractor.ts",
+    "./contracts/control-plane": "./src/contracts/control-plane.ts",
+    "./contracts/disposable": "./src/contracts/disposable.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src/",
+    "test": "vitest run",
+    "clean": "rm -rf dist .turbo"
+  },
+  "dependencies": {
+    "neverthrow": "^8.1.1"
+  },
+  "devDependencies": {
+    "@ipf/eslint-config": "workspace:*",
+    "typescript": "^5.7.0",
+    "vitest": "^3.0.0",
+    "@fast-check/vitest": "^0.2.0",
+    "eslint": "^9.18.0"
+  }
+}

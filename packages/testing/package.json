@@ -1,0 +1,27 @@
+{
+  "name": "@ipf/testing",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./generators/rfc6890": "./src/generators/rfc6890.generator.ts",
+    "./generators/ssrf-payload": "./src/generators/ssrf-payload.generator.ts",
+    "./generators/dns-rebinding": "./src/generators/dns-rebinding.generator.ts",
+    "./property-test-template": "./src/property-test-template.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src/",
+    "test": "vitest run",
+    "clean": "rm -rf dist .turbo"
+  },
+  "dependencies": {
+    "@fast-check/vitest": "^0.2.0"
+  },
+  "devDependencies": {
+    "@ipf/eslint-config": "workspace:*",
+    "typescript": "^5.7.0",
+    "vitest": "^3.0.0",
+    "eslint": "^9.18.0"
+  }
+}
