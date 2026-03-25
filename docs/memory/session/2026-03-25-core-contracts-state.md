@@ -45,12 +45,13 @@
 
 | Field | Value |
 | --- | --- |
-| Current task # | G8 review COMPLETE. Next: Phase 3 (T-ARCH-016..019 static analysis rules) |
-| Last completed gate | G8 (review council executed, findings fixed, committed) |
-| Guard function status | PASS — typecheck ✅ lint ✅ test ✅ |
-| Commits on branch | 7 (`b0a34c0`, `13c5a5d`, `3795aed`, `bc07226`, `5d4b0ad`, `1cea2f4`, `f052239`) |
+| Current task # | Dependency upgrade COMPLETE. Next: G8 review on upgrade, then Phase 3 (T-ARCH-016..019 static analysis rules) |
+| Last completed gate | G6 (commit `5fdd140` — dependency upgrade) |
+| Guard function status | PASS — typecheck ✅ lint ✅ test ✅ (55 tests) |
+| Commits on branch | 10 (`b0a34c0`, `13c5a5d`, `3795aed`, `bc07226`, `5d4b0ad`, `1cea2f4`, `f052239`, `f99a5ea`, `5fdd140`) |
 | Tests passing | yes (55 tests in 10 files: 38 core + 17 config) |
 | Blockers | None |
+| Versions | TS 6.0.2, ESLint 10, Zod 4.3.6 (zod/v4), Vitest 4.x, pnpm 10.33.0, Node 22+ |
 
 ## Recovery Plan
 
