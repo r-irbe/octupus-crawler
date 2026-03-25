@@ -34,21 +34,21 @@
 | 11 | T-ARCH-011: LinkExtractor interface | `done` | `bc07226` | TDD RED→GREEN→REFACTOR |
 | 12 | T-ARCH-012: ControlPlane interface | `done` | `bc07226` | TDD RED→GREEN→REFACTOR |
 | 13 | T-ARCH-028: Disposable interface | `done` | `bc07226` | TDD RED→GREEN→REFACTOR |
-| 14 | T-ARCH-013: Zod config schema | `pending` | — | — |
-| 15 | T-ARCH-014: loadConfig() with Result | `pending` | — | — |
-| 16 | T-ARCH-015: Narrow config slice types | `pending` | — | — |
-| 17 | T-ARCH-022: Error constructor unit tests | `pending` | — | — |
-| 18 | T-ARCH-023: Config loading unit tests | `pending` | — | — |
+| 14 | T-ARCH-013: Zod config schema | `done` | `5d4b0ad` | TDD RED→GREEN→REFACTOR, 7 tests |
+| 15 | T-ARCH-014: loadConfig() with Result | `done` | `5d4b0ad` | TDD RED→GREEN→REFACTOR, 4 tests |
+| 16 | T-ARCH-015: Narrow config slice types | `done` | `5d4b0ad` | TDD RED→GREEN→REFACTOR, 4 tests |
+| 17 | T-ARCH-022: Error constructor unit tests | `done` | `13c5a5d` | Covered in Phase 1 error TDD |
+| 18 | T-ARCH-023: Config loading unit tests | `done` | `5d4b0ad` | Covered in config TDD |
 
 ## Current State
 
 | Field | Value |
 | --- | --- |
-| Current task # | 14 (T-ARCH-013..015: Config schema + loadConfig + slices) |
-| Last completed gate | G7 (state tracker updated after contracts commit) |
+| Current task # | Phase 2 COMPLETE. Next: Phase 3 (T-ARCH-016..019 static analysis rules) |
+| Last completed gate | G7 (state tracker updated after config commit) |
 | Guard function status | PASS — typecheck ✅ lint ✅ test ✅ |
-| Commits on branch | 4 (`b0a34c0`, `13c5a5d`, `3795aed`, `bc07226`) |
-| Tests passing | yes (38 tests in 7 files) |
+| Commits on branch | 5 (`b0a34c0`, `13c5a5d`, `3795aed`, `bc07226`, `5d4b0ad`) |
+| Tests passing | yes (53 tests in 10 files: 38 core + 15 config) |
 | Blockers | None |
 
 ## Recovery Plan
