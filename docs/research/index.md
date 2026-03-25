@@ -11,6 +11,7 @@ Research documents providing the evidence base for Architecture Decision Records
 | [ai_coding.md](ai_coding.md) | Agentic coding, context rot, Guard Functions, SDD | ADR-018 |
 | [ideating.md](ideating.md) | Brainstorming science, reasoning frameworks, anti-sycophancy | ADR-019 |
 | [spec.md](spec.md) | Spec-Driven Development, EARS, contract-first API, quality gates, formal methods | ADR-020 |
+| [REQUIREMENTS-AGNOSTIC.md](REQUIREMENTS-AGNOSTIC.md) | Technology-agnostic requirements (200+), gap analysis, remediation roadmap | All ADRs, [Specs](../specs/index.md) |
 
 ## Index
 
@@ -19,6 +20,7 @@ Research documents providing the evidence base for Architecture Decision Records
 - [ai_coding.md](ai_coding.md) — Context rot mitigation, Atomic Action Pairs, Guard Functions, Spec-Driven Development, token budget, schema-first
 - [ideating.md](ideating.md) — Brainstorming science (EBS, brainwriting), AI reasoning frameworks (CoT/ToT/GoT/SPIRAL), multi-agent debate pathologies, anti-sycophancy
 - [spec.md](spec.md) — EARS requirements syntax, Martin Fowler SDD taxonomy, Kiro/GitHub Spec Kit/BMAD tooling, contract-first API (TypeSpec/Spectral/Dredd/Pact), property-based testing from specs, evidence-driven quality gates, formal methods (TLA+), human-AI collaboration models
+- [REQUIREMENTS-AGNOSTIC.md](REQUIREMENTS-AGNOSTIC.md) — 194 technology-agnostic requirements across 10 domains (architecture, crawl pipeline, security, HTTP fetching, distributed, observability, lifecycle, alerting, infrastructure, testing), 27-item gap analysis, prioritized remediation roadmap. Converted to EARS specs in [docs/specs/](../specs/index.md)
 
 ---
 
