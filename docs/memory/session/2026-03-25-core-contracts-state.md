@@ -45,19 +45,23 @@
 | 22 | T-ARCH-017: Circular dependency detection | `done` | `ee07cfa` | import-x/no-cycle |
 | 23 | T-ARCH-018: Test boundary rules | `done` | `ee07cfa` | prod cannot import test files |
 | 24 | T-ARCH-019: Contracts purity rule | `done` | `ee07cfa` | no-restricted-syntax, smoke tested |
+| 25 | T-ARCH-020: Composition root with phased wiring | `done` | `78f0c4a` | TDD RED→GREEN, factory-based DI |
+| 26 | T-ARCH-021: Signal handlers (SIGTERM/SIGINT) | `done` | `78f0c4a` | once-only shutdown, cleanup fn |
+| 27 | T-ARCH-026: Singleton guard | `done` | `78f0c4a` | Module-level boolean + throw |
+| 28 | T-ARCH-027: Reverse-order cleanup on partial failure | `done` | `78f0c4a` | cleanupReverse with swallowed errors |
 
 ## Current State
 
 | Field | Value |
 | --- | --- |
-| Current task # | Phase 3 COMPLETE. Next: G8 review on Phase 3, then Phase 4 (composition root) |
-| Last completed gate | G6 (commit `ee07cfa` — Phase 3 static analysis rules) |
-| Guard function status | PASS — typecheck ✅ lint ✅ test ✅ (55 tests) |
-| Commits on branch | 12 (`b0a34c0`..`5fdd140`, `a79dfa7`, `ee07cfa`) |
-| Tests passing | yes (55 tests in 10 files: 38 core + 17 config) |
+| Current task # | Phase 4+5 COMPLETE. Next: G8 review, then Phase 6 (remaining tests) |
+| Last completed gate | G6 (commit `78f0c4a` — Phase 4+5 composition root + safety) |
+| Guard function status | PASS — typecheck ✅ lint ✅ test ✅ (70 tests) |
+| Commits on branch | 14 (`b0a34c0`..`5fbe2ec`, `78f0c4a`) |
+| Tests passing | yes (70 tests in 12 files: 53 core + 17 config) |
 | Blockers | None |
 | Versions | TS 6.0.2, ESLint 10, Zod 4.3.6 (zod/v4), Vitest 4.x, pnpm 10.33.0, Node 22+ |
-| New dep | eslint-plugin-import-x ^4.16.2 (ADR-016) |
+| New deps | eslint-plugin-import-x ^4.16.2, @types/node ^25.5.0 |
 
 ## Recovery Plan
 
