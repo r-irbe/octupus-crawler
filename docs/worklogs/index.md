@@ -1,0 +1,25 @@
+# Worklogs
+
+Chronological work session logs documenting what was done, decisions made, and outcomes. Use format: `YYYY-MM-DD-descriptive-topic.md`.
+
+## Documents
+
+| Document | Description | Status | Last Updated |
+| --- | --- | --- | --- |
+| [2026-03-24: Initial Project Setup](2026-03-24-initial-project-setup.md) | Project initialization, ADR creation, documentation framework setup | Complete | 2026-03-24 |
+| [2026-03-24: Agent Framework](2026-03-24-agent-framework.md) | AI agent framework: 11 agents, 14 skills, 6 instructions, orchestration | Complete | 2026-03-24 |
+| [2026-03-24: Automation Framework](2026-03-24-automation-framework.md) | Event-driven automation: 7 pipelines, triggers, metrics, 4 new skills | Complete | 2026-03-24 |
+| [2026-03-25: Research Integration](2026-03-25-research-integration.md) | ADR updates from arch.md and code.md research: 3 new ADRs, 8 updated ADRs | Complete | 2026-03-25 |
+| [2026-03-25: Agentic Coding Integration](2026-03-25-agentic-coding-integration.md) | ADR-018 + updates from ai_coding.md: Guard Functions, SDD, context rot | Complete | 2026-03-25 |
+
+## Index
+
+- [2026-03-24: Initial Project Setup](2026-03-24-initial-project-setup.md) — Created documentation framework, 13 ADRs, PR council convention, CLAUDE.md routing
+- [2026-03-24: Agent Framework](2026-03-24-agent-framework.md) — Created 11 agents, 14 skills, 6 instructions, orchestration protocol, CLAUDE.md integration
+- [2026-03-24: Automation Framework](2026-03-24-automation-framework.md) — Created 7 automated pipelines, trigger catalog, metrics/SLOs, 4 new skills
+- [2026-03-25: Research Integration](2026-03-25-research-integration.md) — Integrated arch.md and code.md research: ADR-015/016/017, updated 8 existing ADRs
+- [2026-03-25: Agentic Coding Integration](2026-03-25-agentic-coding-integration.md) — Integrated ai_coding.md research: ADR-018, updated 6 ADRs, updated 3 skills
+
+---
+
+> **Provenance**: Created 2026-03-24; updated 2026-03-25 with agentic coding integration worklog.
