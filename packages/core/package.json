@@ -30,9 +30,9 @@
   },
   "devDependencies": {
     "@ipf/eslint-config": "workspace:*",
-    "typescript": "^5.7.0",
-    "vitest": "^3.0.0",
-    "@fast-check/vitest": "^0.2.0",
-    "eslint": "^9.18.0"
+    "typescript": "^6.0.0",
+    "vitest": "^4.0.0",
+    "@fast-check/vitest": "^0.3.0",
+    "eslint": "^10.0.0"
   }
 }

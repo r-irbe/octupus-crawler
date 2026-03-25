@@ -1,7 +1,7 @@
 // Config schema — Zod-validated environment variables
 // Implements: T-ARCH-013, REQ-ARCH-014, ADR-013
 
-import { z } from 'zod';
+import { z } from 'zod/v4';
 
 export const ConfigSchema = z.object({
   // Service identity
@@ -10,21 +10,21 @@ export const ConfigSchema = z.object({
   LOG_LEVEL: z.enum(['trace', 'debug', 'info', 'warn', 'error']).default('info'),
 
   // Redis / Dragonfly
-  REDIS_URL: z.string().url().refine(
+  REDIS_URL: z.url().refine(
     (v) => v.startsWith('redis://') || v.startsWith('rediss://'),
     { message: 'REDIS_URL must start with redis:// or rediss://' },
   ),
   REDIS_MAX_RETRIES: z.coerce.number().int().min(0).default(3),
 
   // PostgreSQL
-  DATABASE_URL: z.string().url().refine(
+  DATABASE_URL: z.url().refine(
     (v) => v.startsWith('postgres://') || v.startsWith('postgresql://'),
     { message: 'DATABASE_URL must start with postgres:// or postgresql://' },
   ),
   DATABASE_POOL_SIZE: z.coerce.number().int().min(1).max(100).default(20),
 
   // S3 / MinIO
-  S3_ENDPOINT: z.string().url(),
+  S3_ENDPOINT: z.url(),
   S3_BUCKET: z.string().min(1).default('ipf-crawl-pages'),
   S3_ACCESS_KEY: z.string().min(1),
   S3_SECRET_KEY: z.string().min(1),
@@ -36,7 +36,7 @@ export const ConfigSchema = z.object({
   CRAWL_USER_AGENT: z.string().default('IPF-Crawler/1.0'),
 
   // Observability
-  OTEL_EXPORTER_OTLP_ENDPOINT: z.string().url().default('http://otel-collector:4318'),
+  OTEL_EXPORTER_OTLP_ENDPOINT: z.url().default('http://otel-collector:4318'),
   OTEL_SERVICE_NAME: z.string().optional(),
 
   // Health
