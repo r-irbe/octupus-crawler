@@ -29,17 +29,17 @@
 | 6 | Frontier adapter (implements core Frontier) | `done` | ff886fd | T-DIST-007/8/9/10, 98 lines |
 | 7 | Collision detection | `done` | ff886fd | T-DIST-018, REQ-DIST-009, 50 lines |
 | 8 | Unit + property tests | `done` | ff886fd | 45 tests (41 unit + 4 property) |
-| 9 | Guard functions + commit | `done` | ff886fd | G5 passed attempt 1/3, 441 tests |
-| 10 | PR Review Council | `in-progress` | — | G8 |
+| 9 | Guard functions + commit | `done` | 6f50cb8 | G5 passed attempt 1/3, 441 tests |
+| 10 | PR Review Council | `done` | 6f50cb8 | APPROVED — F-5 fix (remove double-wrap) |
 
 ## Current State
 
 | Field | Value |
 | --- | --- |
-| Current task # | 10 |
-| Last completed gate | G6 |
+| Current task # | complete |
+| Last completed gate | G9 |
 | Guard function status | `passed` (attempt 1/3, 441 tests) |
-| Commits on branch | 1 (ff886fd) |
+| Commits on branch | 1 (6f50cb8) |
 | Tests passing | 441 |
 | Blockers | none |
 
