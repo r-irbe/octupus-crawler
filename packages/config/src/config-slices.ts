@@ -1,5 +1,5 @@
 // Config slices — narrow types for each consumer (structural subtyping)
-// Implements: T-ARCH-015, REQ-ARCH-015
+// Implements: T-ARCH-015, REQ-ARCH-015, T-LIFE-001, T-LIFE-002
 
 import type { Config } from './config-schema.js';
 
@@ -15,4 +15,19 @@ export type CrawlerConfig = Pick<Config,
 
 export type ObservabilityConfig = Pick<Config, 'OTEL_EXPORTER_OTLP_ENDPOINT' | 'OTEL_SERVICE_NAME' | 'LOG_LEVEL'>;
 
-export type HealthConfig = Pick<Config, 'HEALTH_PORT'>;
+export type HealthConfig = Pick<Config, 'HEALTH_PORT' | 'METRICS_PORT'>;
+
+// Application lifecycle slices — REQ-LIFE-CFG-001 to 003
+
+export type SeedConfig = Pick<Config, 'SEED_URLS'>;
+
+export type FetchConfig = Pick<Config,
+  'CRAWL_FETCH_TIMEOUT_MS' | 'CRAWL_MAX_REDIRECTS' | 'CRAWL_MAX_RESPONSE_BYTES' |
+  'CRAWL_MAX_RETRIES' | 'CRAWL_USER_AGENT' | 'ALLOW_PRIVATE_IPS'
+>;
+
+export type WorkerConfig = Pick<Config,
+  'WORKER_ID' | 'SERVICE_NAME' | 'CRAWL_MAX_CONCURRENT_FETCHES' | 'CRAWL_POLITENESS_DELAY_MS'
+>;
+
+export type DomainFilterConfig = Pick<Config, 'ALLOWED_DOMAINS'>;

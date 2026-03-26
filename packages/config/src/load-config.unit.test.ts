@@ -1,4 +1,5 @@
 // Validates REQ-ARCH-014: loadConfig returns Result<Config, ConfigError> — never throws
+// Validates REQ-LIFE-CFG-001: Config validated at startup, structured error on failure
 import { describe, it, expect } from 'vitest';
 import { loadConfig } from './load-config.js';
 
@@ -11,6 +12,7 @@ function validEnv(): Record<string, string> {
     S3_ENDPOINT: 'http://localhost:9000',
     S3_ACCESS_KEY: 'minioadmin',
     S3_SECRET_KEY: 'minioadmin',
+    SEED_URLS: 'https://example.com',
   };
 }
 
