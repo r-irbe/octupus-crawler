@@ -16,21 +16,26 @@ interface EslintMessage {
 interface EslintFileResult {
   readonly filePath: string;
   readonly messages: readonly EslintMessage[];
-  readonly errorCount: number;
 }
 
 /**
  * Run ESLint with JSON output on a package's src/ directory.
- * Returns parsed ESLint results for rule-level analysis.
+ * Results are cached per directory to avoid redundant eslint invocations.
  */
+const eslintCache = new Map<string, readonly EslintFileResult[]>();
+
 function runEslintJson(packageDir: string): readonly EslintFileResult[] {
+  const cached = eslintCache.get(packageDir);
+  if (cached !== undefined) return cached;
   try {
     const output = execSync('npx eslint --format json src/', {
       cwd: packageDir,
       encoding: 'utf-8',
       timeout: 30_000,
     });
-    return JSON.parse(output) as readonly EslintFileResult[];
+    const results = JSON.parse(output) as readonly EslintFileResult[];
+    eslintCache.set(packageDir, results);
+    return results;
   } catch (error: unknown) {
     // ESLint exits 1 when finding errors — output is still in stdout
     if (
@@ -39,9 +44,11 @@ function runEslintJson(packageDir: string): readonly EslintFileResult[] {
       'stdout' in error &&
       typeof (error as { stdout: unknown }).stdout === 'string'
     ) {
-      return JSON.parse(
+      const results = JSON.parse(
         (error as { stdout: string }).stdout,
       ) as readonly EslintFileResult[];
+      eslintCache.set(packageDir, results);
+      return results;
     }
     throw error;
   }

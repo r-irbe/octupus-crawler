@@ -50,16 +50,19 @@
 | 27 | T-ARCH-026: Singleton guard | `done` | `78f0c4a` | Module-level boolean + throw |
 | 28 | T-ARCH-027: Reverse-order cleanup on partial failure | `done` | `78f0c4a` | cleanupReverse with swallowed errors |
 | 29 | Fix all G8 review findings (phases 1-5) | `done` | `f120892` | AR-6, S-1, AC-1, AR-2, T-ARCH-032, T-ARCH-033, unbound-method lint fix. +13 tests. |
+| 30 | T-ARCH-024: Zero circular deps integration test | `done` | `4f28533` | Runs ESLint JSON on core + config |
+| 31 | T-ARCH-025: Layer boundary + contracts purity integration tests | `done` | `4f28533` | 3 tests: boundaries (core, config), contracts purity |
+| 32 | T-ARCH-029/030/031: Already covered by Phase 4+5 tests | `done` | `78f0c4a` | Singleton guard, partial failure, Disposable |
 
 ## Current State
 
 | Field | Value |
 | --- | --- |
-| Current task # | G8 findings fix COMPLETE. Next: Phase 6 (remaining tests) |
-| Last completed gate | G6 (commit `f120892` — all G8 review findings fixed) |
-| Guard function status | PASS — typecheck ✅ lint ✅ test ✅ (83 tests) |
-| Commits on branch | 16 (`b0a34c0`..`f120892`) |
-| Tests passing | yes (83 tests in 14 files: 60 core + 23 config) |
+| Current task # | Phase 6 COMPLETE. All phases done. Next: G8 review. |
+| Last completed gate | G6 (commit `4f28533` — Phase 6 architecture integration tests) |
+| Guard function status | PASS — typecheck ✅ lint ✅ test ✅ (88 tests) |
+| Commits on branch | 18 (`b0a34c0`..`4f28533`) |
+| Tests passing | yes (88 tests in 15 files: 65 core + 23 config) |
 | Blockers | None |
 | Versions | TS 6.0.2, ESLint 10, Zod 4.3.6 (zod/v4), Vitest 4.x, pnpm 10.33.0, Node 22+ |
 | New deps | eslint-plugin-import-x ^4.16.2, @types/node ^25.5.0 |
