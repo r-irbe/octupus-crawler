@@ -1,7 +1,7 @@
 // Enqueue stage — child entry construction + batch enqueue
 // Implements: T-CRAWL-011, REQ-CRAWL-014, REQ-CRAWL-015
 
-import { err } from 'neverthrow';
+import { ok, err } from 'neverthrow';
 import type { CrawlUrl } from '@ipf/core/domain/crawl-url';
 import type { Frontier, FrontierEntry } from '@ipf/core/contracts/frontier';
 import { createQueueError, type CrawlError } from '@ipf/core/errors/crawl-error';
@@ -20,7 +20,6 @@ export async function enqueueUrls(
   _workerId: string,
 ): AsyncResult<number, CrawlError> {
   if (urls.length === 0) {
-    const { ok } = await import('neverthrow');
     return ok(0);
   }
 

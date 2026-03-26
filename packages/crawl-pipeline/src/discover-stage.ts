@@ -64,7 +64,7 @@ export function discoverLinks(
       error: extractResult.error.message,
     });
     // Use partial results from the error
-    return resolveAndDedup(extractResult.error.partialLinks as string[], baseUrl, logger);
+    return resolveAndDedup(extractResult.error.partialLinks, baseUrl, logger);
   }
 
   return resolveAndDedup(extractResult.value, baseUrl, logger);

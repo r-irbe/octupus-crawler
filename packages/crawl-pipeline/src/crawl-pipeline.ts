@@ -44,13 +44,15 @@ export async function executePipeline(
   });
   if (validated.isErr()) return err(validated.error);
 
-  // Stage 2: Fetch
+  // Stage 2: Fetch (with timing — F-CP-002)
+  const fetchStart = performance.now();
   const fetchResult = await deps.fetcher.fetch(entry.url, deps.fetchConfig);
+  const fetchDurationMs = performance.now() - fetchStart;
   if (fetchResult.isErr()) return err(fetchResult.error);
 
   // Map core FetchResult → pipeline CrawlFetchResult
   const coreFetch = fetchResult.value;
-  const crawlFetch = mapFetchResult(entry, coreFetch);
+  const crawlFetch = mapFetchResult(entry, coreFetch, fetchDurationMs);
 
   // Stage 3: Discover
   const discovered = discoverLinks(crawlFetch, deps.extractor, deps.logger);
@@ -76,6 +78,7 @@ export async function executePipeline(
 function mapFetchResult(
   entry: CrawlFrontierEntry,
   coreFetch: { statusCode: number; body: string; headers: Record<string, string>; url: string },
+  durationMs: number,
 ): CrawlFetchResult {
   // Determine finalUrl: if the returned URL differs from the requested, it was a redirect
   let finalUrl: CrawlUrl | null = null;
@@ -86,13 +89,31 @@ function mapFetchResult(
     }
   }
 
+  // F-CP-009: case-insensitive content-type lookup (headers may not be lowercase)
+  const contentType = findHeaderCaseInsensitive(coreFetch.headers, 'content-type');
+
   return {
     requestedUrl: entry.url,
     finalUrl,
     statusCode: coreFetch.statusCode,
-    contentType: coreFetch.headers['content-type'] ?? null,
+    contentType,
     body: coreFetch.body,
     fetchTimestamp: Date.now(),
-    fetchDurationMs: 0, // Caller can measure externally if needed
+    fetchDurationMs: durationMs,
   };
+}
+
+/** Case-insensitive header lookup. */
+function findHeaderCaseInsensitive(
+  headers: Record<string, string>,
+  target: string,
+): string | null {
+  const lower = target.toLowerCase();
+  for (const key of Object.keys(headers)) {
+    if (key.toLowerCase() === lower) {
+      const val = headers[key];
+      if (val !== undefined) return val;
+    }
+  }
+  return null;
 }

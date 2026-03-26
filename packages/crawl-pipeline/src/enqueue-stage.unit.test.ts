@@ -58,6 +58,8 @@ describe('enqueueUrls', () => {
     expect(result.isOk()).toBe(true);
     expect(capturedEntries).toHaveLength(1);
     expect(capturedEntries[0]?.depth).toBe(3);
+    // F-CP-005: assert default priority
+    expect(capturedEntries[0]?.priority).toBe(0);
   });
 
   it('returns 0 for empty URL list', async () => {
