@@ -1,0 +1,31 @@
+{
+  "name": "@ipf/observability",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./pino-logger": "./src/pino-logger.ts",
+    "./null-logger": "./src/null-logger.ts",
+    "./request-id": "./src/request-id.ts",
+    "./prom-metrics": "./src/prom-metrics.ts",
+    "./null-metrics": "./src/null-metrics.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src/",
+    "test": "vitest run",
+    "clean": "rm -rf dist .turbo"
+  },
+  "dependencies": {
+    "pino": "^9.6.0",
+    "prom-client": "^15.1.0"
+  },
+  "devDependencies": {
+    "@ipf/core": "workspace:*",
+    "@ipf/eslint-config": "workspace:*",
+    "@types/node": "^25.5.0",
+    "eslint": "^10.0.0",
+    "typescript": "^6.0.0",
+    "vitest": "^4.0.0"
+  }
+}
