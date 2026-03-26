@@ -13,8 +13,9 @@
     "clean": "turbo run clean",
     "verify:guards": "./scripts/verify-guard-chain.sh",
     "verify:gates": "./scripts/verify-gate-compliance.sh",
+    "verify:specs": "./scripts/verify-spec-update.sh",
     "verify:session": "./scripts/verify-session-compliance.sh",
-    "verify:all": "./scripts/verify-guard-chain.sh && ./scripts/verify-gate-compliance.sh && ./scripts/verify-session-compliance.sh"
+    "verify:all": "./scripts/verify-guard-chain.sh && ./scripts/verify-gate-compliance.sh && ./scripts/verify-spec-update.sh && ./scripts/verify-session-compliance.sh"
   },
   "devDependencies": {
     "turbo": "^2.8.0",

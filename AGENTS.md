@@ -98,6 +98,7 @@ These gates are **NON-NEGOTIABLE**. Skipping any gate is a protocol violation re
 | G8 | **Review** | Run `pnpm verify:gates` + PR Review self-check or launch Review Agent for multi-package changes | Review summary |
 | G9 | **Worklog** | Create `docs/worklogs/YYYY-MM-DD-topic.md` | File path |
 | G10 | **Report** | Run `pnpm verify:session` + present to user: what changed, tests added, ADR compliance, known gaps | Summary message |
+| G11 | **Spec Update** | Run `pnpm verify:specs` — update `tasks.md` checkboxes (`[ ]` → `[x]`) for completed tasks. Update `design.md`/`requirements.md` if implementation diverged (living specs). | Updated spec files |
 
 ### Agent Delegation (tools with subagent support)
 
@@ -209,7 +210,7 @@ src/features/<feature>/
 12. **Review-by-explanation**: Before approving AI-generated code, verify you can explain the implementation to a colleague — prevents critical thinking atrophy (Generation-then-Comprehension pattern: 86% comprehension vs 50% for copy-paste delegation)
 13. **Sliding window context**: Current task = full context; completed tasks = compressed summaries; state tracker = always full
 14. **Human-written context files**: AI may draft AGENTS.md / CLAUDE.md / instructions, but human reviews and rewrites before they become authoritative (ETH Zurich finding)
-15. **Living specs**: When code diverges from `design.md` or `requirements.md`, update the spec in the same commit. Stale specs are flagged in CI.
+15. **Living specs**: When code diverges from `design.md` or `requirements.md`, update the spec in the same commit. Stale specs are flagged by G11 (`pnpm verify:specs`).
 
 ### NEVER (hard boundaries — these are architectural invariants)
 
@@ -267,6 +268,7 @@ pnpm changeset                        # Create a changeset for versioning
 # Gate verification scripts (MANDATORY — use these, not raw turbo)
 pnpm verify:guards                    # G5: typecheck+lint+test with retry (3 attempts)
 pnpm verify:gates                     # G2/G4/G6/G8/G9: Audit git history + artifacts
+pnpm verify:specs                     # G11: Verify specs updated for implemented code
 pnpm verify:session                   # All gates: Full session compliance check
 pnpm verify:all                       # Run all verification scripts sequentially
 ```
@@ -318,7 +320,8 @@ This is not optional — skipping the feedback loop leads to context rot (ADR-02
 3. Spec-first: read `requirements.md` / `design.md` / `tasks.md` before writing code
 4. State tracker: create and update `docs/memory/session/YYYY-MM-DD-<slug>-state.md`
 5. No `any`, no mocked infra, no barrel imports, no `eslint-disable` without justification
+6. Spec update: run `pnpm verify:specs` after G10 — update `tasks.md` checkboxes + living specs
 
 ---
 
-> **Provenance**: Created 2026-03-25 per ADR-018 §4. Updated 2026-03-25: G1–G10 gates, ADR-020 SDD, ADR-021/022, context collapse prevention, AMBIG-SWE, review-by-explanation. Updated 2026-03-25: added three-tier boundaries (REQ-AGENT-004), positional layout (REQ-AGENT-055), quick reference.
+> **Provenance**: Created 2026-03-25 per ADR-018 §4. Updated 2026-03-25: G1–G10 gates, ADR-020 SDD, ADR-021/022, context collapse prevention, AMBIG-SWE, review-by-explanation. Updated 2026-03-25: added three-tier boundaries (REQ-AGENT-004), positional layout (REQ-AGENT-055), quick reference. Updated 2026-03-26: added G11 Spec Update gate.

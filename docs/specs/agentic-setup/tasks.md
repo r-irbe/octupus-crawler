@@ -138,9 +138,9 @@
 ## Phase 16: Quality Gates and Runtime Constraints
 
 - [x] **T-AGENT-067**: Add five-dimension quality gate to CI pipeline — task success, context preservation, P95 latency, safety pass rate, evidence coverage → REQ-AGENT-071
-- [x] **T-AGENT-068**: Add spec drift detection job to `agent-pr-validation.yml` — Spectral for API contracts, custom script for design.md type consistency, living spec update check → REQ-AGENT-072
+- [x] **T-AGENT-068**: Add spec drift detection job to `agent-pr-validation.yml` — Spectral for API contracts, custom script for design.md type consistency, living spec update check → REQ-AGENT-072 — *concrete implementation: `scripts/verify-spec-update.sh` + `pnpm verify:specs`*
 - [x] **T-AGENT-069**: Create runtime predicate script (`scripts/agent-constraints.sh`) — file count bounds, directory scope, dependency additions, API surface changes → REQ-AGENT-070
-- [x] **T-AGENT-070**: Add living spec policy to AGENTS.md — spec updated in same commit as divergent code, stale specs flagged in CI → REQ-AGENT-073
+- [x] **T-AGENT-070**: Add living spec policy to AGENTS.md — spec updated in same commit as divergent code, stale specs flagged in CI → REQ-AGENT-073 — *enforced via G11 gate in mandatory execution protocol*
 
 ## Phase 17: Reasoning and Ideation Protocols
 
@@ -204,6 +204,15 @@
 - [ ] **T-AGENT-107**: ⏏️ DEFERRED — Verify Spectral catches API contract drift → REQ-AGENT-095 — *requires API specs to validate against*
 - [ ] **T-AGENT-108**: ⏏️ DEFERRED — Verify security property generators produce valid fast-check arbitraries for all RFC 6890 ranges → REQ-AGENT-100, REQ-AGENT-102 — *requires ssrf-guard implementation*
 - [ ] **T-AGENT-109**: ⏏️ DEFERRED — Run full end-to-end: feature request → spec-writer → TDD → review → merge using all mechanisms → REQ-AGENT-083, REQ-AGENT-020, REQ-AGENT-071, REQ-AGENT-089 — *requires live environment with implemented features*
+
+## Phase 25: G11 Spec Update Gate
+
+- [x] **T-AGENT-110**: Create `scripts/verify-spec-update.sh` — package→spec mapping, task completion sync, spec freshness checks → REQ-AGENT-072, REQ-AGENT-073
+- [x] **T-AGENT-111**: Add `pnpm verify:specs` script alias to root `package.json` and wire into `pnpm verify:all` → REQ-AGENT-072
+- [x] **T-AGENT-112**: Add G11 Spec Update gate to AGENTS.md mandatory execution protocol (completion gates table) → REQ-AGENT-073, REQ-AGENT-045
+- [x] **T-AGENT-113**: Add G11 to CLAUDE.md (Always Do + Required Artifacts) and `.github/copilot-instructions.md` (Always Do) → REQ-AGENT-001, REQ-AGENT-003
+- [x] **T-AGENT-114**: Wire G11 check into `scripts/verify-session-compliance.sh` → REQ-AGENT-071
+- [x] **T-AGENT-115**: Backfill stale tasks.md checkboxes for 5 implemented packages (crawl-pipeline, http-fetching, ssrf-guard, testing-quality, url-frontier) → REQ-AGENT-073
 
 ---
 
@@ -287,10 +296,10 @@
 
 | Metric | Count |
 | --- | --- |
-| Total tasks | 109 (T-AGENT-000a to T-AGENT-109) |
-| Completed | 91 |
+| Total tasks | 115 (T-AGENT-000a to T-AGENT-115) |
+| Completed | 97 |
 | Deferred | 18 |
-| Completion rate | 83.5% |
+| Completion rate | 84.3% |
 
 ### Deferred Tasks
 
@@ -311,4 +320,4 @@
 | D-3 | `agent-constraints.sh` as bash (not .ts) | Shell script for CI pipeline portability |
 | D-4 | Security generators in `packages/testing/` | Co-located with other test utilities per project layout |
 
-> **Provenance**: Created 2026-03-25. Updated 2026-03-25: added Phases 13–20 (38 new tasks) from research. Updated 2026-03-26: renumbered original Phase 20 validation tasks, added Phases 20–24 (25 new tasks, T-AGENT-085 to 109) from cross-validation against all 22 ADRs, REQUIREMENTS-AGNOSTIC.md, arch.md, code.md, 13 feature specs, and docs infrastructure. Total: 109 tasks across 24 phases. Updated 2026-03-27: marked 91/109 tasks complete, 18 deferred, added completion summary and key decisions from implementation worklog.
+> **Provenance**: Created 2026-03-25. Updated 2026-03-25: added Phases 13–20 (38 new tasks) from research. Updated 2026-03-26: renumbered original Phase 20 validation tasks, added Phases 20–24 (25 new tasks, T-AGENT-085 to 109) from cross-validation against all 22 ADRs, REQUIREMENTS-AGNOSTIC.md, arch.md, code.md, 13 feature specs, and docs infrastructure. Total: 109 tasks across 24 phases. Updated 2026-03-27: marked 91/109 tasks complete, 18 deferred, added completion summary and key decisions from implementation worklog. Updated 2026-03-27: added Phase 25 (G11 Spec Update Gate — T-AGENT-110 to T-AGENT-115), annotated T-AGENT-068/070 with concrete implementation references. Total: 115 tasks, 97 complete, 84.3%.

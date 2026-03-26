@@ -2,7 +2,7 @@
 # verify-session-compliance.sh — Check all required artifacts for current session
 # Validates: state tracker, worklog, guard chain evidence, commit format,
 #            review evidence, and spec traceability
-# AGENTS.md Gates G1-G10
+# AGENTS.md Gates G1-G11
 
 set -euo pipefail
 
@@ -252,6 +252,24 @@ echo ""
 # ─────────────────────────────────────────────
 echo "━━━ G10: Report ━━━"
 echo "  (Manual check — verify summary was communicated to user)"
+echo ""
+
+# ─────────────────────────────────────────────
+# G11: Spec Update
+# ─────────────────────────────────────────────
+echo "━━━ G11: Spec Update ━━━"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+if [[ -x "$SCRIPT_DIR/verify-spec-update.sh" ]]; then
+  if "$SCRIPT_DIR/verify-spec-update.sh" > /dev/null 2>&1; then
+    echo "  ✓ All specs current (pnpm verify:specs passed)"
+  else
+    echo "  ✗ Stale specs detected — run 'pnpm verify:specs' for details"
+    FAILED=$((FAILED + 1))
+  fi
+else
+  echo "  ⚠ verify-spec-update.sh not found or not executable"
+  WARNINGS=$((WARNINGS + 1))
+fi
 echo ""
 
 # ─────────────────────────────────────────────

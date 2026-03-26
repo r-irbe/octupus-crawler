@@ -7,17 +7,17 @@
 
 ## Phase 1: IP Range Checking
 
-- [ ] **T-SEC-001**: Implement IPv4 CIDR range checker for all blocked ranges → REQ-SEC-001
-- [ ] **T-SEC-002**: Implement IPv6 blocked address checker → REQ-SEC-002
-- [ ] **T-SEC-003**: Implement IPv4-mapped IPv6 normalization (`::ffff:x.x.x.x` → IPv4) → GAP-SEC-001
-- [ ] **T-SEC-004**: Extend blocked ranges with CGNAT, multicast, broadcast → GAP-SEC-002
-- [ ] **T-SEC-005**: Implement literal IP detection (skip DNS for raw IPs) → REQ-SEC-005
+- [x] **T-SEC-001**: Implement IPv4 CIDR range checker for all blocked ranges → REQ-SEC-001
+- [x] **T-SEC-002**: Implement IPv6 blocked address checker → REQ-SEC-002
+- [x] **T-SEC-003**: Implement IPv4-mapped IPv6 normalization (`::ffff:x.x.x.x` → IPv4) → GAP-SEC-001
+- [x] **T-SEC-004**: Extend blocked ranges with CGNAT, multicast, broadcast → GAP-SEC-002
+- [x] **T-SEC-005**: Implement literal IP detection (skip DNS for raw IPs) → REQ-SEC-005
 
 ## Phase 2: DNS Resolution & Validation
 
-- [ ] **T-SEC-006**: Implement DNS resolver wrapper with fail-open/fail-closed policy → REQ-SEC-003, REQ-SEC-006
-- [ ] **T-SEC-007**: Implement DNS IP pinning for HTTP connection (close TOCTOU gap) → GAP-SEC-003
-- [ ] **T-SEC-008**: Implement configurable `ALLOW_PRIVATE_IPS` bypass → REQ-SEC-007
+- [x] **T-SEC-006**: Implement DNS resolver wrapper with fail-open/fail-closed policy → REQ-SEC-003, REQ-SEC-006
+- [x] **T-SEC-007**: Implement DNS IP pinning for HTTP connection (close TOCTOU gap) → GAP-SEC-003
+- [x] **T-SEC-008**: Implement configurable `ALLOW_PRIVATE_IPS` bypass → REQ-SEC-007
 
 ## Phase 3: Fetch Hardening
 
@@ -33,12 +33,12 @@
 
 ## Phase 5: SSRF Metrics & DNS Enhancements
 
-- [ ] **T-SEC-023**: Implement `ssrf_checks_total` counter with `result` and `reason` labels → REQ-SEC-014
-- [ ] **T-SEC-024**: Implement `ssrf_dns_resolution_seconds` histogram → REQ-SEC-015
-- [ ] **T-SEC-025**: Implement multi-IP DNS validation (all resolved IPs checked against blocked ranges) → REQ-SEC-016
-- [ ] **T-SEC-026**: Implement configurable DNS resolution timeout (default: 5s) with fail-policy integration → REQ-SEC-017
-- [ ] **T-SEC-027**: Implement `SsrfValidationResult` interface returning pinned IP → REQ-SEC-018, REQ-SEC-019
-- [ ] **T-SEC-028**: Expose `pinnedIp` and `originalHost` in validation result for Fetcher consumption → REQ-SEC-019
+- [x] **T-SEC-023**: Implement `ssrf_checks_total` counter with `result` and `reason` labels → REQ-SEC-014
+- [x] **T-SEC-024**: Implement `ssrf_dns_resolution_seconds` histogram → REQ-SEC-015
+- [x] **T-SEC-025**: Implement multi-IP DNS validation (all resolved IPs checked against blocked ranges) → REQ-SEC-016
+- [x] **T-SEC-026**: Implement configurable DNS resolution timeout (default: 5s) with fail-policy integration → REQ-SEC-017
+- [x] **T-SEC-027**: Implement `SsrfValidationResult` interface returning pinned IP → REQ-SEC-018, REQ-SEC-019
+- [x] **T-SEC-028**: Expose `pinnedIp` and `originalHost` in validation result for Fetcher consumption → REQ-SEC-019
 
 ## Phase 6: Tests
 
@@ -71,4 +71,4 @@
 
 ---
 
-> **Provenance**: Created 2026-03-25. Security Agent task decomposition per ADR-020. Updated 2026-03-25: added Phase 5 (REQ-SEC-014–019 metrics, multi-IP DNS, DNS pinning).
+> **Provenance**: Created 2026-03-25. Security Agent task decomposition per ADR-020. Updated 2026-03-25: added Phase 5 (REQ-SEC-014–019 metrics, multi-IP DNS, DNS pinning). Updated 2026-03-26: checked completed tasks per G11 spec update gate.

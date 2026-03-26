@@ -7,42 +7,42 @@
 
 ## Phase 1: Politeness Controller
 
-- [ ] **T-FETCH-001**: Implement LRU Map with configurable hard cap and eviction → REQ-FETCH-013
-- [ ] **T-FETCH-002**: Implement per-domain delay enforcement with immediate first request → REQ-FETCH-009, REQ-FETCH-010
-- [ ] **T-FETCH-003**: Ensure failed fetches do not break domain serialization → REQ-FETCH-011
-- [ ] **T-FETCH-004**: Implement stale entry pruning → REQ-FETCH-012
+- [x] **T-FETCH-001**: Implement LRU Map with configurable hard cap and eviction → REQ-FETCH-013
+- [x] **T-FETCH-002**: Implement per-domain delay enforcement with immediate first request → REQ-FETCH-009, REQ-FETCH-010
+- [x] **T-FETCH-003**: Ensure failed fetches do not break domain serialization → REQ-FETCH-011
+- [x] **T-FETCH-004**: Implement stale entry pruning → REQ-FETCH-012
 
 ## Phase 2: HTTP Client Adapter
 
-- [ ] **T-FETCH-005**: Implement HTTP client wrapper with configurable User-Agent → REQ-FETCH-001, REQ-FETCH-002
-- [ ] **T-FETCH-006**: Make HTTP client injectable via Fetcher contract → REQ-FETCH-003
-- [ ] **T-FETCH-007**: Implement manual redirect loop with counter → REQ-FETCH-004
-- [ ] **T-FETCH-008**: Resolve relative `Location` headers at each redirect hop → REQ-FETCH-005
-- [ ] **T-FETCH-009**: Handle 3xx without Location as HTTP error → REQ-FETCH-006
-- [ ] **T-FETCH-010**: Wire SSRF validation into redirect loop → REQ-FETCH-007
-- [ ] **T-FETCH-011**: Record final URL when different from request URL → REQ-FETCH-008
+- [x] **T-FETCH-005**: Implement HTTP client wrapper with configurable User-Agent → REQ-FETCH-001, REQ-FETCH-002
+- [x] **T-FETCH-006**: Make HTTP client injectable via Fetcher contract → REQ-FETCH-003
+- [x] **T-FETCH-007**: Implement manual redirect loop with counter → REQ-FETCH-004
+- [x] **T-FETCH-008**: Resolve relative `Location` headers at each redirect hop → REQ-FETCH-005
+- [x] **T-FETCH-009**: Handle 3xx without Location as HTTP error → REQ-FETCH-006
+- [x] **T-FETCH-010**: Wire SSRF validation into redirect loop → REQ-FETCH-007
+- [x] **T-FETCH-011**: Record final URL when different from request URL → REQ-FETCH-008
 
 ## Phase 3: Response Processing
 
-- [ ] **T-FETCH-012**: Implement Content-Length pre-flight size check → REQ-FETCH-015
-- [ ] **T-FETCH-013**: Implement streaming byte counter with stream destruction → REQ-FETCH-014
-- [ ] **T-FETCH-014**: Implement UTF-8 body decoding → REQ-FETCH-016
-- [ ] **T-FETCH-015**: Drain redirect/non-2xx response bodies → REQ-FETCH-017
+- [x] **T-FETCH-012**: Implement Content-Length pre-flight size check → REQ-FETCH-015
+- [x] **T-FETCH-013**: Implement streaming byte counter with stream destruction → REQ-FETCH-014
+- [x] **T-FETCH-014**: Implement UTF-8 body decoding → REQ-FETCH-016
+- [x] **T-FETCH-015**: Drain redirect/non-2xx response bodies → REQ-FETCH-017
 
 ## Phase 4: Error Classification
 
-- [ ] **T-FETCH-016**: Implement error classifier mapping exceptions to 9 FetchError variants → REQ-FETCH-018
-- [ ] **T-FETCH-017**: Track wall-clock duration for every fetch → REQ-FETCH-019
+- [x] **T-FETCH-016**: Implement error classifier mapping exceptions to 9 FetchError variants → REQ-FETCH-018
+- [x] **T-FETCH-017**: Track wall-clock duration for every fetch → REQ-FETCH-019
 
 ## Phase 5: Metrics & Integration
 
-- [ ] **T-FETCH-025**: Implement `fetches_total` counter with `status` and `error_kind` labels → REQ-FETCH-022
-- [ ] **T-FETCH-026**: Implement `fetch_duration_seconds` histogram with configurable buckets → REQ-FETCH-022
-- [ ] **T-FETCH-027**: Implement `redirects_followed_total` counter and `body_bytes_received_total` counter → REQ-FETCH-022
-- [ ] **T-FETCH-028**: Implement per-domain promise-chain serialization for concurrency safety → REQ-FETCH-020
-- [ ] **T-FETCH-029**: Implement TLD+1 domain grouping via public suffix list → REQ-FETCH-021
-- [ ] **T-FETCH-030**: Integrate SSRF guard pinned IP result (use `pinnedIp` + `Host` header) → REQ-FETCH-023
-- [ ] **T-FETCH-031**: Implement stream drain error handling (catch + log, continue redirect chain) → REQ-FETCH-024
+- [x] **T-FETCH-025**: Implement `fetches_total` counter with `status` and `error_kind` labels → REQ-FETCH-022
+- [x] **T-FETCH-026**: Implement `fetch_duration_seconds` histogram with configurable buckets → REQ-FETCH-022
+- [x] **T-FETCH-027**: Implement `redirects_followed_total` counter and `body_bytes_received_total` counter → REQ-FETCH-022
+- [x] **T-FETCH-028**: Implement per-domain promise-chain serialization for concurrency safety → REQ-FETCH-020
+- [x] **T-FETCH-029**: Implement TLD+1 domain grouping via public suffix list → REQ-FETCH-021
+- [x] **T-FETCH-030**: Integrate SSRF guard pinned IP result (use `pinnedIp` + `Host` header) → REQ-FETCH-023
+- [x] **T-FETCH-031**: Implement stream drain error handling (catch + log, continue redirect chain) → REQ-FETCH-024
 
 ## Phase 6: Tests
 
@@ -74,4 +74,4 @@
 
 ---
 
-> **Provenance**: Created 2026-03-25. Implementation Agent task decomposition per ADR-020. Updated 2026-03-25: added Phase 5 (REQ-FETCH-020–024 concurrency safety, TLD+1, metrics, SSRF integration, drain handling).
+> **Provenance**: Created 2026-03-25. Implementation Agent task decomposition per ADR-020. Updated 2026-03-25: added Phase 5 (REQ-FETCH-020–024 concurrency safety, TLD+1, metrics, SSRF integration, drain handling). Updated 2026-03-26: checked completed tasks per G11 spec update gate.

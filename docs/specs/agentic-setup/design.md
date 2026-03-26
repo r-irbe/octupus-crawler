@@ -723,6 +723,18 @@ graph TD
 
 ### Spec Drift Detection
 
+Implemented as `scripts/verify-spec-update.sh` (G11 gate), invoked via `pnpm verify:specs`.
+
+**Checks performed:**
+
+1. **Task Completion Sync**: For each package with source files, verify that the corresponding `tasks.md` has checkboxes matching implementation status. Fails if a package has source files but 0/N tasks checked.
+2. **Unimplemented Specs**: List spec directories without a matching package (informational).
+3. **Spec Freshness**: Verify all spec docs have provenance lines.
+
+**Package→Spec mapping**: Explicit map for non-obvious names (e.g., `core→core-contracts`, `config→core-contracts`, `testing→testing-quality`); otherwise package name matches spec dir name.
+
+**Integration**: G11 runs after G10 in the completion gates, is included in `pnpm verify:session`, and is also available standalone via `pnpm verify:specs`.
+
 ```yaml
 # Added to .github/workflows/agent-pr-validation.yml
 spec-drift-detection:
@@ -738,16 +750,9 @@ spec-drift-detection:
         # Verify types in design.md match TypeScript interfaces
         # Custom script: extract types from design.md, diff against src/
         node scripts/check-spec-drift.js
-    - name: Verify living spec updates
+    - name: Verify living spec updates (G11)
       run: |
-        # If src/ files changed, check if corresponding spec was updated
-        CHANGED_FEATURES=$(git diff --name-only HEAD~1 | grep 'src/features/' | cut -d/ -f3 | sort -u)
-        for feature in $CHANGED_FEATURES; do
-          SPEC_CHANGED=$(git diff --name-only HEAD~1 | grep "docs/specs/$feature/" || true)
-          if [ -z "$SPEC_CHANGED" ]; then
-            echo "::warning::Feature $feature code changed but spec not updated"
-          fi
-        done
+        ./scripts/verify-spec-update.sh
 ```
 
 ### Runtime Predicate System (AgentSpec pattern)

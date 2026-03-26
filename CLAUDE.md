@@ -9,6 +9,7 @@
 - Run `pnpm verify:guards` (NOT raw turbo commands) before every commit
 - Run `pnpm verify:gates` before merging to main
 - Run `pnpm verify:session` before declaring work complete
+- Run `pnpm verify:specs` after G10 to ensure living specs are current
 - Create feature branch `work/<task-slug>` before writing code
 - Create/update state tracker in `docs/memory/session/`
 - Use separate subagents for implementation vs review (multi-package work)
@@ -61,6 +62,7 @@ Recovery: re-read state tracker → re-anchor on Boundaries section → if signa
 | Conventional commits | Git log | G6 |
 | Worklog | `docs/worklogs/YYYY-MM-DD-topic.md` | G9 |
 | Summary to user | Chat message | G10 |
+| Updated spec files | `docs/specs/<feature>/tasks.md` checkboxes | G11 |
 
 ## Hooks (`.claude/settings.json`)
 

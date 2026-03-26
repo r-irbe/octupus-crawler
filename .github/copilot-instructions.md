@@ -9,6 +9,7 @@
 - Run `pnpm verify:guards` (NOT raw turbo commands) before every commit
 - Run `pnpm verify:gates` before merging to main
 - Run `pnpm verify:session` before declaring work complete
+- Run `pnpm verify:specs` after G10 to ensure living specs are current
 - Create feature branch `work/<task-slug>` before writing code
 - Read relevant `requirements.md` / `design.md` / `tasks.md` before writing code
 - Use path-scoped instructions from `.github/instructions/`
