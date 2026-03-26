@@ -9,7 +9,10 @@
     "./request-id": "./src/request-id.ts",
     "./prom-metrics": "./src/prom-metrics.ts",
     "./null-metrics": "./src/null-metrics.ts",
-    "./metrics-server": "./src/metrics-server.ts"
+    "./metrics-server": "./src/metrics-server.ts",
+    "./tracer": "./src/tracer.ts",
+    "./in-memory-exporter": "./src/in-memory-exporter.ts",
+    "./trace-propagation": "./src/trace-propagation.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
@@ -18,6 +21,13 @@
     "clean": "rm -rf dist .turbo"
   },
   "dependencies": {
+    "@opentelemetry/api": "^1.9.1",
+    "@opentelemetry/exporter-trace-otlp-http": "^0.214.0",
+    "@opentelemetry/instrumentation-undici": "^0.24.0",
+    "@opentelemetry/resources": "^2.6.1",
+    "@opentelemetry/sdk-node": "^0.214.0",
+    "@opentelemetry/sdk-trace-base": "^2.6.1",
+    "@opentelemetry/semantic-conventions": "^1.40.0",
     "pino": "^9.6.0",
     "prom-client": "^15.1.0"
   },

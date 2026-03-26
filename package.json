@@ -23,7 +23,8 @@
       "@typescript-eslint/typescript-estree>typescript": "^6.0.0"
     },
     "onlyBuiltDependencies": [
-      "unrs-resolver"
+      "unrs-resolver",
+      "protobufjs"
     ]
   }
 }
