@@ -46,17 +46,21 @@
 | 23 | T-OBS-028: Batch processor config | `done` | `ed12121` | BatchSpanProcessor with configurable params |
 | 24 | T-OBS-029: BullMQ trace propagation | `blocked` | — | Needs url-frontier spec / BullMQ |
 | 25 | T-OBS-030: Enhanced /readyz | `blocked` | — | Needs Redis/PG infrastructure |
+| 26 | F-014: Span capture integration test | `done` | `224d283` | SimpleSpanProcessor + InMemoryExporter |
+| 27 | T-OBS-032: Batch flush test | `done` | `224d283` | BatchSpanProcessor forceFlush |
+| 28 | T-OBS-033: Job queue trace propagation test | `blocked` | — | Needs T-OBS-029 (BullMQ) |
+| 29 | T-OBS-034: /readyz integration test | `blocked` | — | Needs T-OBS-030 (Redis/PG) |
 
 ## Current State
 
 | Field | Value |
 | --- | --- |
-| Current task # | Phase 5 COMPLETE (partial — 2 blocked). Next: G8 council, then Phase 6 tests |
-| Last completed gate | G6 (commit `ed12121` — Phase 5) |
-| Guard function status | PASS — typecheck ✅ lint ✅ test ✅ (149 tests) |
-| Commits on branch | 10 (`8cc6910`..`ed12121`) |
-| Tests passing | yes (149 tests: 65 core + 23 config + 61 observability) |
-| Blockers | T-OBS-029 (BullMQ), T-OBS-030 (Redis/PG) |
+| Current task # | Phase 6 COMPLETE (2 implemented, 2 blocked). Next: G8 council |
+| Last completed gate | G6 (commit `224d283` — Phase 6) |
+| Guard function status | PASS — typecheck ✅ lint ✅ test ✅ (151 tests) |
+| Commits on branch | 12 (`8cc6910`..`224d283`) |
+| Tests passing | yes (151 tests: 65 core + 23 config + 63 observability) |
+| Blockers | T-OBS-029/033 (BullMQ), T-OBS-030/034 (Redis/PG) |
 
 ## Decisions Log
 
