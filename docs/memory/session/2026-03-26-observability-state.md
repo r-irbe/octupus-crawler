@@ -38,11 +38,11 @@
 
 | Field | Value |
 | --- | --- |
-| Current task # | Phase 1+2 COMPLETE. Next: G8 review, then Phase 3 (metrics server) |
-| Last completed gate | G6 (commit `8cc6910` — Phase 1+2) |
-| Guard function status | PASS — typecheck ✅ lint ✅ test ✅ (125 tests) |
-| Commits on branch | 1 (`8cc6910`) |
-| Tests passing | yes (125 tests: 65 core + 23 config + 37 observability) |
+| Current task # | Phase 1+2 COMPLETE + G8 fixes applied. Next: Phase 3 (metrics server) |
+| Last completed gate | G8 (PR Review Council — CHANGES REQUESTED → fixed → `f8e1dda`) |
+| Guard function status | PASS — typecheck ✅ lint ✅ test ✅ (127 tests) |
+| Commits on branch | 3 (`8cc6910`, `dc1a3c0`, `f8e1dda`) |
+| Tests passing | yes (127 tests: 65 core + 23 config + 39 observability) |
 | Blockers | None |
 
 ## Decisions Log
@@ -54,3 +54,5 @@
 
 | 1 | Pino `base` option rejects `undefined` with exactOptionalPropertyTypes | Build options object conditionally, only set `base` when defined | 1 |
 | 2 | `JobLoggerBindings` readonly interface doesn't satisfy `Record<string, unknown>` | Spread bindings: `{ ...bindings }` | 3 |
+| 3 | G8-F-001: Test helper reimplemented wrapPino instead of using production code | Export `wrapPino`, test helper calls it directly | `f8e1dda` |
+| 4 | G8-F-003: Unbounded status label cardinality on fetches_total counter | Added allowlist + fallback to 'unknown' | `f8e1dda` |
