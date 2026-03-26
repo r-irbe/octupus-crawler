@@ -11,6 +11,16 @@ Run the full guard function chain before every commit. This is the enforcement m
 
 ## Execution Steps
 
+**PREFERRED**: Use the verification script for automatic retry and structured output:
+
+```bash
+pnpm verify:guards
+```
+
+This runs typecheck → lint → test with retry logic (3 attempts) and produces a structured pass/fail report.
+
+**MANUAL** (only when script unavailable):
+
 1. Run TypeScript type checking:
    ```bash
    pnpm turbo typecheck

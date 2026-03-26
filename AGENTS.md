@@ -87,7 +87,7 @@ These gates are **NON-NEGOTIABLE**. Skipping any gate is a protocol violation re
 
 | # | Gate | Action | Artifact |
 | --- | --- | --- | --- |
-| G5 | **Guard Functions** | Run `pnpm turbo typecheck && pnpm turbo lint && pnpm turbo test` — ALL must pass (3 total attempts: 1 initial + 2 retries, then escalate to user) | Terminal output |
+| G5 | **Guard Functions** | Run `pnpm verify:guards` (NOT raw turbo commands) — enforces retry logic, structured output. ALL must pass (3 total attempts, then escalate). | Terminal output |
 | G6 | **Commit** | `git add -A && git commit -m "<type>(<scope>): <description>"` — conventional commit per logical change | Commit hash |
 | G7 | **State update** | Update state tracker: mark task done, record commit hash, update "Current State" section, log decisions/problems | Updated file |
 
@@ -95,9 +95,9 @@ These gates are **NON-NEGOTIABLE**. Skipping any gate is a protocol violation re
 
 | # | Gate | Action | Artifact |
 | --- | --- | --- | --- |
-| G8 | **Review** | Run PR Review self-check or launch Review Agent for multi-package changes | Review summary |
+| G8 | **Review** | Run `pnpm verify:gates` + PR Review self-check or launch Review Agent for multi-package changes | Review summary |
 | G9 | **Worklog** | Create `docs/worklogs/YYYY-MM-DD-topic.md` | File path |
-| G10 | **Report** | Present to user: what changed, tests added, ADR compliance, known gaps | Summary message |
+| G10 | **Report** | Run `pnpm verify:session` + present to user: what changed, tests added, ADR compliance, known gaps | Summary message |
 
 ### Agent Delegation (tools with subagent support)
 
@@ -263,6 +263,12 @@ pnpm turbo lint                       # Lint all packages
 pnpm turbo typecheck                  # Type check all packages
 pnpm turbo test --filter=<package>    # Test specific package
 pnpm changeset                        # Create a changeset for versioning
+
+# Gate verification scripts (MANDATORY — use these, not raw turbo)
+pnpm verify:guards                    # G5: typecheck+lint+test with retry (3 attempts)
+pnpm verify:gates                     # G2/G4/G6/G8/G9: Audit git history + artifacts
+pnpm verify:session                   # All gates: Full session compliance check
+pnpm verify:all                       # Run all verification scripts sequentially
 ```
 
 ## PR Review Process

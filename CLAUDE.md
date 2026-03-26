@@ -6,7 +6,9 @@
 
 ### Always Do
 
-- Run `pnpm turbo typecheck && pnpm turbo lint && pnpm turbo test` before every commit
+- Run `pnpm verify:guards` (NOT raw turbo commands) before every commit
+- Run `pnpm verify:gates` before merging to main
+- Run `pnpm verify:session` before declaring work complete
 - Create feature branch `work/<task-slug>` before writing code
 - Create/update state tracker in `docs/memory/session/`
 - Use separate subagents for implementation vs review (multi-package work)
