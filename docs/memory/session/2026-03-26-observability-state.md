@@ -36,22 +36,29 @@
 | 13 | T-OBS-013: HTTP server /metrics /health /readyz | `done` | `b102bca` | Built-in Node.js HTTP server |
 | 14 | T-OBS-014: Readiness check (injectable) | `done` | `b102bca` | Default: self-ok |
 | 15 | T-OBS-015: 404/500 error handling | `done` | `b102bca` | Generic error body, no leaks |
+| 16 | T-OBS-016: OTel SDK with OTLP exporter | `done` | `c8c816c` | NodeSDK, resourceFromAttributes |
+| 17 | T-OBS-017: HTTP auto-instrumentation (undici) | `done` | `c8c816c` | UndiciInstrumentation |
+| 18 | T-OBS-018: Job queue trace propagation | `done` | `c8c816c` | inject/extract W3C traceparent |
+| 19 | T-OBS-019: Trace context for log correlation | `done` | `c8c816c` | getTraceContext helper |
+| 20 | T-OBS-020: In-memory span exporter | `done` | `c8c816c` | Re-export OTel built-in |
+| 21 | T-OBS-021: Non-throwing tracer shutdown | `done` | `c8c816c` | catch + log, never propagate |
 
 ## Current State
 
 | Field | Value |
 | --- | --- |
-| Current task # | Phase 1-3 COMPLETE. Next: G8 council review, then Phase 4 (distributed tracing) |
-| Last completed gate | G6 (commit `b102bca` — Phase 3) |
-| Guard function status | PASS — typecheck ✅ lint ✅ test ✅ (136 tests) |
-| Commits on branch | 5 (`8cc6910`, `dc1a3c0`, `f8e1dda`, `4b888c4`, `b102bca`) |
-| Tests passing | yes (136 tests: 65 core + 23 config + 48 observability) |
+| Current task # | Phase 1-4 COMPLETE. Next: G8 council review, then Phase 5 (tracing enhancements) |
+| Last completed gate | G6 (commit `c8c816c` — Phase 4) |
+| Guard function status | PASS — typecheck ✅ lint ✅ test ✅ (145 tests) |
+| Commits on branch | 7 (`8cc6910`..⁠`c8c816c`) |
+| Tests passing | yes (145 tests: 65 core + 23 config + 57 observability) |
 | Blockers | None |
 
 ## Decisions Log
 
 | # | Decision | Rationale | ADR ref |
 | --- | --- | --- | --- |
+| 1 | Use OTel built-in InMemorySpanExporter instead of custom | SDK already provides exactly what we need, no custom code to maintain | ADR-006 |
 
 ## Problems & Solutions
 
@@ -60,3 +67,4 @@
 | 3 | G8-F-001: Test helper reimplemented wrapPino instead of using production code | Export `wrapPino`, test helper calls it directly | `f8e1dda` |
 | 4 | G8-F-003: Unbounded status label cardinality on fetches_total counter | Added allowlist + fallback to 'unknown' | `f8e1dda` |
 | 5 | `exactOptionalPropertyTypes` prevents passing optional param through to config object | Conditionally build config: `readinessCheck !== undefined ? { registry, readinessCheck } : { registry }` | `b102bca` |
+| 6 | OTel `Resource` class removed in latest version; `resourceFromAttributes()` is the new API | Use `resourceFromAttributes` instead of `new Resource()` | `c8c816c` |
