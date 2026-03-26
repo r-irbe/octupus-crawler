@@ -46,7 +46,7 @@ Then no output is produced and no errors occur
 The CrawlMetrics contract shall abstract all metric recording behind a technology-neutral interface.
 
 **REQ-OBS-009** (Ubiquitous)
-The system shall record a `fetches_total` counter with `status` and `error_kind` labels.
+The system shall record a `fetches_total` counter with `status` and `error_kind` labels. The `status` label shall be constrained to an allowlist of known values (e.g., `success`, `error`, `timeout`, `dns_error`, `connection_refused`, `tls_error`); unrecognised statuses shall be mapped to a fallback value (`unknown`) to prevent unbounded label cardinality.
 
 **REQ-OBS-010** (Ubiquitous)
 The system shall record a `fetch_duration_seconds` histogram with configurable buckets (default: `[0.05, 0.1, 0.25, 0.5, 1, 2.5, 5, 10]`). Duration shall only be recorded when `> 0`.
@@ -131,7 +131,7 @@ A pluggable trace exporter shall be available for tests (e.g., in-memory exporte
 Tracer shutdown shall be non-throwing: exceptions are caught and logged at error level.
 
 **REQ-OBS-027** (Ubiquitous)
-Trace sampling shall use a tail-based or parent-based strategy. Default: sample 100% of errors and 10% of successful traces. Sampling rate shall be configurable via `TRACE_SAMPLING_RATE` and `TRACE_ERROR_SAMPLING_RATE` environment variables.
+Trace sampling shall use a parent-based strategy wrapping a `TraceIdRatioBasedSampler`. Default: sample 10% of traces (`TRACE_SAMPLING_RATE=0.1`). Sampling rate shall be configurable via `TRACE_SAMPLING_RATE` environment variable. Tests requiring span capture verification shall set `samplingRate: 1.0` to avoid sampling-induced flakiness.
 
 **REQ-OBS-028** (Event-driven)
 When the OTel Collector export buffer exceeds 80% capacity, the system shall log a warning and switch to dropping oldest spans (not newest). Buffer size shall be configurable via `OTEL_BSP_MAX_QUEUE_SIZE` (default: 2048).
@@ -203,7 +203,18 @@ Then it returns 503 with "postgresql" identified as the failing component
 | REQ-OBS-024 | §7.4 | SHOULD | Integration |
 | REQ-OBS-025 | §7.4 | MUST | Unit |
 | REQ-OBS-026 | §7.4 | MUST | Unit |
+| REQ-OBS-027 | §7.4 | MUST | Unit |
+| REQ-OBS-028 | §7.4 | MUST | Unit |
+| REQ-OBS-029 | §7.4 | MUST | Integration |
+| REQ-OBS-030 | §7.4 | MUST | Integration |
+
+## G8 Review Council Findings (sustained)
+
+| Finding | Severity | Requirement | Change |
+| --- | --- | --- | --- |
+| F-003 | Minor | REQ-OBS-009 | Added status label allowlist + fallback to prevent unbounded cardinality |
+| F-017 | Minor | REQ-OBS-027 | Clarified default sampling = 10% (not 100% success); added test sampling guidance |
 
 ---
 
-> **Provenance**: Created 2026-03-25 from REQUIREMENTS-AGNOSTIC.md §7. EARS conversion per ADR-020. Updated 2026-03-26: added REQ-OBS-027–030 (trace sampling, OTel buffer overflow, queue trace propagation, readiness probe details) per PR Review Council.
+> **Provenance**: Created 2026-03-25 from REQUIREMENTS-AGNOSTIC.md §7. EARS conversion per ADR-020. Updated 2026-03-26: added REQ-OBS-027–030. Updated 2026-03-26: incorporated G8 sustained findings F-003, F-017 (living specs per AGENTS.md SHOULD #15).

@@ -60,6 +60,8 @@ rootLogger{service, workerId}
        └── fetchLogger{requestId}
 ```
 
+**G8 Finding F-004**: `wrapPino(instance)` is exported as a public API to allow test helpers and consumers to wrap external Pino instances without reimplementing the Logger adapter.
+
 Covers: REQ-OBS-001 to 007
 
 ## 3. Metrics Registry
@@ -80,6 +82,7 @@ interface MetricsRegistry {
 - Per-process isolated registry (new `Registry()` per instance) → REQ-OBS-017
 - Duration recorded only when `> 0` → REQ-OBS-010
 - Discovery count recorded only when `count > 0` → REQ-OBS-011
+- **G8 Finding F-003**: `status` label on `fetches_total` constrained to allowlist; unrecognised values mapped to `'unknown'` fallback → REQ-OBS-009
 
 ## 4. Metrics Server Routes
 
@@ -118,6 +121,8 @@ sequenceDiagram
 - Job queue instrumentation (BullMQ) for cross-job propagation → REQ-OBS-024, REQ-OBS-029
 - In-memory exporter for tests → REQ-OBS-025
 - Non-throwing shutdown → REQ-OBS-026
+- **G8 Finding F-015**: Tracer name in `extractAndStartSpan` is parameterised (default `'ipf-observability'`), not hardcoded
+- **G8 Finding F-017**: Default sampling rate is 10% — tests verifying span capture must pass `samplingRate: 1.0`
 
 ### Trace Sampling Strategy (REQ-OBS-027)
 
@@ -200,4 +205,15 @@ async function readinessCheck(): Promise<ReadinessResult> {
 
 ---
 
-> **Provenance**: Created 2026-03-25. SRE Agent design for observability per ADR-006/020. Updated 2026-03-26: added trace sampling strategy, OTel buffer overflow mitigation, job queue trace propagation, readiness probe design per PR Review Council.
+## G8 Review Council Findings (sustained)
+
+| Finding | Severity | Affects | Design Change |
+| --- | --- | --- | --- |
+| F-003 | Minor | §3 Metrics Registry | Added status label allowlist + `'unknown'` fallback |
+| F-004 | Minor | §2 Logger | `wrapPino` exported as public API |
+| F-015 | Minor | §5 Tracing | Tracer name parameterised in `extractAndStartSpan` |
+| F-017 | Minor | §5 Trace Sampling | Default 10% sampling; tests use `samplingRate: 1.0` |
+
+---
+
+> **Provenance**: Created 2026-03-25. SRE Agent design for observability per ADR-006/020. Updated 2026-03-26: added trace sampling strategy, OTel buffer overflow mitigation, job queue trace propagation, readiness probe design per PR Review Council. Updated 2026-03-26: incorporated G8 sustained findings F-003, F-004, F-015, F-017 (living specs per AGENTS.md SHOULD #15).
