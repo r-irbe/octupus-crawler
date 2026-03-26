@@ -20,29 +20,29 @@
 
 | # | Task | Status | Commit | Notes |
 | --- | --- | --- | --- | --- |
-| 0 | Scaffold packages/observability | `pending` | — | package.json, tsconfig, eslint, vitest |
-| 1 | T-OBS-001: Pino Logger adapter | `pending` | — | 5 levels + child |
-| 2 | T-OBS-002: JSON output + ISO 8601 | `pending` | — | Pino defaults |
-| 3 | T-OBS-003: Per-job child logger | `pending` | — | jobId, url, depth |
-| 4 | T-OBS-004: Request ID generation | `pending` | — | HTTP correlation |
-| 5 | T-OBS-005: NullLogger for tests | `pending` | — | No-op implementation |
-| 6 | T-OBS-006: CrawlMetrics adapter | `pending` | — | prom-client, per-process registry |
-| 7 | T-OBS-007: fetches_total counter | `pending` | — | status + error_kind labels |
-| 8 | T-OBS-008: fetch_duration_seconds histogram | `pending` | — | configurable buckets |
-| 9 | T-OBS-009: urls_discovered_total counter | `pending` | — | guard: count > 0 |
-| 10 | T-OBS-010: gauges (frontier, active, utilization) | `pending` | — | 3 gauges |
-| 11 | T-OBS-011: counters (stalled, restarts) | `pending` | — | 2 counters |
-| 12 | T-OBS-012: NullMetrics for tests | `pending` | — | No-op implementation |
+| 0 | Scaffold packages/observability | `done` | `8cc6910` | package.json, tsconfig, eslint, vitest |
+| 1 | T-OBS-001: Pino Logger adapter | `done` | `8cc6910` | 5 levels + child, wrapPino |
+| 2 | T-OBS-002: JSON output + ISO 8601 | `done` | `8cc6910` | pino.stdTimeFunctions.isoTime |
+| 3 | T-OBS-003: Per-job child logger | `done` | `8cc6910` | createJobLogger factory |
+| 4 | T-OBS-004: Request ID generation | `done` | `8cc6910` | crypto.randomUUID |
+| 5 | T-OBS-005: NullLogger for tests | `done` | `8cc6910` | Returns self from child() |
+| 6 | T-OBS-006: CrawlMetrics adapter | `done` | `8cc6910` | prom-client, per-process registry |
+| 7 | T-OBS-007: fetches_total counter | `done` | `8cc6910` | status + error_kind labels |
+| 8 | T-OBS-008: fetch_duration_seconds histogram | `done` | `8cc6910` | configurable buckets, guard > 0 |
+| 9 | T-OBS-009: urls_discovered_total counter | `done` | `8cc6910` | guard: count > 0 |
+| 10 | T-OBS-010: gauges (frontier, active, utilization) | `done` | `8cc6910` | 3 gauges |
+| 11 | T-OBS-011: counters (stalled, restarts) | `done` | `8cc6910` | 2 counters |
+| 12 | T-OBS-012: NullMetrics for tests | `done` | `8cc6910` | No-op implementation |
 
 ## Current State
 
 | Field | Value |
 | --- | --- |
-| Current task # | 0 (scaffold) |
-| Last completed gate | G4 (state tracker created) |
-| Guard function status | Not run yet |
-| Commits on branch | 0 |
-| Tests passing | N/A |
+| Current task # | Phase 1+2 COMPLETE. Next: G8 review, then Phase 3 (metrics server) |
+| Last completed gate | G6 (commit `8cc6910` — Phase 1+2) |
+| Guard function status | PASS — typecheck ✅ lint ✅ test ✅ (125 tests) |
+| Commits on branch | 1 (`8cc6910`) |
+| Tests passing | yes (125 tests: 65 core + 23 config + 37 observability) |
 | Blockers | None |
 
 ## Decisions Log
@@ -52,5 +52,5 @@
 
 ## Problems & Solutions
 
-| # | Problem | Solution | Task # |
-| --- | --- | --- | --- |
+| 1 | Pino `base` option rejects `undefined` with exactOptionalPropertyTypes | Build options object conditionally, only set `base` when defined | 1 |
+| 2 | `JobLoggerBindings` readonly interface doesn't satisfy `Record<string, unknown>` | Spread bindings: `{ ...bindings }` | 3 |
