@@ -1,0 +1,35 @@
+{
+  "name": "@ipf/crawl-pipeline",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./normalized-url": "./src/normalized-url.ts",
+    "./url-normalizer": "./src/url-normalizer.ts",
+    "./crawl-url-factory": "./src/crawl-url-factory.ts",
+    "./crawl-types": "./src/crawl-types.ts",
+    "./validate-stage": "./src/validate-stage.ts",
+    "./discover-stage": "./src/discover-stage.ts",
+    "./enqueue-stage": "./src/enqueue-stage.ts",
+    "./crawl-pipeline": "./src/crawl-pipeline.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src/",
+    "test": "vitest run",
+    "clean": "rm -rf dist .turbo"
+  },
+  "dependencies": {
+    "neverthrow": "^8.2.0",
+    "@ipf/core": "workspace:*"
+  },
+  "devDependencies": {
+    "@ipf/eslint-config": "workspace:*",
+    "@ipf/testing": "workspace:*",
+    "@fast-check/vitest": "^0.3.0",
+    "@types/node": "^25.5.0",
+    "typescript": "^6.0.0",
+    "vitest": "^4.0.0",
+    "eslint": "^10.0.0"
+  }
+}
