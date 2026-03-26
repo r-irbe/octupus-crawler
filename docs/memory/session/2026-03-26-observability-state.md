@@ -33,16 +33,19 @@
 | 10 | T-OBS-010: gauges (frontier, active, utilization) | `done` | `8cc6910` | 3 gauges |
 | 11 | T-OBS-011: counters (stalled, restarts) | `done` | `8cc6910` | 2 counters |
 | 12 | T-OBS-012: NullMetrics for tests | `done` | `8cc6910` | No-op implementation |
+| 13 | T-OBS-013: HTTP server /metrics /health /readyz | `done` | `b102bca` | Built-in Node.js HTTP server |
+| 14 | T-OBS-014: Readiness check (injectable) | `done` | `b102bca` | Default: self-ok |
+| 15 | T-OBS-015: 404/500 error handling | `done` | `b102bca` | Generic error body, no leaks |
 
 ## Current State
 
 | Field | Value |
 | --- | --- |
-| Current task # | Phase 1+2 COMPLETE + G8 fixes applied. Next: Phase 3 (metrics server) |
-| Last completed gate | G8 (PR Review Council — CHANGES REQUESTED → fixed → `f8e1dda`) |
-| Guard function status | PASS — typecheck ✅ lint ✅ test ✅ (127 tests) |
-| Commits on branch | 3 (`8cc6910`, `dc1a3c0`, `f8e1dda`) |
-| Tests passing | yes (127 tests: 65 core + 23 config + 39 observability) |
+| Current task # | Phase 1-3 COMPLETE. Next: G8 council review, then Phase 4 (distributed tracing) |
+| Last completed gate | G6 (commit `b102bca` — Phase 3) |
+| Guard function status | PASS — typecheck ✅ lint ✅ test ✅ (136 tests) |
+| Commits on branch | 5 (`8cc6910`, `dc1a3c0`, `f8e1dda`, `4b888c4`, `b102bca`) |
+| Tests passing | yes (136 tests: 65 core + 23 config + 48 observability) |
 | Blockers | None |
 
 ## Decisions Log
@@ -56,3 +59,4 @@
 | 2 | `JobLoggerBindings` readonly interface doesn't satisfy `Record<string, unknown>` | Spread bindings: `{ ...bindings }` | 3 |
 | 3 | G8-F-001: Test helper reimplemented wrapPino instead of using production code | Export `wrapPino`, test helper calls it directly | `f8e1dda` |
 | 4 | G8-F-003: Unbounded status label cardinality on fetches_total counter | Added allowlist + fallback to 'unknown' | `f8e1dda` |
+| 5 | `exactOptionalPropertyTypes` prevents passing optional param through to config object | Conditionally build config: `readinessCheck !== undefined ? { registry, readinessCheck } : { registry }` | `b102bca` |
