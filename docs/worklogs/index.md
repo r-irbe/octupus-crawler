@@ -18,6 +18,7 @@ Chronological work session logs documenting what was done, decisions made, and o
 | [2026-03-25: Implementation Postmortem](2026-03-25-implementation-postmortem.md) | Postmortem analysis of implementation practices and gate compliance | Complete | 2026-03-25 |
 | [2026-03-26: SSRF Guard Implementation](2026-03-26-ssrf-guard-implementation.md) | SSRF Guard: IP classification, DNS pinning, fail-closed policy, 51 tests | Complete | 2026-03-26 |
 | [2026-03-26: HTTP Fetching Implementation](2026-03-26-http-fetching-implementation.md) | HTTP Fetching: redirect loop, SSRF per-hop, politeness, stream processing, 63 tests | Complete | 2026-03-26 |
+| [2026-03-26: Crawl Pipeline Implementation](2026-03-26-crawl-pipeline.md) | Crawl Pipeline: URL normalization, pipeline stages, link discovery, 64 tests (60 unit + 4 property) | Complete | 2026-03-26 |
 
 ## Index
 
