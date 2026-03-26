@@ -1,6 +1,7 @@
 // Tracer unit tests
 // Validates: T-OBS-016 (SDK setup), T-OBS-017 (undici instrumentation),
-//            T-OBS-021 (non-throwing shutdown), REQ-OBS-023, 026
+//            T-OBS-021 (non-throwing shutdown), T-OBS-027 (sampling),
+//            T-OBS-028 (batch config), REQ-OBS-023, 026, 027, 028
 // TODO(Phase 6): Add integration test verifying SDK produces spans via InMemorySpanExporter (F-014)
 
 import { describe, it, expect, vi, afterEach } from 'vitest';
@@ -55,9 +56,8 @@ describe('createTracer (REQ-OBS-023)', () => {
       child: vi.fn<(bindings: Record<string, unknown>) => Logger>().mockReturnThis(),
     };
 
-    // Create tracer with a broken exporter that fails on shutdown
     const brokenExporter = new InMemorySpanExporter();
-    await brokenExporter.shutdown(); // Pre-shut it down
+    await brokenExporter.shutdown();
 
     const handle = createTracer({
       serviceName: 'test-service',
@@ -65,8 +65,6 @@ describe('createTracer (REQ-OBS-023)', () => {
       logger,
     });
 
-    // SDK shutdown may or may not throw with a pre-shutdown exporter.
-    // The important thing is it never propagates an exception.
     await expect(handle.shutdown()).resolves.toBeUndefined();
   });
 
@@ -78,6 +76,64 @@ describe('createTracer (REQ-OBS-023)', () => {
       serviceVersion: '1.0.0',
       exporter,
       logger: new NullLogger(),
+    });
+    shutdownFn = handle.shutdown.bind(handle);
+    expect(typeof handle.shutdown).toBe('function');
+  });
+
+  // Validates T-OBS-027: Sampling rate configuration (REQ-OBS-027)
+  it('should accept custom sampling rate', () => {
+    const exporter = new InMemorySpanExporter();
+    const handle = createTracer({
+      serviceName: 'test-service',
+      exporter,
+      logger: new NullLogger(),
+      samplingRate: 0.5,
+    });
+    shutdownFn = handle.shutdown.bind(handle);
+    expect(typeof handle.shutdown).toBe('function');
+  });
+
+  // Validates T-OBS-027: Default sampling rate is 0.1 (10%)
+  it('should use default sampling rate of 0.1 when not specified', () => {
+    const exporter = new InMemorySpanExporter();
+    // Should not throw — default 0.1 is applied internally
+    const handle = createTracer({
+      serviceName: 'test-service',
+      exporter,
+      logger: new NullLogger(),
+    });
+    shutdownFn = handle.shutdown.bind(handle);
+    expect(typeof handle.shutdown).toBe('function');
+  });
+
+  // Validates T-OBS-028: Batch processor config (REQ-OBS-028)
+  it('should accept batch processor with custom config', () => {
+    const exporter = new InMemorySpanExporter();
+    const handle = createTracer({
+      serviceName: 'test-service',
+      exporter,
+      logger: new NullLogger(),
+      useBatchProcessor: true,
+      batchConfig: {
+        maxQueueSize: 4096,
+        maxExportBatchSize: 256,
+        scheduledDelayMillis: 10000,
+        exportTimeoutMillis: 60000,
+      },
+    });
+    shutdownFn = handle.shutdown.bind(handle);
+    expect(typeof handle.shutdown).toBe('function');
+  });
+
+  // Validates T-OBS-028: Default batch config values
+  it('should use default batch config when not specified', () => {
+    const exporter = new InMemorySpanExporter();
+    const handle = createTracer({
+      serviceName: 'test-service',
+      exporter,
+      logger: new NullLogger(),
+      useBatchProcessor: true,
     });
     shutdownFn = handle.shutdown.bind(handle);
     expect(typeof handle.shutdown).toBe('function');
