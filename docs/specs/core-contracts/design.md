@@ -329,4 +329,17 @@ Covers: REQ-ARCH-018
 
 ---
 
-> **Provenance**: Created 2026-03-25. Architect Agent design for core contracts per ADR-015/016/020.
+## G8 Review Council Findings (sustained)
+
+| Finding | Severity | Affects | Design Change |
+| --- | --- | --- | --- |
+| AR-6 | Minor | §6 Package Mapping | Package export entries deduplicated, missing entries added |
+| S-1/P4 | Major | §4 Composition Root | `resetCompositionRoot()` annotated `@internal`; `toSafeLog()` + `SENSITIVE_FIELDS` added to config (T-ARCH-032) |
+| AC-1/P4 | Minor | §5 Disposable | `DisposableEntry` extends `Disposable` interface |
+| AR-2/P4 | Major | §4 Composition Root | `createCompositionRoot` made async; cleanup awaited (not fire-and-forget) |
+| S-2 | Minor | §3 Error Handling | `stripUrlCredentials()` integrated in all error constructors (T-ARCH-033) |
+| P-1/P6 | Minor | §3 Static Analysis | ESLint integration test results cached per-package |
+
+---
+
+> **Provenance**: Created 2026-03-25. Architect Agent design for core contracts per ADR-015/016/020. Updated 2026-03-26: incorporated G8 sustained findings (living specs per AGENTS.md SHOULD #15).

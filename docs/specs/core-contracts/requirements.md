@@ -159,4 +159,15 @@ And the process exits with code 1
 
 ---
 
-> **Provenance**: Created 2026-03-25 from REQUIREMENTS-AGNOSTIC.md §2. EARS conversion per ADR-020. Updated 2026-03-25: added §6 (REQ-ARCH-016–018) per PR Review Council finding F-CC-013 (singleton guard), F-CC-022 (startup failure).
+## G8 Review Council Findings (sustained)
+
+| Finding | Severity | Requirement | Change |
+| --- | --- | --- | --- |
+| S-1 | Major | REQ-ARCH-014 | Config must provide `toSafeLog()` + `SENSITIVE_FIELDS` for secret redaction |
+| S-2 | Minor | REQ-ARCH-013 | Error constructors must strip credentials from URLs before embedding in message |
+| AR-2 | Major | REQ-ARCH-006 | Composition root factory must be async; cleanup must be awaited |
+| AC-1 | Minor | REQ-ARCH-018 | Composition root disposable entries must extend `Disposable` interface |
+
+---
+
+> **Provenance**: Created 2026-03-25 from REQUIREMENTS-AGNOSTIC.md §2. EARS conversion per ADR-020. Updated 2026-03-25: added §6 (REQ-ARCH-016–018) per PR Review Council finding F-CC-013 (singleton guard), F-CC-022 (startup failure). Updated 2026-03-26: incorporated G8 sustained findings (living specs per AGENTS.md SHOULD #15).

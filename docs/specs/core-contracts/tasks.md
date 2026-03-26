@@ -74,4 +74,17 @@
 
 ---
 
-> **Provenance**: Created 2026-03-25. Implementation Agent task decomposition per ADR-020. Updated 2026-03-25: added Phase 5 (REQ-ARCH-016–018 singleton guard, cleanup, Disposable).
+## G8 Review Council Findings (sustained)
+
+| Finding | Phase | Severity | Impact | Resolution |
+| --- | --- | --- | --- | --- |
+| AR-6 | 1 | Minor | Missing/duplicate package exports | Deduplicated, added missing entries |
+| S-1/P4 | 4 | Major | `resetCompositionRoot()` exposed publicly | `@internal` JSDoc; `toSafeLog()` + `SENSITIVE_FIELDS` added (T-ARCH-032) |
+| AC-1/P4 | 4 | Minor | `DisposableEntry` didn't extend `Disposable` | Fixed to extend interface |
+| AR-2/P4 | 4 | Major | Fire-and-forget cleanup in composition root | `createCompositionRoot` made async, cleanup awaited |
+| S-2 | 1 | Minor | URLs in error messages could leak credentials | `stripUrlCredentials()` in all error constructors (T-ARCH-033) |
+| P-1/P6 | 6 | Minor | ESLint integration tests slow without cache | Results cached per-package |
+
+---
+
+> **Provenance**: Created 2026-03-25. Implementation Agent task decomposition per ADR-020. Updated 2026-03-25: added Phase 5 (REQ-ARCH-016–018 singleton guard, cleanup, Disposable). Updated 2026-03-26: added G8 sustained findings table (living specs per AGENTS.md SHOULD #15).
