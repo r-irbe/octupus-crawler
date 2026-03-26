@@ -8,7 +8,8 @@
     "./null-logger": "./src/null-logger.ts",
     "./request-id": "./src/request-id.ts",
     "./prom-metrics": "./src/prom-metrics.ts",
-    "./null-metrics": "./src/null-metrics.ts"
+    "./null-metrics": "./src/null-metrics.ts",
+    "./metrics-server": "./src/metrics-server.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
