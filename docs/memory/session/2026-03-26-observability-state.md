@@ -42,17 +42,21 @@
 | 19 | T-OBS-019: Trace context for log correlation | `done` | `c8c816c` | getTraceContext helper |
 | 20 | T-OBS-020: In-memory span exporter | `done` | `c8c816c` | Re-export OTel built-in |
 | 21 | T-OBS-021: Non-throwing tracer shutdown | `done` | `c8c816c` | catch + log, never propagate |
+| 22 | T-OBS-027: Parent-based sampling | `done` | `ed12121` | ParentBasedSampler + TraceIdRatio, default 10% |
+| 23 | T-OBS-028: Batch processor config | `done` | `ed12121` | BatchSpanProcessor with configurable params |
+| 24 | T-OBS-029: BullMQ trace propagation | `blocked` | — | Needs url-frontier spec / BullMQ |
+| 25 | T-OBS-030: Enhanced /readyz | `blocked` | — | Needs Redis/PG infrastructure |
 
 ## Current State
 
 | Field | Value |
 | --- | --- |
-| Current task # | Phase 1-4 COMPLETE. Next: G8 council review, then Phase 5 (tracing enhancements) |
-| Last completed gate | G6 (commit `c8c816c` — Phase 4) |
-| Guard function status | PASS — typecheck ✅ lint ✅ test ✅ (145 tests) |
-| Commits on branch | 7 (`8cc6910`..⁠`c8c816c`) |
-| Tests passing | yes (145 tests: 65 core + 23 config + 57 observability) |
-| Blockers | None |
+| Current task # | Phase 5 COMPLETE (partial — 2 blocked). Next: G8 council, then Phase 6 tests |
+| Last completed gate | G6 (commit `ed12121` — Phase 5) |
+| Guard function status | PASS — typecheck ✅ lint ✅ test ✅ (149 tests) |
+| Commits on branch | 10 (`8cc6910`..`ed12121`) |
+| Tests passing | yes (149 tests: 65 core + 23 config + 61 observability) |
+| Blockers | T-OBS-029 (BullMQ), T-OBS-030 (Redis/PG) |
 
 ## Decisions Log
 

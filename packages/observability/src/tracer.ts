@@ -39,6 +39,10 @@ export interface BatchProcessorConfig {
   readonly exportTimeoutMillis?: number;
 }
 
+/**
+ * Default trace sampling rate (10%). Tests that verify span capture should
+ * pass `samplingRate: 1.0` to avoid sampling-induced flakiness.
+ */
 const DEFAULT_SAMPLING_RATE = 0.1;
 const DEFAULT_MAX_QUEUE_SIZE = 2048;
 
