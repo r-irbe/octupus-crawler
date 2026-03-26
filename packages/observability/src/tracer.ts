@@ -48,6 +48,7 @@ const DEFAULT_MAX_QUEUE_SIZE = 2048;
 
 export interface TracerHandle {
   shutdown(): Promise<void>;
+  forceFlush(): Promise<void>;
 }
 
 export function createTracer(config: TracerConfig): TracerHandle {
@@ -96,6 +97,15 @@ export function createTracer(config: TracerConfig): TracerHandle {
   sdk.start();
 
   return {
+    // Flush pending spans without shutting down (useful for tests with BatchSpanProcessor)
+    async forceFlush(): Promise<void> {
+      try {
+        await spanProcessor.forceFlush();
+      } catch (err: unknown) {
+        const message = err instanceof Error ? err.message : String(err);
+        logger.error('tracer flush failed', { error: message });
+      }
+    },
     // T-OBS-021: Non-throwing shutdown (REQ-OBS-026)
     async shutdown(): Promise<void> {
       try {
