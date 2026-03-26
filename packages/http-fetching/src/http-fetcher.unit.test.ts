@@ -4,7 +4,8 @@
 import { describe, it, expect } from 'vitest';
 import { Readable } from 'node:stream';
 import { httpFetch } from './http-fetcher.js';
-import type { HttpClient, FetcherConfig, SsrfCheckResult } from './http-fetcher.js';
+import type { HttpClient, FetcherConfig } from './http-fetcher.js';
+import type { SsrfValidationResult } from '@ipf/ssrf-guard/ssrf-types';
 import type { FetchMetrics } from './fetch-types.js';
 
 // --- Test helpers ---
@@ -28,7 +29,7 @@ function makeClient(
   };
 }
 
-function passAllValidator(): (_url: URL) => Promise<SsrfCheckResult> {
+function passAllValidator(): (_url: URL) => Promise<SsrfValidationResult | null> {
   return () => Promise.resolve(null);
 }
 
@@ -190,7 +191,7 @@ describe('httpFetch SSRF integration', () => {
       },
     };
 
-    const validator = (): Promise<SsrfCheckResult> => Promise.resolve({
+    const validator = (): Promise<SsrfValidationResult | null> => Promise.resolve({
       _tag: 'allowed' as const,
       pinnedIp: '93.184.216.34',
       originalHost: 'example.com',
@@ -209,7 +210,7 @@ describe('httpFetch SSRF integration', () => {
       body: bodyFrom('ok'),
     }));
 
-    const validator = (): Promise<SsrfCheckResult> => Promise.resolve({
+    const validator = (): Promise<SsrfValidationResult | null> => Promise.resolve({
       _tag: 'blocked' as const,
       originalHost: 'evil.com',
       reason: 'private_ipv4',
@@ -278,6 +279,32 @@ describe('httpFetch HTTP errors', () => {
     expect(result.isErr()).toBe(true);
     if (result.isErr()) {
       expect(result.error.kind).toBe('body_too_large');
+    }
+  });
+});
+
+// --- Timeout (F-07 review finding) ---
+
+describe('httpFetch timeout', () => {
+  it('returns timeout error when client exceeds timeoutMs', async () => {
+    const slowClient: HttpClient = {
+      request: (_url, opts) =>
+        new Promise((_resolve, reject) => {
+          // AbortSignal.timeout fires → abort event rejects the request
+          opts.signal?.addEventListener('abort', () => {
+            reject(new DOMException('signal timed out', 'TimeoutError'));
+          });
+        }),
+    };
+
+    const config = { ...BASE_CONFIG, timeoutMs: 50 };
+    const result = await httpFetch('https://slow.com/', slowClient, config, passAllValidator());
+    expect(result.isErr()).toBe(true);
+    if (result.isErr()) {
+      expect(result.error.kind).toBe('timeout');
+      if (result.error.kind === 'timeout') {
+        expect(result.error.timeoutMs).toBe(50);
+      }
     }
   });
 });

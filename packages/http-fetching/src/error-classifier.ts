@@ -87,6 +87,14 @@ export function classifyBodyTooLarge(maxBytes: number, actualBytes: number, url:
   return createBodyTooLargeError({ url, maxBytes, actualBytes });
 }
 
+/** Classify an outer catch — timeout-aware (F-03: preserves timeoutMs) */
+export function classifyTimeout(cause: unknown, url: string, timeoutMs: number): FetchError {
+  if (isAbortError(cause)) {
+    return createTimeoutError({ url, timeoutMs });
+  }
+  return classifyError(cause, url);
+}
+
 // --- Internal helpers ---
 
 function isAbortError(cause: unknown): cause is DOMException | Error {

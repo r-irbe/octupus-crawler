@@ -8,6 +8,7 @@ import {
   classifySsrfBlocked,
   classifyTooManyRedirects,
   classifyBodyTooLarge,
+  classifyTimeout,
 } from './error-classifier.js';
 
 const URL = 'https://example.com/page';
@@ -112,5 +113,22 @@ describe('classifyBodyTooLarge', () => {
       expect(result.maxBytes).toBe(1024);
       expect(result.actualBytes).toBe(2048);
     }
+  });
+});
+
+describe('classifyTimeout', () => {
+  it('returns timeout with timeoutMs for abort errors', () => {
+    const abort = new DOMException('signal timed out', 'TimeoutError');
+    const result = classifyTimeout(abort, URL, 5000);
+    expect(result.kind).toBe('timeout');
+    if (result.kind === 'timeout') {
+      expect(result.timeoutMs).toBe(5000);
+    }
+  });
+
+  it('delegates to classifyError for non-abort errors', () => {
+    const error = Object.assign(new Error('broken'), { code: 'ECONNREFUSED' });
+    const result = classifyTimeout(error, URL, 5000);
+    expect(result.kind).toBe('connection_refused');
   });
 });

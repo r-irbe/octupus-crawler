@@ -5,6 +5,7 @@ import type { Readable } from 'node:stream';
 import { ok, err, type Result } from 'neverthrow';
 import type { AsyncResult } from '@ipf/core/types/result';
 import type { FetchError } from '@ipf/core/errors/fetch-error';
+import type { SsrfValidationResult } from '@ipf/ssrf-guard/ssrf-types';
 import type { FetchMetrics } from './fetch-types.js';
 import { NULL_FETCH_METRICS } from './fetch-types.js';
 import {
@@ -13,6 +14,7 @@ import {
   classifyTooManyRedirects,
   classifySsrfBlocked,
   classifyHttpStatus,
+  classifyTimeout,
 } from './error-classifier.js';
 import { checkContentLength, readBodyStream, drainBody } from './stream-processor.js';
 
@@ -36,12 +38,11 @@ export type HttpResponse = {
   readonly body: Readable;
 };
 
-/** SSRF validator — returns allowed (with pinned IP) or blocked */
-export type SsrfValidator = (url: URL) => Promise<SsrfCheckResult>;
-export type SsrfCheckResult =
-  | { readonly _tag: 'allowed'; readonly pinnedIp: string; readonly originalHost: string }
-  | { readonly _tag: 'blocked'; readonly reason: string }
-  | null;
+/**
+ * SSRF validator — returns SsrfValidationResult or null (no validation).
+ * Contract: @ipf/ssrf-guard/ssrf-types.SsrfValidationResult
+ */
+export type SsrfValidator = (url: URL) => Promise<SsrfValidationResult | null>;
 
 export type FetcherConfig = {
   readonly userAgent: string;
@@ -63,6 +64,9 @@ export type FetchResultData = {
 const REDIRECT_CODES = new Set([301, 302, 303, 307, 308]);
 
 // --- Fetcher ---
+// NOTE: Politeness (PolitenessController.acquire/release) is NOT called here.
+// Callers (e.g., crawl-pipeline) must orchestrate politeness before/after httpFetch.
+// See design.md §1 for the full REQ → PC → SSRF → HC → SP flow.
 
 export async function httpFetch(
   url: string,
@@ -135,7 +139,7 @@ export async function httpFetch(
       return await readResponse(res, url, currentUrl, startMs, config, metrics);
     }
   } catch (cause: unknown) {
-    return fail(classifyError(cause, url), startMs, metrics);
+    return fail(classifyTimeout(cause, url, config.timeoutMs), startMs, metrics);
   }
 }
 
