@@ -16,6 +16,8 @@ Chronological work session logs documenting what was done, decisions made, and o
 | [2026-03-26: Core Contracts Implementation](2026-03-26-core-contracts-implementation.md) | Full core-contracts spec: 63 files, 88 tests, 18 commits, Phases 0–6 | Complete | 2026-03-26 |
 | [2026-03-26: Observability Implementation](2026-03-26-observability-implementation.md) | Observability spec: 9 production + 10 test files, 63 tests, 14 commits, Phases 1–6 | Complete | 2026-03-26 |
 | [2026-03-25: Implementation Postmortem](2026-03-25-implementation-postmortem.md) | Postmortem analysis of implementation practices and gate compliance | Complete | 2026-03-25 |
+| [2026-03-26: SSRF Guard Implementation](2026-03-26-ssrf-guard-implementation.md) | SSRF Guard: IP classification, DNS pinning, fail-closed policy, 51 tests | Complete | 2026-03-26 |
+| [2026-03-26: HTTP Fetching Implementation](2026-03-26-http-fetching-implementation.md) | HTTP Fetching: redirect loop, SSRF per-hop, politeness, stream processing, 63 tests | Complete | 2026-03-26 |
 
 ## Index
 
@@ -29,6 +31,8 @@ Chronological work session logs documenting what was done, decisions made, and o
 - [2026-03-26: Core Contracts Implementation](2026-03-26-core-contracts-implementation.md) — Implemented core-contracts spec: 63 files, 88 tests, 4 packages (core, config, eslint-config, testing), error taxonomy, contracts, config, composition root, static analysis, architecture compliance tests
 - [2026-03-26: Observability Implementation](2026-03-26-observability-implementation.md) — Implemented observability spec: packages/observability (Pino logger, Prometheus metrics, HTTP metrics server, OTel tracing), 63 tests, 14 commits, 5 G8 reviews, 7 sustained findings incorporated into living specs
 - [2026-03-25: Implementation Postmortem](2026-03-25-implementation-postmortem.md) — Postmortem analysis of implementation practices and gate compliance
+- [2026-03-26: SSRF Guard Implementation](2026-03-26-ssrf-guard-implementation.md) — Implemented @ipf/ssrf-guard: RFC 6890 IP classification, DNS pinning, fail-closed policy, 51 tests (retroactive worklog)
+- [2026-03-26: HTTP Fetching Implementation](2026-03-26-http-fetching-implementation.md) — Implemented @ipf/http-fetching: manual redirect loop, per-hop SSRF, politeness controller, stream processing, error classification, 63 tests, 4 review findings fixed
 
 ---
 

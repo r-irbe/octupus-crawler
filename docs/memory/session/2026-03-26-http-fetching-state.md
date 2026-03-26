@@ -29,17 +29,17 @@
 | 7 | HTTP fetcher (main module) | `done` | 4a3b3b3 | T-FETCH-005 to 011, T-FETCH-030, T-FETCH-031 |
 | 8 | Unit tests | `done` | 4a3b3b3 | 60 tests: T-FETCH-018 to 024, T-FETCH-032 to 036 |
 | 9 | Guard chain + commit | `done` | 4a3b3b3 | typecheck 6/6, lint 6/6, test 6/6 (282 total) |
-| 10 | Review + worklog + report | `pending` | — | G8+G9+G10 |
+| 10 | Review + worklog + report | `done` | — | G8 review: 1 Major + 3 Minor fixed. G9 worklogs created. |
 
 ## Current State
 
 | Field | Value |
 | --- | --- |
 | Current task # | 10 |
-| Last completed gate | G7 (state updated) |
-| Guard function status | `pass` — typecheck 6/6, lint 6/6, test 6/6 (282 total) |
-| Commits on branch | 2 (f31c85b scaffold, 4a3b3b3 implementation) |
-| Tests passing | 282 (222 existing + 60 http-fetching) |
+| Last completed gate | G10 (report) |
+| Guard function status | `pass` — typecheck 6/6, lint 6/6, test 6/6 (285 total) |
+| Commits on branch | 4 (f31c85b scaffold, 4a3b3b3 impl, 5b8265a state, 5f56529 review) |
+| Tests passing | 285 (222 existing + 63 http-fetching) |
 | Blockers | none |
 
 ## Decisions Log
