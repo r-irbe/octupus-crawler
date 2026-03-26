@@ -1,6 +1,7 @@
 // Tracer unit tests
 // Validates: T-OBS-016 (SDK setup), T-OBS-017 (undici instrumentation),
 //            T-OBS-021 (non-throwing shutdown), REQ-OBS-023, 026
+// TODO(Phase 6): Add integration test verifying SDK produces spans via InMemorySpanExporter (F-014)
 
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import { createTracer } from './tracer.js';

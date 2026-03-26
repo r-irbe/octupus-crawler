@@ -29,9 +29,10 @@ export function injectTraceContext(carrier: TraceCarrier): TraceCarrier {
 export function extractAndStartSpan(
   carrier: TraceCarrier,
   spanName: string,
+  tracerName: string = 'ipf-observability',
 ): { span: Span; end: () => void } {
   const parentContext = propagation.extract(context.active(), carrier);
-  const tracer = trace.getTracer('ipf-job-queue');
+  const tracer = trace.getTracer(tracerName);
   const span = tracer.startSpan(
     spanName,
     { kind: SpanKind.CONSUMER },
