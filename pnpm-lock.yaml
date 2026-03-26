@@ -134,6 +134,37 @@ importers:
         specifier: ^4.0.0
         version: 4.1.1(@opentelemetry/api@1.9.1)(@types/node@25.5.0)(vite@7.3.1(@types/node@25.5.0)(yaml@2.8.3))
 
+  packages/ssrf-guard:
+    dependencies:
+      neverthrow:
+        specifier: ^8.1.1
+        version: 8.2.0
+    devDependencies:
+      '@fast-check/vitest':
+        specifier: ^0.2.0
+        version: 0.2.4(vitest@4.1.1(@opentelemetry/api@1.9.1)(@types/node@25.5.0)(vite@7.3.1(@types/node@25.5.0)(yaml@2.8.3)))
+      '@ipf/eslint-config':
+        specifier: workspace:*
+        version: link:../eslint-config
+      '@ipf/testing':
+        specifier: workspace:*
+        version: link:../testing
+      '@types/node':
+        specifier: ^25.5.0
+        version: 25.5.0
+      eslint:
+        specifier: ^10.0.0
+        version: 10.1.0
+      fast-check:
+        specifier: ^4.0.0
+        version: 4.6.0
+      typescript:
+        specifier: ^6.0.0
+        version: 6.0.2
+      vitest:
+        specifier: ^4.0.0
+        version: 4.1.1(@opentelemetry/api@1.9.1)(@types/node@25.5.0)(vite@7.3.1(@types/node@25.5.0)(yaml@2.8.3))
+
   packages/testing:
     dependencies:
       '@fast-check/vitest':
@@ -349,6 +380,11 @@ packages:
   '@eslint/plugin-kit@0.6.1':
     resolution: {integrity: sha512-iH1B076HoAshH1mLpHMgwdGeTs0CYwL0SPMkGuSebZrwBp16v415e9NZXg2jtrqPVQjf6IANe2Vtlr5KswtcZQ==}
     engines: {node: ^20.19.0 || ^22.13.0 || >=24}
+
+  '@fast-check/vitest@0.2.4':
+    resolution: {integrity: sha512-Ilcr+JAIPhb1s6FRm4qoglQYSGXXrS+zAupZeNuWAA3qHVGDA1d1Gb84Hb/+otL3GzVZjFJESg5/1SfIvrgssA==}
+    peerDependencies:
+      vitest: ^1 || ^2 || ^3 || ^4
 
   '@fast-check/vitest@0.3.0':
     resolution: {integrity: sha512-mXxAu7DJtzwSUeOMecZibq/403b8uX1/dWWXXCBgb+j9ERWuN9Hvr6usId+9ivdQ+tJl8H6o+CMv71BmjaENRQ==}
@@ -1744,6 +1780,11 @@ snapshots:
     dependencies:
       '@eslint/core': 1.1.1
       levn: 0.4.1
+
+  '@fast-check/vitest@0.2.4(vitest@4.1.1(@opentelemetry/api@1.9.1)(@types/node@25.5.0)(vite@7.3.1(@types/node@25.5.0)(yaml@2.8.3)))':
+    dependencies:
+      fast-check: 4.6.0
+      vitest: 4.1.1(@opentelemetry/api@1.9.1)(@types/node@25.5.0)(vite@7.3.1(@types/node@25.5.0)(yaml@2.8.3))
 
   '@fast-check/vitest@0.3.0(vitest@4.1.1(@opentelemetry/api@1.9.1)(@types/node@25.5.0)(vite@7.3.1(@types/node@25.5.0)(yaml@2.8.3)))':
     dependencies:

@@ -1,0 +1,30 @@
+{
+  "name": "@ipf/ssrf-guard",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./ip-range-checker": "./src/ip-range-checker.ts",
+    "./ssrf-validator": "./src/ssrf-validator.ts",
+    "./ssrf-types": "./src/ssrf-types.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src/",
+    "test": "vitest run",
+    "clean": "rm -rf dist .turbo"
+  },
+  "dependencies": {
+    "neverthrow": "^8.1.1"
+  },
+  "devDependencies": {
+    "@ipf/eslint-config": "workspace:*",
+    "@ipf/testing": "workspace:*",
+    "@fast-check/vitest": "^0.2.0",
+    "@types/node": "^25.5.0",
+    "fast-check": "^4.0.0",
+    "typescript": "^6.0.0",
+    "vitest": "^4.0.0",
+    "eslint": "^10.0.0"
+  }
+}
