@@ -1,11 +1,13 @@
 // PinoLogger unit tests
 // Validates: T-OBS-001 (5 levels + child), T-OBS-002 (JSON + ISO 8601),
 //            T-OBS-003 (per-job child), REQ-OBS-001..004
+// G8-F-001: Test helper uses production wrapPino — not a reimplementation
 
 import { describe, it, expect } from 'vitest';
 import pino from 'pino';
 import { Writable } from 'node:stream';
-import { createPinoLogger, createJobLogger } from './pino-logger.js';
+import { wrapPino, createPinoLogger, createJobLogger } from './pino-logger.js';
+import type { Logger } from '@ipf/core/contracts/logger';
 
 interface LogRecord {
   level: number;
@@ -17,7 +19,7 @@ interface LogRecord {
 function createCapturingLogger(
   level: string = 'debug',
   initialBindings?: Record<string, unknown>,
-): { logger: ReturnType<typeof createPinoLogger>; getRecords: () => LogRecord[] } {
+): { logger: Logger; getRecords: () => LogRecord[] } {
   const records: LogRecord[] = [];
   const stream = new Writable({
     write(chunk: Buffer, _encoding: string, callback: () => void): void {
@@ -33,78 +35,8 @@ function createCapturingLogger(
   if (initialBindings !== undefined) {
     pinoOptions.base = initialBindings;
   }
-  const pinoInstance = pino(
-    pinoOptions,
-    stream,
-  );
-
-  // Use the internal wrapPino pattern — create via the public API
-  // and replace the underlying instance. Instead, we construct the
-  // logger object directly to test the wrapping behavior.
-  const logger = {
-    debug(msg: string, bindings?: Record<string, unknown>): void {
-      if (bindings !== undefined) {
-        pinoInstance.debug(bindings, msg);
-      } else {
-        pinoInstance.debug(msg);
-      }
-    },
-    info(msg: string, bindings?: Record<string, unknown>): void {
-      if (bindings !== undefined) {
-        pinoInstance.info(bindings, msg);
-      } else {
-        pinoInstance.info(msg);
-      }
-    },
-    warn(msg: string, bindings?: Record<string, unknown>): void {
-      if (bindings !== undefined) {
-        pinoInstance.warn(bindings, msg);
-      } else {
-        pinoInstance.warn(msg);
-      }
-    },
-    error(msg: string, bindings?: Record<string, unknown>): void {
-      if (bindings !== undefined) {
-        pinoInstance.error(bindings, msg);
-      } else {
-        pinoInstance.error(msg);
-      }
-    },
-    fatal(msg: string, bindings?: Record<string, unknown>): void {
-      if (bindings !== undefined) {
-        pinoInstance.fatal(bindings, msg);
-      } else {
-        pinoInstance.fatal(msg);
-      }
-    },
-    child(bindings: Record<string, unknown>): ReturnType<typeof createPinoLogger> {
-      const childInstance = pinoInstance.child(bindings);
-      return createChildWrapper(childInstance);
-    },
-  };
-
-  function createChildWrapper(instance: pino.Logger): ReturnType<typeof createPinoLogger> {
-    return {
-      debug(msg: string, bindings?: Record<string, unknown>): void {
-        if (bindings !== undefined) { instance.debug(bindings, msg); } else { instance.debug(msg); }
-      },
-      info(msg: string, bindings?: Record<string, unknown>): void {
-        if (bindings !== undefined) { instance.info(bindings, msg); } else { instance.info(msg); }
-      },
-      warn(msg: string, bindings?: Record<string, unknown>): void {
-        if (bindings !== undefined) { instance.warn(bindings, msg); } else { instance.warn(msg); }
-      },
-      error(msg: string, bindings?: Record<string, unknown>): void {
-        if (bindings !== undefined) { instance.error(bindings, msg); } else { instance.error(msg); }
-      },
-      fatal(msg: string, bindings?: Record<string, unknown>): void {
-        if (bindings !== undefined) { instance.fatal(bindings, msg); } else { instance.fatal(msg); }
-      },
-      child(b: Record<string, unknown>): ReturnType<typeof createPinoLogger> {
-        return createChildWrapper(instance.child(b));
-      },
-    };
-  }
+  const pinoInstance = pino(pinoOptions, stream);
+  const logger = wrapPino(pinoInstance);
 
   return { logger, getRecords: (): LogRecord[] => records };
 }

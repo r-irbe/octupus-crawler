@@ -22,7 +22,7 @@ export function createPinoLogger(config: PinoLoggerConfig): Logger {
   return wrapPino(pinoInstance);
 }
 
-function wrapPino(instance: pino.Logger): Logger {
+export function wrapPino(instance: pino.Logger): Logger {
   return {
     debug(msg: string, bindings?: Record<string, unknown>): void {
       if (bindings !== undefined) {

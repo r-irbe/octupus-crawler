@@ -9,6 +9,10 @@ import {
 } from 'prom-client';
 import type { CrawlMetrics } from '@ipf/core/contracts/crawl-metrics';
 
+// G8-F-003: Allowlist prevents unbounded label cardinality (Prometheus anti-pattern)
+const ALLOWED_FETCH_STATUSES = new Set(['success', 'error', 'timeout', 'blocked', 'skipped']);
+const FALLBACK_STATUS = 'unknown';
+
 export interface PromMetricsConfig {
   readonly prefix?: string;
   readonly durationBuckets?: readonly number[];
@@ -89,7 +93,8 @@ export function createPromMetrics(config?: PromMetricsConfig): PromMetricsHandle
 
   const metrics: CrawlMetrics = {
     recordFetch(status: string, errorKind?: string): void {
-      const labels: Record<string, string> = { status };
+      const safeStatus = ALLOWED_FETCH_STATUSES.has(status) ? status : FALLBACK_STATUS;
+      const labels: Record<string, string> = { status: safeStatus };
       if (errorKind !== undefined) {
         labels['error_kind'] = errorKind;
       }

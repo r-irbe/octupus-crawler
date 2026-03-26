@@ -63,6 +63,23 @@ describe('fetches_total (REQ-OBS-009)', () => {
     const output = await getMetricValue('test_fetches_total');
     expect(output).toContain('error_kind="timeout"');
   });
+
+  // G8-F-006: Verify error_kind label absent when not provided
+  it('should not include error_kind label when omitted', async () => {
+    handle.metrics.recordFetch('success');
+    const output = await getMetricValue('test_fetches_total');
+    const successLine = output.split('\n').find((l) => l.includes('status="success"'));
+    expect(successLine).toBeDefined();
+    expect(successLine).not.toContain('error_kind');
+  });
+
+  // G8-F-003: Status allowlist prevents label cardinality explosion
+  it('should normalize unknown status to fallback', async () => {
+    handle.metrics.recordFetch('arbitrary-value');
+    const output = await getMetricValue('test_fetches_total');
+    expect(output).toContain('status="unknown"');
+    expect(output).not.toContain('status="arbitrary-value"');
+  });
 });
 
 // Validates T-OBS-008: fetch_duration_seconds histogram (REQ-OBS-010)
