@@ -22,24 +22,24 @@
 | --- | --- | --- | --- | --- |
 | 1 | Package scaffold (package.json, tsconfig, vitest) | `done` | — | Created in prior session |
 | 2 | fetch-types.ts (FetchMetrics contract) | `done` | — | Placeholder created |
-| 3 | LRU Map implementation | `pending` | — | T-FETCH-001 |
-| 4 | Politeness controller | `pending` | — | T-FETCH-002 to 004, T-FETCH-028, T-FETCH-029 |
-| 5 | Error classifier | `pending` | — | T-FETCH-016, T-FETCH-017 |
-| 6 | Stream processor | `pending` | — | T-FETCH-012 to 015 |
-| 7 | HTTP fetcher (main module) | `pending` | — | T-FETCH-005 to 011, T-FETCH-030, T-FETCH-031 |
-| 8 | Unit tests | `pending` | — | T-FETCH-018 to 024, T-FETCH-032 to 036 |
-| 9 | Guard chain + commit | `pending` | — | G5+G6 |
+| 3 | LRU Map implementation | `done` | 4a3b3b3 | T-FETCH-001 |
+| 4 | Politeness controller | `done` | 4a3b3b3 | T-FETCH-002 to 004, T-FETCH-028, T-FETCH-029 |
+| 5 | Error classifier | `done` | 4a3b3b3 | T-FETCH-016, T-FETCH-017 |
+| 6 | Stream processor | `done` | 4a3b3b3 | T-FETCH-012 to 015 |
+| 7 | HTTP fetcher (main module) | `done` | 4a3b3b3 | T-FETCH-005 to 011, T-FETCH-030, T-FETCH-031 |
+| 8 | Unit tests | `done` | 4a3b3b3 | 60 tests: T-FETCH-018 to 024, T-FETCH-032 to 036 |
+| 9 | Guard chain + commit | `done` | 4a3b3b3 | typecheck 6/6, lint 6/6, test 6/6 (282 total) |
 | 10 | Review + worklog + report | `pending` | — | G8+G9+G10 |
 
 ## Current State
 
 | Field | Value |
 | --- | --- |
-| Current task # | 3 |
-| Last completed gate | G2 (branch created) |
-| Guard function status | `pass` (retroactive full check 2026-03-26) |
-| Commits on branch | 0 |
-| Tests passing | 222 (across all packages) |
+| Current task # | 10 |
+| Last completed gate | G7 (state updated) |
+| Guard function status | `pass` — typecheck 6/6, lint 6/6, test 6/6 (282 total) |
+| Commits on branch | 2 (f31c85b scaffold, 4a3b3b3 implementation) |
+| Tests passing | 282 (222 existing + 60 http-fetching) |
 | Blockers | none |
 
 ## Decisions Log
