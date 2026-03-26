@@ -14,6 +14,7 @@ Chronological work session logs documenting what was done, decisions made, and o
 | [2026-03-25: Agentic Setup Implementation](2026-03-25-agentic-setup-implementation.md) | Full implementation of agentic-setup spec: 37 new files, 11 modified, Phases 0–23 | In Progress | 2026-03-25 |
 | [2026-03-25: Tool Parity Audit](2026-03-25-tool-parity-audit.md) | Audit .claude/.github/docs parity: 7 fixes, 6 new files, 19 modified, canonical source pattern | Complete | 2026-03-25 |
 | [2026-03-26: Core Contracts Implementation](2026-03-26-core-contracts-implementation.md) | Full core-contracts spec: 63 files, 88 tests, 18 commits, Phases 0–6 | Complete | 2026-03-26 |
+| [2026-03-26: Observability Implementation](2026-03-26-observability-implementation.md) | Observability spec: 9 production + 10 test files, 63 tests, 14 commits, Phases 1–6 | Complete | 2026-03-26 |
 
 ## Index
 
@@ -25,6 +26,7 @@ Chronological work session logs documenting what was done, decisions made, and o
 - [2026-03-25: Agentic Setup Implementation](2026-03-25-agentic-setup-implementation.md) — Implemented agentic-setup spec: 37 new files, 11 modified, Claude rules/skills/hooks, Copilot agents/instructions/prompts, CI workflow, security PBT generators
 - [2026-03-25: Tool Parity Audit](2026-03-25-tool-parity-audit.md) — Audited .claude/.github/docs for equivalence: fixed frontmatter, removed duplication, created 4 canonical docs/skills, added cross-references, Copilot parity prompts
 - [2026-03-26: Core Contracts Implementation](2026-03-26-core-contracts-implementation.md) — Implemented core-contracts spec: 63 files, 88 tests, 4 packages (core, config, eslint-config, testing), error taxonomy, contracts, config, composition root, static analysis, architecture compliance tests
+- [2026-03-26: Observability Implementation](2026-03-26-observability-implementation.md) — Implemented observability spec: packages/observability (Pino logger, Prometheus metrics, HTTP metrics server, OTel tracing), 63 tests, 14 commits, 5 G8 reviews, 7 sustained findings incorporated into living specs
 
 ---
 
