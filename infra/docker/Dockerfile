@@ -44,6 +44,6 @@ RUN pnpm install --frozen-lockfile --prod --ignore-scripts
 # REQ-INFRA-002: Run as non-root user
 USER node
 
-EXPOSE 9090
+EXPOSE 8081 9090
 
 CMD ["node", "packages/application-lifecycle/dist/main.js"]

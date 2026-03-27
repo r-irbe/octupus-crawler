@@ -36,6 +36,7 @@ services:
     ports:
       - "9090:9090"
       - "8081:8081"
+    restart: unless-stopped
     depends_on:
       dragonfly:
         condition: service_healthy
@@ -44,7 +45,7 @@ services:
   # REQ-INFRA-009: Persistence via appendonly + volume
   # REQ-INFRA-010: Health check via redis-cli ping
   dragonfly:
-    image: docker.dragonflydb.io/dragonflydb/dragonfly:latest
+    image: docker.dragonflydb.io/dragonflydb/dragonfly:v1.37.2
     command: ["--appendonly", "yes"]
     ports:
       - "6379:6379"
@@ -83,8 +84,8 @@ services:
     ports:
       - "3000:3000"
     environment:
-      GF_AUTH_ANONYMOUS_ENABLED: "true"
-      GF_AUTH_ANONYMOUS_ORG_ROLE: Viewer
+      GF_AUTH_ANONYMOUS_ENABLED: "true"   # DEV ONLY — disable in production
+      GF_AUTH_ANONYMOUS_ORG_ROLE: Viewer     # DEV ONLY — disable in production
 
 volumes:
   dragonfly-data:

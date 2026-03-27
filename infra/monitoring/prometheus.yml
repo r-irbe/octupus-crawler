@@ -1,4 +1,6 @@
-# IPF Crawler — Prometheus Configuration
+# IPF Crawler — Prometheus Configuration (docker-compose dev only)
+# For K8s, Prometheus uses pod annotation-based service discovery
+# (prometheus.io/scrape, prometheus.io/port, prometheus.io/path)
 # Implements: REQ-INFRA-012 (scrape crawler metrics)
 #             REQ-INFRA-014 (load alert rules from config)
 # Design: docs/specs/infrastructure/design.md §4

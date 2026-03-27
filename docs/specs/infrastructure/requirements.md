@@ -76,7 +76,7 @@ Given a Redis/Dragonfly container with appendonly=yes
 When the container restarts
 Then previously enqueued jobs are still present
 
-Given STATE_STORE_URL environment variable
+Given REDIS_URL environment variable
 When the application connects
 Then it uses the provided connection parameters
 ```
@@ -110,7 +110,7 @@ Then all 8 metrics are displayed with panels
 All environment variables shall be documented in a reference table with name, type, default, and description.
 
 **REQ-INFRA-016** (Ubiquitous)
-Secrets (STATE_STORE_URL containing passwords) shall be injected via Kubernetes Secrets, not plain ConfigMaps.
+Secrets (REDIS_URL containing passwords) shall be injected via Kubernetes Secrets, not plain ConfigMaps.
 
 **REQ-INFRA-017** (Ubiquitous)
 A local development environment shall be reproducible via `docker compose up` with a single command.
@@ -143,7 +143,7 @@ Then a corresponding runbook document exists in docs/runbooks/
 
 | Variable | Type | Required | Default | Description |
 | --- | --- | --- | --- | --- |
-| `STATE_STORE_URL` | string (URL) | Yes | — | Redis/Dragonfly connection URL (redis://host:port) |
+| `REDIS_URL` | string (URL) | Yes | — | Redis/Dragonfly connection URL (redis://host:port) |
 | `METRICS_PORT` | number | Yes | — | Port for metrics/health/readyz HTTP server |
 | `SEED_URLS` | string (CSV) | Yes | — | Comma-separated list of initial crawl URLs |
 | `MAX_DEPTH` | number | Yes | — | Maximum crawl depth from seed URLs |
@@ -172,7 +172,7 @@ And the crawler connects to redis and begins processing
 
 Given a Kubernetes deployment
 When secrets are configured via External Secrets Operator
-Then STATE_STORE_URL is injected from K8s Secrets, not ConfigMap
+Then REDIS_URL is injected from K8s Secrets, not ConfigMap
 
 Given Prometheus with a named volume
 When the Prometheus container restarts
