@@ -1,0 +1,32 @@
+{
+  "name": "@ipf/completion-detection",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./completion-detector": "./src/completion-detector.ts",
+    "./backoff-controller": "./src/backoff-controller.ts",
+    "./control-plane-adapter": "./src/control-plane-adapter.ts",
+    "./leader-election": "./src/leader-election.ts",
+    "./coordinator-config": "./src/coordinator-config.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src/",
+    "test": "vitest run",
+    "clean": "rm -rf dist .turbo"
+  },
+  "dependencies": {
+    "neverthrow": "^8.2.0",
+    "zod": "^4.0.0",
+    "@ipf/core": "workspace:*"
+  },
+  "devDependencies": {
+    "@ipf/eslint-config": "workspace:*",
+    "@ipf/testing": "workspace:*",
+    "@types/node": "^25.5.0",
+    "typescript": "^6.0.0",
+    "vitest": "^4.0.0",
+    "eslint": "^10.0.0"
+  }
+}
