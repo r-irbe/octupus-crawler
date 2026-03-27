@@ -700,7 +700,7 @@ This format is read by all supported tools. Claude Code reads it as CLAUDE.md (s
 | Config format | CLAUDE.md + .claude/ | AGENTS.md + copilot-instructions.md | Both read AGENTS.md |
 | Custom commands | `.claude/commands/*.md` (`/project:name`) | `.github/prompts/*.prompt.md` | Different invocation syntax |
 | Workflow modules | `.claude/skills/` (auto-invoked) | `.github/chatmodes/*.chatmode.md` (manual selection) | Different activation models |
-| Hooks / automation | `.claude/settings.json` hooks | GitHub Actions + path-scoped instructions | Copilot hooks = CI; Claude = local |
+| Hooks / automation | `.claude/settings.json` hooks | `.github/hooks/*.json` (PreToolUse, PostToolUse, Stop) | Both support local hooks; same lifecycle events |
 | Plan mode | Shift+Tab×2, writes plan.md | Plan agent mode | Both support pre-code planning |
 | Parallel execution | git worktrees + multiple sessions | Copilot agent creates branch+PR | Different isolation models |
 | Security model | Local permissions (settings.json) | GitHub Actions sandbox + org policies | Copilot is more enterprise-hardened |

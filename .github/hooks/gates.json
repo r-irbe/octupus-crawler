@@ -1,0 +1,25 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "type": "command",
+        "command": "./scripts/hooks/copilot-pre-tool-use.sh",
+        "timeout": 300
+      }
+    ],
+    "PostToolUse": [
+      {
+        "type": "command",
+        "command": "./scripts/hooks/copilot-post-tool-use.sh",
+        "timeout": 30
+      }
+    ],
+    "Stop": [
+      {
+        "type": "command",
+        "command": "./scripts/hooks/copilot-stop.sh",
+        "timeout": 10
+      }
+    ]
+  }
+}

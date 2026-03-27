@@ -20,26 +20,26 @@
 
 | # | Task | Status | Commit | Notes |
 | --- | --- | --- | --- | --- |
-| 1 | T-WORK-001: UtilizationTracker with counters + floor guard | `pending` | — | — |
-| 2 | T-WORK-002: Wire lifecycle events to tracker | `pending` | — | — |
-| 3 | T-WORK-003: Job consumer with configurable concurrency | `pending` | — | — |
-| 4 | T-WORK-004: Single-start guard | `pending` | — | — |
-| 5 | T-WORK-005: Register listeners before consumption | `pending` | — | — |
-| 6 | T-WORK-006: Stalled job detection config | `pending` | — | — |
-| 7 | T-WORK-011: Worker re-registration on crash | `pending` | — | — |
-| 8 | T-WORK-012: Counter inconsistency guard | `pending` | — | — |
-| 9 | T-WORK-013: Worker metrics | `pending` | — | — |
-| 10 | T-WORK-007/008/015: Unit tests | `pending` | — | — |
+| 1 | T-WORK-001: UtilizationTracker with counters + floor guard | `done` | 5a17da0 | — |
+| 2 | T-WORK-002: Wire lifecycle events to tracker | `done` | 5a17da0 | — |
+| 3 | T-WORK-003: Job consumer with configurable concurrency | `done` | 5a17da0 | — |
+| 4 | T-WORK-004: Single-start guard | `done` | 5a17da0 | — |
+| 5 | T-WORK-005: Register listeners before consumption | `done` | 5a17da0 | — |
+| 6 | T-WORK-006: Stalled job detection config | `done` | 5a17da0 | — |
+| 7 | T-WORK-011: Worker re-registration on crash | `done` | 5a17da0 | Via BullMQ stalled detection |
+| 8 | T-WORK-012: Counter inconsistency guard | `done` | 5a17da0 | — |
+| 9 | T-WORK-013: Worker metrics | `done` | 5a17da0 | — |
+| 10 | T-WORK-007/008/015: Unit tests | `done` | 5a17da0 | 43 tests |
 
 ## Current State
 
 | Field | Value |
 | --- | --- |
-| Current task # | — |
-| Last completed gate | G4 |
-| Guard function status | `not-run` |
-| Commits on branch | 0 |
-| Tests passing | — |
+| Current task # | 10 (complete) |
+| Last completed gate | G7 |
+| Guard function status | `pass` (attempt 1/3) — 484 tests |
+| Commits on branch | 1 (5a17da0) |
+| Tests passing | 484/484 |
 | Blockers | none |
 
 ## Decisions Log
@@ -52,7 +52,8 @@
 
 | # | Problem | Solution | Task # |
 | --- | --- | --- | --- |
-| 1 | — | — | — |
+| 1 | Typecheck failed: core test missing onActive in mock | Added onActive handler to contracts.unit.test.ts mock | T-WORK-002 |
+| 2 | Lint: require-await on mock async methods | Used Promise.resolve() instead of async keyword | T-WORK-007 |
 
 ## Action Traceability
 

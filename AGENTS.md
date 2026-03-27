@@ -83,7 +83,11 @@ These gates are **NON-NEGOTIABLE**. Skipping any gate is a protocol violation re
 | G3 | **Spec** | Read relevant `requirements.md` / `design.md` / `tasks.md` before writing code | Spec reference in plan |
 | G4 | **State tracker** | Create `docs/memory/session/YYYY-MM-DD-<slug>-state.md` from [template](docs/memory/session/STATE-TRACKER-TEMPLATE.md). This is the agent's external working memory — re-read before every task. | File path |
 
-> **Enforcement**: A git pre-commit hook (`.githooks/pre-commit`) blocks commits that violate G2 (branch naming) or G4 (state tracker). This runs for ALL tools — Copilot, Claude, terminal. Installed automatically by `pnpm install` via the `prepare` script.
+> **Enforcement**: Three-layer defense:
+>
+> 1. **Tool-native hooks**: Copilot (`.github/hooks/gates.json`) and Claude Code (`.claude/settings.json`) — `PreToolUse` blocks `git commit` without guard functions, blocks `git push` to main.
+> 2. **Git pre-commit hook** (`.githooks/pre-commit`): Blocks commits violating G2 (branch naming) or G4 (state tracker). Runs for ALL tools.
+> 3. Installed automatically by `pnpm install` via the `prepare` script.
 
 ### Per-Task Gates (after EACH logical change — one task = one commit)
 

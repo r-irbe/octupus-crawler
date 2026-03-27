@@ -1,0 +1,10 @@
+{
+  // Copilot hook file locations — use .github/hooks/ (native), disable .claude/ (matchers ignored)
+  // VS Code ignores Claude Code matcher syntax, causing hooks to fire on ALL tool invocations.
+  // The .github/hooks/gates.json hooks filter by tool_name internally.
+  "chat.hookFilesLocations": {
+    ".github/hooks": true,
+    ".claude/settings.json": false,
+    ".claude/settings.local.json": false
+  }
+}

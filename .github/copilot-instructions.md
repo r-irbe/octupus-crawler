@@ -16,7 +16,12 @@
 - Use path-scoped instructions from `.github/instructions/`
 - Verify Guard Functions would pass: `tsc`, `eslint`, `vitest`
 
-> **Enforcement**: A git pre-commit hook (`.githooks/pre-commit`) blocks commits that violate G2 (branch naming) or G4 (state tracker). This runs for ALL tools — Copilot, Claude, terminal. Installed automatically by `pnpm install` via the `prepare` script.
+> **Enforcement**: Three-layer defense:
+> 1. **Copilot hooks** (`.github/hooks/gates.json`): `PreToolUse` blocks `git commit` without guard functions, blocks `git push` to main. `PostToolUse` runs typecheck + file size warning after edits. `Stop` checks for uncommitted changes.
+> 2. **Git pre-commit hook** (`.githooks/pre-commit`): Blocks commits violating G2 (branch naming) or G4 (state tracker). Runs for ALL tools.
+> 3. **Claude Code hooks** (`.claude/settings.json`): Same gates, Claude-native format.
+>
+> VS Code loads hooks from `.github/hooks/` only (`.claude/settings.json` disabled via `.vscode/settings.json` — matchers are ignored by VS Code, causing Claude hooks to fire on every tool call).
 
 ### Ask First
 
@@ -88,6 +93,17 @@ Watch for: **Mapping** (NL→code errors), **Naming** (fabricated APIs), **Resou
 | `FetchResult` / `ParseResult` | HTTP fetch / HTML parse outcomes |
 | `URLDiscovered` / `CrawlCompleted` / `CrawlFailed` | Domain events |
 
+## Hooks (`.github/hooks/gates.json`)
+
+- **PreToolUse** `run_in_terminal(git commit)`: runs G2/G4 pre-commit gates + G5 guard functions — blocks commit if any fail
+- **PreToolUse** `run_in_terminal(git push)`: blocks push to `main` — forces feature branch
+- **PreToolUse** `run_in_terminal(git push --force)`: requires user confirmation
+- **PostToolUse** `create_file|replace_string_in_file`: runs `pnpm tsc --noEmit` — feeds type errors back
+- **PostToolUse** `create_file|replace_string_in_file`: warns if file exceeds 300-line hard limit
+- **Stop**: checks for uncommitted changes and missing state tracker — blocks session end if found
+
+> **Note**: `.claude/settings.json` hooks are disabled in VS Code via `.vscode/settings.json` (`chat.hookFilesLocations`). VS Code ignores Claude Code matcher syntax, which causes Claude hooks to fire on every tool invocation. Use `.github/hooks/` for Copilot-native hooks that filter by `tool_name`.
+
 ## Key File Locations
 
 | What | Where |
@@ -103,7 +119,10 @@ Watch for: **Mapping** (NL→code errors), **Naming** (fabricated APIs), **Resou
 | Config schema | `packages/config/src/` |
 | ESLint config | `packages/eslint-config/` |
 | Zod schemas | `packages/validation/src/` |
+| Copilot hooks | `.github/hooks/gates.json` |
+| Claude hooks | `.claude/settings.json` |
+| Hook scripts | `scripts/hooks/` |
 
 ---
 
-> **Provenance**: Created 2026-03-25. Condensed 2026-03-25: removed ADR Awareness section (→ AGENTS.md), removed duplicated error handling/naming tables.
+> **Provenance**: Created 2026-03-25. Condensed 2026-03-25: removed ADR Awareness section (→ AGENTS.md), removed duplicated error handling/naming tables. Updated 2026-03-27: added Copilot hooks section, three-layer enforcement.
