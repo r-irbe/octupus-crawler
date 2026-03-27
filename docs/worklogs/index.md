@@ -22,6 +22,7 @@ Chronological work session logs documenting what was done, decisions made, and o
 | [2026-03-26: URL Frontier Implementation](2026-03-26-url-frontier.md) | URL Frontier: SHA-256 dedup, BFS priority, QueueBackend port, collision detection, 45 tests (41 unit + 4 property) | Complete | 2026-03-26 |
 | [2026-03-27: G11 Spec Update Gate](2026-03-27-g11-spec-update-gate.md) | G11 gate: verify-spec-update.sh, pnpm verify:specs, 5 stale specs backfilled, agentic-setup specs updated | Complete | 2026-03-27 |
 | [2026-03-27: Worker Management](2026-03-27-worker-management.md) | Worker management: utilization tracker, job consumer adapter, metrics reporter, 43 tests | Complete | 2026-03-27 |
+| [2026-03-27: Application Lifecycle](2026-03-27-application-lifecycle.md) | Application lifecycle: startup, shutdown, seeding, worker processing, 49 tests | Complete | 2026-03-27 |
 
 ## Index
 

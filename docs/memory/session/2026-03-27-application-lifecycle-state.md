@@ -20,22 +20,22 @@
 
 | # | Task | Status | Commit | Notes |
 | --- | --- | --- | --- | --- |
-| 1 | Package scaffolding + ShutdownReason + exit codes | `pending` | — | — |
-| 2 | Graceful shutdown orchestrator + tests | `pending` | — | — |
-| 3 | Process handlers (uncaught, rejection, abort trigger) + tests | `pending` | — | — |
-| 4 | Seeding (seed URL processing + frontier enqueue) + tests | `pending` | — | — |
-| 5 | Worker processor (payload validation, queue_error, metrics) + tests | `pending` | — | — |
-| 6 | Startup orchestrator + readiness probe + abort handler + tests | `pending` | — | — |
+| 1 | Package scaffolding + ShutdownReason + exit codes | `done` | 676b1c1 | 9 source + 8 test files |
+| 2 | Graceful shutdown orchestrator + tests | `done` | 676b1c1 | 7 tests, drain+teardown+idempotent |
+| 3 | Process handlers (uncaught, rejection, abort trigger) + tests | `done` | 676b1c1 | 5 tests |
+| 4 | Seeding (seed URL processing + frontier enqueue) + tests | `done` | 676b1c1 | 8 tests |
+| 5 | Worker processor (payload validation, queue_error, metrics) + tests | `done` | 676b1c1 | 5 tests |
+| 6 | Startup orchestrator + readiness probe + abort handler + tests | `done` | 676b1c1 | 15 tests (8+4+3) |
 
 ## Current State
 
 | Field | Value |
 | --- | --- |
-| Current task # | — |
-| Last completed gate | G4 (state tracker) |
-| Guard function status | `not-run` |
-| Commits on branch | 0 |
-| Tests passing | 484 (inherited from main) |
+| Current task # | all done |
+| Last completed gate | G7 (state update) |
+| Guard function status | `pass` |
+| Commits on branch | 1 (676b1c1) |
+| Tests passing | 533 (484 + 49 new) |
 | Blockers | none |
 
 ## Decisions Log
