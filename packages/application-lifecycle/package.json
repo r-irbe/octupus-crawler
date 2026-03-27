@@ -1,0 +1,37 @@
+{
+  "name": "@ipf/application-lifecycle",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./shutdown-reason": "./src/shutdown-reason.ts",
+    "./exit-codes": "./src/exit-codes.ts",
+    "./graceful-shutdown": "./src/graceful-shutdown.ts",
+    "./seed-frontier": "./src/seed-frontier.ts",
+    "./worker-processor": "./src/worker-processor.ts",
+    "./process-handlers": "./src/process-handlers.ts",
+    "./readiness-probe": "./src/readiness-probe.ts",
+    "./abort-handler": "./src/abort-handler.ts",
+    "./startup-orchestrator": "./src/startup-orchestrator.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src/",
+    "test": "vitest run",
+    "clean": "rm -rf dist .turbo"
+  },
+  "dependencies": {
+    "neverthrow": "^8.2.0",
+    "zod": "^4.0.0",
+    "@ipf/core": "workspace:*",
+    "@ipf/config": "workspace:*"
+  },
+  "devDependencies": {
+    "@ipf/eslint-config": "workspace:*",
+    "@ipf/testing": "workspace:*",
+    "@types/node": "^25.5.0",
+    "typescript": "^6.0.0",
+    "vitest": "^4.0.0",
+    "eslint": "^10.0.0"
+  }
+}
