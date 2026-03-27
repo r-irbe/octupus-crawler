@@ -2,11 +2,11 @@
 
 **Date**: 2026-03-27
 **Branch**: `work/worker-management`
-**Commits**: `5a17da0`
+**Commits**: `5a17da0`, `129be39`, `28dd6a2`
 
 ## What Changed
 
-Implemented `packages/worker-management/` — worker utilization tracking, job consumer adapter, stalled job config, counter consistency guard, and worker metrics reporter.
+Implemented `packages/worker-management/` — worker utilization tracking, job consumer adapter, stalled job config, counter consistency guard, and worker metrics reporter. Also added Copilot agent hooks (`.github/hooks/gates.json`) and ran G8 PR Review Council on all unreviewed packages.
 
 ### Files Created
 
@@ -32,6 +32,16 @@ Implemented `packages/worker-management/` — worker utilization tracking, job c
 | `packages/core/src/contracts/job-event-source.ts` | Added `onActive` method to track job start events |
 | `packages/core/src/contracts/contracts.unit.test.ts` | Updated mock to include `onActive` |
 | `pnpm-lock.yaml` | Updated for new package |
+| `.github/hooks/gates.json` | Created — Copilot hook config (PreToolUse/PostToolUse/Stop) |
+| `scripts/hooks/copilot-pre-tool-use.sh` | Created — blocks commit without G2/G4/G5, blocks push to main |
+| `scripts/hooks/copilot-post-tool-use.sh` | Created — typecheck + file size warning after edits |
+| `scripts/hooks/copilot-stop.sh` | Created — session-end verification |
+| `.vscode/settings.json` | Created — disables Claude hooks in VS Code |
+| `AGENTS.md` | Updated enforcement note to three-layer defense |
+| `.github/copilot-instructions.md` | Added Hooks section, three-layer enforcement |
+| `docs/specs/agentic-setup/requirements.md` | Added §17 (REQ-AGENT-107 to 112) |
+| `docs/specs/agentic-setup/design.md` | Added Copilot Hooks Architecture + three-layer diagram |
+| `docs/specs/agentic-setup/tasks.md` | Added Phase 26 (T-AGENT-116 to 121) |
 
 ## Decisions Made
 
@@ -40,6 +50,17 @@ Implemented `packages/worker-management/` — worker utilization tracking, job c
 | 1 | Added `onActive` to `JobEventSource` contract | REQ-DIST-011 requires tracking job starts; contract was incomplete |
 | 2 | Worker recovery via BullMQ stalled detection only | No custom recovery code needed — BullMQ handles natively (ADR-002) |
 | 3 | Separate `WorkerMetricsReporter` from `JobConsumerAdapter` | Keeps adapter focused on lifecycle; metrics is cross-cutting (ADR-015) |
+| 4 | Copilot hooks filter by `tool_name` internally (not via matchers) | VS Code ignores Claude matcher syntax — would fire on every tool call |
+| 5 | `.vscode/settings.json` disables Claude hook loading in VS Code | Prevents double-firing and broken matchers |
+
+## G8 Review Council
+
+Ran Ralph-Loop on 5 unreviewed packages: ssrf-guard, url-frontier, worker-management, Copilot hooks, G11 gate.
+
+- **14 findings** across 5 packages
+- **1 sustained Major** (F-HOOK-002): `if !` grouping bug in guard function chain — **fixed** in `28dd6a2`
+- **F-SSRF-001** not sustained (4/6, needed >75%): `dnsFailPolicy:'open'` default — SRE dissented (DNS transience)
+- **F-WORK-001** not sustained (2/6): `onActive` contract change — additive, plan was approved
 
 ## Tests
 
@@ -56,4 +77,4 @@ Implemented `packages/worker-management/` — worker utilization tracking, job c
 
 ---
 
-> **Provenance**: Created 2026-03-27.
+> **Provenance**: Created 2026-03-27. Updated 2026-03-27: added Copilot hooks, G8 review council results, spec updates.
