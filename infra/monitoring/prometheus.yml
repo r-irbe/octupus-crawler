@@ -1,0 +1,22 @@
+# IPF Crawler — Prometheus Configuration
+# Implements: REQ-INFRA-012 (scrape crawler metrics)
+#             REQ-INFRA-014 (load alert rules from config)
+# Design: docs/specs/infrastructure/design.md §4
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+rule_files:
+  - "alert-rules.yml"
+
+scrape_configs:
+  - job_name: "crawler"
+    static_configs:
+      - targets: ["crawler:9090"]
+        labels:
+          instance: "crawler-dev"
+
+  - job_name: "prometheus"
+    static_configs:
+      - targets: ["localhost:9090"]

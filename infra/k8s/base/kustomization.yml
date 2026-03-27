@@ -1,0 +1,17 @@
+# Kustomize base configuration
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: ipf
+
+resources:
+  - namespace.yml
+  - crawler-deployment.yml
+  - crawler-configmap.yml
+  - secrets.yml
+  - dragonfly-statefulset.yml
+
+labels:
+  - pairs:
+      app.kubernetes.io/part-of: ipf-crawler
+      app.kubernetes.io/managed-by: kustomize

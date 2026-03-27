@@ -1,0 +1,76 @@
+# IPF Crawler — Dragonfly StatefulSet
+# Implements: REQ-INFRA-009 (persistence via PVC + appendonly)
+#             REQ-INFRA-010 (health endpoint)
+# Design: docs/specs/infrastructure/design.md §3
+
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: dragonfly
+  namespace: ipf
+  labels:
+    app: dragonfly
+    app.kubernetes.io/part-of: ipf-crawler
+spec:
+  serviceName: dragonfly
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dragonfly
+  template:
+    metadata:
+      labels:
+        app: dragonfly
+    spec:
+      containers:
+        - name: dragonfly
+          image: docker.dragonflydb.io/dragonflydb/dragonfly:latest
+          args: ["--appendonly", "yes"]
+          ports:
+            - containerPort: 6379
+              name: redis
+          volumeMounts:
+            - name: data
+              mountPath: /data
+          livenessProbe:
+            exec:
+              command: ["redis-cli", "ping"]
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
+          readinessProbe:
+            exec:
+              command: ["redis-cli", "ping"]
+            periodSeconds: 5
+            timeoutSeconds: 3
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 5Gi
+---
+# Headless Service for StatefulSet DNS
+apiVersion: v1
+kind: Service
+metadata:
+  name: dragonfly
+  namespace: ipf
+  labels:
+    app: dragonfly
+spec:
+  clusterIP: None
+  selector:
+    app: dragonfly
+  ports:
+    - port: 6379
+      targetPort: redis

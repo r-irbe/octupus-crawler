@@ -1,0 +1,15 @@
+# Grafana Dashboard Provisioning
+# Implements: REQ-INFRA-013 (pre-configured dashboards)
+
+apiVersion: 1
+
+providers:
+  - name: "IPF Crawler"
+    orgId: 1
+    folder: ""
+    type: file
+    disableDeletion: false
+    editable: true
+    options:
+      path: /var/lib/grafana/dashboards
+      foldersFromFilesStructure: false

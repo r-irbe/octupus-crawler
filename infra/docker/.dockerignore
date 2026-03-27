@@ -1,0 +1,36 @@
+# REQ-INFRA-003: Exclude build artifacts, documentation, and dev-only files
+node_modules
+dist
+*.tsbuildinfo
+
+# Version control
+.git
+.gitignore
+
+# Documentation
+docs/
+*.md
+!README.md
+
+# Dev tooling
+.claude/
+.github/
+.vscode/
+.cursor/
+
+# Infrastructure (not needed in app image)
+infra/
+scripts/
+
+# Test files
+**/*.test.ts
+**/*.spec.ts
+**/*.property.test.ts
+packages/testing/
+
+# Build cache
+.turbo/
+.pnpm-store/
+
+# Environment files
+.env*

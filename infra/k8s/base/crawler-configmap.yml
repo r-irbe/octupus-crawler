@@ -1,0 +1,27 @@
+# IPF Crawler — ConfigMap for non-secret environment variables
+# REQ-INFRA-018: SCREAMING_SNAKE_CASE convention
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: crawler-config
+  namespace: ipf
+  labels:
+    app: crawler-worker
+data:
+  SEED_URLS: "https://example.com"
+  CRAWL_MAX_DEPTH: "3"
+  CRAWL_MAX_CONCURRENT_FETCHES: "10"
+  CRAWL_FETCH_TIMEOUT_MS: "30000"
+  CRAWL_POLITENESS_DELAY_MS: "2000"
+  CRAWL_RATE_LIMIT_PER_DOMAIN: "2000"
+  CRAWL_MAX_CONCURRENT_DOMAINS: "100"
+  CRAWL_MAX_RETRIES: "3"
+  CRAWL_MAX_REDIRECTS: "5"
+  CRAWL_MAX_RESPONSE_BYTES: "10485760"
+  CRAWL_USER_AGENT: "IPF-Crawler/1.0"
+  ALLOW_PRIVATE_IPS: "false"
+  S3_ENDPOINT: "http://minio:9000"
+  S3_BUCKET: "ipf-crawl-pages"
+  OTEL_EXPORTER_OTLP_ENDPOINT: "http://otel-collector:4318"
+  LOG_LEVEL: "info"
