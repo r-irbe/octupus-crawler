@@ -77,7 +77,7 @@ groups:
             P99 fetch latency is {{ $value | humanizeDuration }} over the
             last 5 minutes. Threshold: 15s (1.5x FETCH_TIMEOUT_MS).
             Indicates systemic degradation.
-          runbook_url: "https://github.com/ipf/ipf/wiki/Runbooks#critical-latency"
+          runbook_url: "https://github.com/ipf/ipf/wiki/Runbooks#high-latency"
 
       # REQ-ALERT-006: Frontier capacity alert (T-ALERT-006)
       - alert: FrontierCapacity
@@ -103,7 +103,7 @@ groups:
           description: >-
             Frontier is growing at {{ $value | humanize }} URLs/min over the
             last 3 minutes. Threshold: 100 URLs/min (10x normal discovery rate).
-          runbook_url: "https://github.com/ipf/ipf/wiki/Runbooks#frontier-growth"
+          runbook_url: "https://github.com/ipf/ipf/wiki/Runbooks#frontier-capacity"
 
       # REQ-ALERT-008: High utilization alert (T-ALERT-008)
       - alert: HighUtilization
@@ -116,7 +116,7 @@ groups:
           description: >-
             Average worker utilization is {{ $value | humanizePercentage }}
             over the last 3 minutes. Threshold: 80%. Consider scaling up workers.
-          runbook_url: "https://github.com/ipf/ipf/wiki/Runbooks#high-utilization"
+          runbook_url: "https://github.com/ipf/ipf/wiki/Runbooks#worker-utilization"
 
       # REQ-ALERT-009: Low utilization alert (T-ALERT-009)
       - alert: LowUtilization
@@ -129,7 +129,7 @@ groups:
           description: >-
             Average worker utilization is {{ $value | humanizePercentage }}
             for 10 minutes. Threshold: below 20%. Consider scaling down.
-          runbook_url: "https://github.com/ipf/ipf/wiki/Runbooks#low-utilization"
+          runbook_url: "https://github.com/ipf/ipf/wiki/Runbooks#worker-utilization"
 
       # REQ-ALERT-010: Worker down alert (T-ALERT-010)
       - alert: WorkerDown

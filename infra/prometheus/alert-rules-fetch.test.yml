@@ -209,7 +209,7 @@ tests:
             exp_annotations:
               summary: "P99 fetch latency above 15s (22.5s)"
               description: "P99 fetch latency is 22.5s over the last 5 minutes. Threshold: 15s (1.5x FETCH_TIMEOUT_MS). Indicates systemic degradation."
-              runbook_url: "https://github.com/ipf/ipf/wiki/Runbooks#critical-latency"
+              runbook_url: "https://github.com/ipf/ipf/wiki/Runbooks#high-latency"
 
   # T-ALERT-013: Should NOT fire when P99 below threshold
   - interval: 1m
