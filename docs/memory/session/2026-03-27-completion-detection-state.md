@@ -20,9 +20,9 @@
 | G5: Guard functions | ✅ | — | 11 packages pass typecheck+lint+test |
 | G6: Commit | ✅ | d01b5e2 | feat(completion-detection) |
 | G7: State update | ✅ | — | Updated this file |
-| G8: RALPH review | 🔄 | — | In progress |
-| G9: Worklog | ⏳ | — | |
-| G10: Report | ⏳ | — | |
+| G8: RALPH review | ✅ | c824fa5 | 7 findings, all resolved, APPROVED |
+| G9: Worklog | ✅ | — | 2026-03-27-completion-detection.md |
+| G10: Report | 🔄 | — | In progress |
 | G11: Spec update | ⏳ | — | |
 
 ## Key Contracts

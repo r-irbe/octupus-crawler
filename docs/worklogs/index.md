@@ -23,6 +23,7 @@ Chronological work session logs documenting what was done, decisions made, and o
 | [2026-03-27: G11 Spec Update Gate](2026-03-27-g11-spec-update-gate.md) | G11 gate: verify-spec-update.sh, pnpm verify:specs, 5 stale specs backfilled, agentic-setup specs updated | Complete | 2026-03-27 |
 | [2026-03-27: Worker Management](2026-03-27-worker-management.md) | Worker management: utilization tracker, job consumer adapter, metrics reporter, 43 tests | Complete | 2026-03-27 |
 | [2026-03-27: Application Lifecycle](2026-03-27-application-lifecycle.md) | Application lifecycle: startup, shutdown, seeding, worker processing, 49 tests | Complete | 2026-03-27 |
+| [2026-03-27: Completion Detection](2026-03-27-completion-detection.md) | Completion detection: backoff, poll loop, control plane, leader election, 38 tests | Complete | 2026-03-27 |
 
 ## Index
 
@@ -42,6 +43,7 @@ Chronological work session logs documenting what was done, decisions made, and o
 - [2026-03-26: URL Frontier Implementation](2026-03-26-url-frontier.md) — Implemented @ipf/url-frontier: SHA-256 dedup, BFS priority, QueueBackend hexagonal port, collision detection, 45 tests (41 unit + 4 property)
 - [2026-03-27: G11 Spec Update Gate](2026-03-27-g11-spec-update-gate.md) — Added G11 Spec Update gate: verify-spec-update.sh script, pnpm verify:specs, wired into AGENTS.md/CLAUDE.md/copilot-instructions.md, backfilled 5 stale specs, updated agentic-setup specs
 - [2026-03-27: Worker Management](2026-03-27-worker-management.md) — Implemented @ipf/worker-management: utilization tracker, job consumer adapter, stalled job config, counter consistency guard, worker metrics reporter, 43 unit tests
+- [2026-03-27: Completion Detection](2026-03-27-completion-detection.md) — Implemented @ipf/completion-detection: backoff controller, completion detector, control plane adapter, leader election, 38 unit tests, 7 RALPH findings fixed
 
 ---
 
