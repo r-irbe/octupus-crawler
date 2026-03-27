@@ -21,10 +21,10 @@
 | G5: Guard functions | ✅ | — | 583 tests pass, 0 lint/type errors |
 | G6: Commit | ✅ | 16d66c9, 548fe46 | Fix + feature commits |
 | G7: State update | ✅ | — | This update |
-| G8: RALPH review | 🔄 | — | In progress |
-| G9: Worklog | ⏳ | — | |
-| G10: Report | ⏳ | — | |
-| G11: Spec update | ⏳ | — | |
+| G8: RALPH review | ✅ | e55e634 | 8 findings (2 Major, 6 Minor), all resolved |
+| G9: Worklog | ✅ | — | docs/worklogs/2026-03-28-infrastructure.md |
+| G10: Report | ✅ | — | Summary to user |
+| G11: Spec update | ✅ | — | tasks.md 23/26 checked, requirements.md REDIS_URL fix |
 
 ## Key Config Vars (from config-schema.ts)
 
