@@ -52,14 +52,18 @@ export function createCompletionDetector(deps: CompletionDetectorDeps): {
     let isFirstPoll = true;
 
     return new Promise<CompletionOutcome>((resolve) => {
-      const timer = setInterval(() => {
-        void tick().then((outcome) => {
-          if (outcome !== undefined) {
-            clearInterval(timer);
-            resolve(outcome);
-          }
-        });
-      }, deps.config.pollIntervalMs);
+      function scheduleNextTick(): void {
+        setTimeout(() => {
+          void tick().then((outcome) => {
+            if (outcome !== undefined) {
+              resolve(outcome);
+            } else {
+              scheduleNextTick();
+            }
+          });
+        }, deps.config.pollIntervalMs);
+      }
+      scheduleNextTick();
 
       async function tick(): Promise<CompletionOutcome | undefined> {
         // Check backoff abort

@@ -1,7 +1,7 @@
 // Control plane adapter — state derivation, pause/resume, idempotent cancel
 // Implements: T-COORD-008 to 011, REQ-DIST-017 to 020
 
-import { ok, err } from 'neverthrow';
+import { ok, err, type Result } from 'neverthrow';
 import type { Logger } from '@ipf/core/contracts/logger';
 import type { CrawlState, CrawlProgress, ControlPlane } from '@ipf/core/contracts/control-plane';
 import type { AsyncResult } from '@ipf/core/types/result';
@@ -23,12 +23,12 @@ export type ControlPlaneDeps = {
 
 // REQ-DIST-017: state derived from live query, not cached
 function deriveState(
-  counts: { waiting: number; active: number; completed: number; failed: number; paused: number },
+  counts: { waiting: number; active: number; completed: number; failed: number; delayed: number; paused: number },
   cancelled: boolean,
 ): CrawlState {
   if (cancelled) return 'cancelled';
   if (counts.paused > 0) return 'paused';
-  const pending = counts.waiting + counts.active;
+  const pending = counts.waiting + counts.active + counts.delayed;
   const done = counts.completed + counts.failed;
   if (pending === 0 && done > 0) return 'completed';
   if (pending === 0 && done === 0) return 'idle';
@@ -72,12 +72,14 @@ export function createControlPlaneAdapter(deps: ControlPlaneDeps): ControlPlane 
   }
 
   // REQ-DIST-019: idempotent cancel with promise deduplication
+  let cancelResult: Result<void, QueueError> | undefined;
+
   async function cancel(): AsyncResult<void, QueueError> {
     if (cancelPromise === undefined) {
       cancelPromise = doCancel();
     }
     await cancelPromise;
-    return ok(undefined);
+    return cancelResult ?? ok(undefined);
   }
 
   async function doCancel(): Promise<void> {
@@ -86,6 +88,9 @@ export function createControlPlaneAdapter(deps: ControlPlaneDeps): ControlPlane 
     const result = await deps.queue.obliterate();
     if (result.isErr()) {
       deps.logger.error('Cancel failed', { error: result.error.message });
+      cancelResult = err(result.error);
+    } else {
+      cancelResult = ok(undefined);
     }
   }
 

@@ -1,5 +1,5 @@
 // Unit tests for control plane adapter
-// Validates REQ-DIST-017, REQ-DIST-018, REQ-DIST-019, REQ-DIST-020
+// Validates REQ-DIST-017, REQ-DIST-018, REQ-DIST-019
 
 import { describe, it, expect, vi } from 'vitest';
 import { ok, err } from 'neverthrow';
@@ -85,6 +85,18 @@ describe('ControlPlaneAdapter', () => {
       if (result.isOk()) expect(result.value).toBe('paused');
     });
 
+    it('returns running when only delayed jobs exist (F-001 regression)', async () => {
+      const queue = stubQueue({
+        getJobCounts: vi.fn(() =>
+          Promise.resolve(ok(stubCounts({ delayed: 5 }))),
+        ),
+      });
+      const adapter = createControlPlaneAdapter({ queue, logger: recLogger() });
+      const result = await adapter.getState();
+      expect(result.isOk()).toBe(true);
+      if (result.isOk()) expect(result.value).toBe('running');
+    });
+
     it('propagates queue errors', async () => {
       const queueErr = createQueueError({ operation: 'getJobCounts', cause: new Error('redis') });
       const queue = stubQueue({
@@ -163,6 +175,18 @@ describe('ControlPlaneAdapter', () => {
       const result = await adapter.getState();
       expect(result.isOk()).toBe(true);
       if (result.isOk()) expect(result.value).toBe('cancelled');
+    });
+
+    // F-002 regression: cancel propagates obliterate errors
+    it('propagates error when obliterate fails', async () => {
+      const queueErr = createQueueError({ operation: 'obliterate', cause: new Error('busy') });
+      const queue = stubQueue({
+        obliterate: vi.fn(() => Promise.resolve(err(queueErr))),
+      });
+      const adapter = createControlPlaneAdapter({ queue, logger: recLogger() });
+      const result = await adapter.cancel();
+      expect(result.isErr()).toBe(true);
+      if (result.isErr()) expect(result.error.operation).toBe('obliterate');
     });
   });
 

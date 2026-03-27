@@ -88,4 +88,14 @@ describe('BackoffController', () => {
     // failures count stayed at 2 — ignored after abort
     expect(backoff.consecutiveFailures()).toBe(2);
   });
+
+  // REQ-DIST-015: non-Error values handled in backoff
+  it('handles non-Error values as store errors', () => {
+    const logger = recLogger();
+    const backoff = createBackoffController(DEFAULT_BACKOFF_CONFIG, logger);
+    backoff.onStoreError('string error');
+    expect(backoff.consecutiveFailures()).toBe(1);
+    backoff.onStoreError(42);
+    expect(backoff.consecutiveFailures()).toBe(2);
+  });
 });

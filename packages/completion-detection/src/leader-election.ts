@@ -78,6 +78,7 @@ export function createLeaderElection(
   }
 
   // REQ-DIST-023: graceful lease release on shutdown (T-COORD-018)
+  // TOCTOU: get+del not atomic — requires compareAndDelete in LeaseStore for full safety
   async function releaseInner(): AsyncResult<void, QueueError> {
     try {
       // Only release if we're still the recorded leader
