@@ -1,0 +1,55 @@
+# IPF Crawler — Alertmanager Routing Configuration
+# Implements: REQ-ALERT-016 (severity-based routing)
+# Design: docs/specs/alerting/design.md §4
+
+global:
+  resolve_timeout: 5m
+
+route:
+  receiver: "default"
+  group_by: ["alertname"]
+  group_wait: 30s
+  group_interval: 5m
+  repeat_interval: 4h
+  routes:
+    # REQ-ALERT-016: critical → immediate notification (PagerDuty/webhook)
+    - match:
+        severity: critical
+      receiver: "pagerduty"
+      repeat_interval: 15m
+
+    # REQ-ALERT-016: warning → Slack channel
+    - match:
+        severity: warning
+      receiver: "slack-alerts"
+      repeat_interval: 1h
+
+    # REQ-ALERT-016: info → log only
+    - match:
+        severity: info
+      receiver: "log-only"
+
+receivers:
+  - name: "pagerduty"
+    pagerduty_configs:
+      - service_key: "${PAGERDUTY_SERVICE_KEY}"
+
+  - name: "slack-alerts"
+    slack_configs:
+      - api_url: "${SLACK_WEBHOOK_URL}"
+        channel: "#ipf-alerts"
+        title: '{{ .GroupLabels.alertname }}'
+        text: >-
+          {{ range .Alerts }}
+          *{{ .Labels.severity | toUpper }}*: {{ .Annotations.summary }}
+          {{ .Annotations.description }}
+          <{{ .Annotations.runbook_url }}|Runbook>
+          {{ end }}
+
+  - name: "log-only"
+    webhook_configs: []
+
+  - name: "default"
+    slack_configs:
+      - api_url: "${SLACK_WEBHOOK_URL}"
+        channel: "#ipf-alerts"

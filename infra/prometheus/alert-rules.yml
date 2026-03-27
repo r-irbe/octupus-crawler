@@ -1,0 +1,175 @@
+# IPF Crawler — Prometheus Alert Rules
+# Implements: REQ-ALERT-001 through REQ-ALERT-012, REQ-ALERT-017 (annotations)
+# Design: docs/specs/alerting/design.md
+# Metric source: packages/observability/src/prom-metrics.ts
+
+groups:
+  - name: ipf-crawler-alerts
+    rules:
+      # REQ-ALERT-001: High error rate alert (T-ALERT-001)
+      - alert: HighErrorRate
+        expr: |
+          (
+            sum(rate(fetches_total{status="error"}[2m]))
+            / sum(rate(fetches_total[2m]))
+          ) > 0.5
+          and sum(rate(fetches_total[2m])) > 0.1
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High fetch error rate ({{ $value | humanizePercentage }})"
+          description: >-
+            Error rate is {{ $value | humanizePercentage }} over the last 2
+            minutes. Threshold: 50%. Minimum throughput guard: 0.1 req/s.
+          runbook_url: "https://github.com/ipf/ipf/wiki/Runbooks#high-error-rate"
+
+      # REQ-ALERT-002: Zero fetch rate alert (T-ALERT-002)
+      - alert: ZeroFetchRate
+        expr: |
+          frontier_size > 0
+          and on() sum(rate(fetches_total{status="success"}[5m])) == 0
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Zero successful fetches with non-empty frontier"
+          description: >-
+            No successful fetches in the last 5 minutes while frontier
+            contains {{ $value }} URLs. System may be deadlocked.
+          runbook_url: "https://github.com/ipf/ipf/wiki/Runbooks#zero-fetch-rate"
+
+      # REQ-ALERT-003: Stalled jobs alert (T-ALERT-003)
+      - alert: StalledJobs
+        expr: rate(stalled_jobs_total[2m]) > 0.05
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High stalled job rate ({{ $value | humanize }}/s)"
+          description: >-
+            Stalled job rate is {{ $value | humanize }}/s over the last 2
+            minutes. Threshold: 0.05/s (~6 stalls per 2 min).
+          runbook_url: "https://github.com/ipf/ipf/wiki/Runbooks#stalled-jobs"
+
+      # REQ-ALERT-004: P95 latency alert (T-ALERT-004)
+      - alert: P95LatencyHigh
+        expr: histogram_quantile(0.95, rate(fetch_duration_seconds_bucket[3m])) > 10
+        for: 3m
+        labels:
+          severity: warning
+        annotations:
+          summary: "P95 fetch latency above 10s ({{ $value | humanizeDuration }})"
+          description: >-
+            P95 fetch latency is {{ $value | humanizeDuration }} over the
+            last 3 minutes. Threshold: 10s (matches FETCH_TIMEOUT_MS).
+          runbook_url: "https://github.com/ipf/ipf/wiki/Runbooks#high-latency"
+
+      # REQ-ALERT-005: P99 latency critical alert (T-ALERT-005)
+      - alert: P99LatencyCritical
+        expr: histogram_quantile(0.99, rate(fetch_duration_seconds_bucket[5m])) > 15
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "P99 fetch latency above 15s ({{ $value | humanizeDuration }})"
+          description: >-
+            P99 fetch latency is {{ $value | humanizeDuration }} over the
+            last 5 minutes. Threshold: 15s (1.5x FETCH_TIMEOUT_MS).
+            Indicates systemic degradation.
+          runbook_url: "https://github.com/ipf/ipf/wiki/Runbooks#critical-latency"
+
+      # REQ-ALERT-006: Frontier capacity alert (T-ALERT-006)
+      - alert: FrontierCapacity
+        expr: frontier_size > 5000
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Frontier size exceeds capacity threshold ({{ $value }})"
+          description: >-
+            Frontier contains {{ $value }} URLs, exceeding the 5000
+            threshold for 5 minutes. This is 50% of the retention window.
+          runbook_url: "https://github.com/ipf/ipf/wiki/Runbooks#frontier-capacity"
+
+      # REQ-ALERT-007: Frontier growth rate alert (T-ALERT-007)
+      - alert: FrontierGrowth
+        expr: deriv(frontier_size[3m]) * 60 > 100
+        for: 3m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Frontier growing rapidly ({{ $value | humanize }} URLs/min)"
+          description: >-
+            Frontier is growing at {{ $value | humanize }} URLs/min over the
+            last 3 minutes. Threshold: 100 URLs/min (10x normal discovery rate).
+          runbook_url: "https://github.com/ipf/ipf/wiki/Runbooks#frontier-growth"
+
+      # REQ-ALERT-008: High utilization alert (T-ALERT-008)
+      - alert: HighUtilization
+        expr: avg(worker_utilization_ratio) > 0.8
+        for: 3m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High worker utilization ({{ $value | humanizePercentage }})"
+          description: >-
+            Average worker utilization is {{ $value | humanizePercentage }}
+            over the last 3 minutes. Threshold: 80%. Consider scaling up workers.
+          runbook_url: "https://github.com/ipf/ipf/wiki/Runbooks#high-utilization"
+
+      # REQ-ALERT-009: Low utilization alert (T-ALERT-009)
+      - alert: LowUtilization
+        expr: avg(worker_utilization_ratio) < 0.2 and avg(worker_utilization_ratio) > 0
+        for: 10m
+        labels:
+          severity: info
+        annotations:
+          summary: "Low worker utilization ({{ $value | humanizePercentage }})"
+          description: >-
+            Average worker utilization is {{ $value | humanizePercentage }}
+            for 10 minutes. Threshold: below 20%. Consider scaling down.
+          runbook_url: "https://github.com/ipf/ipf/wiki/Runbooks#low-utilization"
+
+      # REQ-ALERT-010: Worker down alert (T-ALERT-010)
+      - alert: WorkerDown
+        expr: up{job="crawler"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Worker instance {{ $labels.instance }} is down"
+          description: >-
+            Worker instance {{ $labels.instance }} has been unreachable
+            for 1 minute. Grace period for transient network issues exceeded.
+          runbook_url: "https://github.com/ipf/ipf/wiki/Runbooks#worker-down"
+
+      # REQ-ALERT-011: Coordinator restart alert (T-ALERT-011)
+      - alert: CoordinatorRestart
+        expr: increase(coordinator_restarts_total[1m]) > 0
+        for: 0m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Coordinator restart detected"
+          description: >-
+            Coordinator restart detected ({{ $value }} restart(s) in the
+            last minute). State continuity may be at risk if HA is not active.
+          runbook_url: "https://github.com/ipf/ipf/wiki/Runbooks#coordinator-restart"
+
+      # REQ-ALERT-012: Zero discovery alert (T-ALERT-012)
+      - alert: ZeroDiscovery
+        expr: |
+          frontier_size > 100
+          and on() sum(rate(fetches_total{status="success"}[10m])) > 0
+          and on() sum(rate(urls_discovered_total[10m])) == 0
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "No URLs discovered despite successful fetches"
+          description: >-
+            Zero URLs discovered in the last 10 minutes despite successful
+            fetches and a frontier of {{ with query "frontier_size" }}{{ . | first | value }}{{ end }}
+            URLs. Crawl may have reached a dead end.
+          runbook_url: "https://github.com/ipf/ipf/wiki/Runbooks#zero-discovery"

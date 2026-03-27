@@ -1,0 +1,228 @@
+# IPF Crawler — Alert Rule Tests Part 1 (Fetching & Latency)
+# Implements: REQ-ALERT-013 (fire + no-fire), REQ-ALERT-015 (edge cases)
+# Covers: HighErrorRate, ZeroFetchRate, StalledJobs, P95/P99 Latency
+# Run: promtool test rules alert-rules-fetch.test.yml
+
+rule_files:
+  - alert-rules.yml
+
+evaluation_interval: 1m
+
+tests:
+  # =========================================================================
+  # REQ-ALERT-001: HighErrorRate — warning when error rate > 50% for 2m
+  # =========================================================================
+
+  # T-ALERT-013: Should fire when error rate > 50%
+  - interval: 1m
+    input_series:
+      - series: 'fetches_total{status="error"}'
+        values: "0+60x10"
+      - series: 'fetches_total{status="success"}'
+        values: "0+30x10"
+    alert_rule_test:
+      - eval_time: 5m
+        alertname: HighErrorRate
+        exp_alerts:
+          - exp_labels:
+              severity: warning
+            exp_annotations:
+              summary: "High fetch error rate (66.67%)"
+              description: "Error rate is 66.67% over the last 2 minutes. Threshold: 50%. Minimum throughput guard: 0.1 req/s."
+              runbook_url: "https://github.com/ipf/ipf/wiki/Runbooks#high-error-rate"
+
+  # T-ALERT-013: Should NOT fire when error rate < 50%
+  - interval: 1m
+    input_series:
+      - series: 'fetches_total{status="error"}'
+        values: "0+6x10"
+      - series: 'fetches_total{status="success"}'
+        values: "0+60x10"
+    alert_rule_test:
+      - eval_time: 5m
+        alertname: HighErrorRate
+        exp_alerts: []
+
+  # REQ-ALERT-015: Edge case — exactly 50% should NOT fire (>50%, not >=)
+  - interval: 1m
+    input_series:
+      - series: 'fetches_total{status="error"}'
+        values: "0+60x10"
+      - series: 'fetches_total{status="success"}'
+        values: "0+60x10"
+    alert_rule_test:
+      - eval_time: 5m
+        alertname: HighErrorRate
+        exp_alerts: []
+
+  # REQ-ALERT-015: Edge case — low throughput guard (< 0.1 req/s)
+  - interval: 1m
+    input_series:
+      - series: 'fetches_total{status="error"}'
+        values: "0+2x10"
+      - series: 'fetches_total{status="success"}'
+        values: "0+1x10"
+    alert_rule_test:
+      - eval_time: 5m
+        alertname: HighErrorRate
+        exp_alerts: []
+
+  # =========================================================================
+  # REQ-ALERT-002: ZeroFetchRate — critical, frontier>0, zero success/5m
+  # =========================================================================
+
+  # T-ALERT-013: Should fire when frontier non-empty and zero fetches
+  - interval: 1m
+    input_series:
+      - series: "frontier_size"
+        values: "200x15"
+      - series: 'fetches_total{status="success"}'
+        values: "100x15"
+    alert_rule_test:
+      - eval_time: 10m
+        alertname: ZeroFetchRate
+        exp_alerts:
+          - exp_labels:
+              severity: critical
+            exp_annotations:
+              summary: "Zero successful fetches with non-empty frontier"
+              description: "No successful fetches in the last 5 minutes while frontier contains 200 URLs. System may be deadlocked."
+              runbook_url: "https://github.com/ipf/ipf/wiki/Runbooks#zero-fetch-rate"
+
+  # T-ALERT-013: Should NOT fire when fetches are succeeding
+  - interval: 1m
+    input_series:
+      - series: "frontier_size"
+        values: "200x15"
+      - series: 'fetches_total{status="success"}'
+        values: "0+10x15"
+    alert_rule_test:
+      - eval_time: 10m
+        alertname: ZeroFetchRate
+        exp_alerts: []
+
+  # REQ-ALERT-015: Edge case — frontier empty, zero fetches → no alert
+  - interval: 1m
+    input_series:
+      - series: "frontier_size"
+        values: "0x15"
+      - series: 'fetches_total{status="success"}'
+        values: "100x15"
+    alert_rule_test:
+      - eval_time: 10m
+        alertname: ZeroFetchRate
+        exp_alerts: []
+
+  # =========================================================================
+  # REQ-ALERT-003: StalledJobs — warning when stall rate > 0.05/s for 2m
+  # =========================================================================
+
+  # T-ALERT-013: Should fire on high stall rate
+  - interval: 1m
+    input_series:
+      - series: "stalled_jobs_total"
+        values: "0+6x10"
+    alert_rule_test:
+      - eval_time: 5m
+        alertname: StalledJobs
+        exp_alerts:
+          - exp_labels:
+              severity: warning
+            exp_annotations:
+              summary: "High stalled job rate (100m/s)"
+              description: "Stalled job rate is 100m/s over the last 2 minutes. Threshold: 0.05/s (~6 stalls per 2 min)."
+              runbook_url: "https://github.com/ipf/ipf/wiki/Runbooks#stalled-jobs"
+
+  # T-ALERT-013: Should NOT fire on low stall rate
+  - interval: 1m
+    input_series:
+      - series: "stalled_jobs_total"
+        values: "0+1x10"
+    alert_rule_test:
+      - eval_time: 5m
+        alertname: StalledJobs
+        exp_alerts: []
+
+  # =========================================================================
+  # REQ-ALERT-004: P95LatencyHigh — warning when P95 > 10s for 3m
+  # =========================================================================
+
+  # T-ALERT-013: Should fire on high P95
+  - interval: 1m
+    input_series:
+      - series: 'fetch_duration_seconds_bucket{le="5"}'
+        values: "0+80x10"
+      - series: 'fetch_duration_seconds_bucket{le="10"}'
+        values: "0+90x10"
+      - series: 'fetch_duration_seconds_bucket{le="15"}'
+        values: "0+100x10"
+      - series: 'fetch_duration_seconds_bucket{le="+Inf"}'
+        values: "0+100x10"
+    alert_rule_test:
+      - eval_time: 6m
+        alertname: P95LatencyHigh
+        exp_alerts:
+          - exp_labels:
+              severity: warning
+            exp_annotations:
+              summary: "P95 fetch latency above 10s (12.5s)"
+              description: "P95 fetch latency is 12.5s over the last 3 minutes. Threshold: 10s (matches FETCH_TIMEOUT_MS)."
+              runbook_url: "https://github.com/ipf/ipf/wiki/Runbooks#high-latency"
+
+  # T-ALERT-013: Should NOT fire when P95 below threshold
+  - interval: 1m
+    input_series:
+      - series: 'fetch_duration_seconds_bucket{le="5"}'
+        values: "0+98x10"
+      - series: 'fetch_duration_seconds_bucket{le="10"}'
+        values: "0+100x10"
+      - series: 'fetch_duration_seconds_bucket{le="15"}'
+        values: "0+100x10"
+      - series: 'fetch_duration_seconds_bucket{le="+Inf"}'
+        values: "0+100x10"
+    alert_rule_test:
+      - eval_time: 6m
+        alertname: P95LatencyHigh
+        exp_alerts: []
+
+  # =========================================================================
+  # REQ-ALERT-005: P99LatencyCritical — critical when P99 > 15s for 5m
+  # =========================================================================
+
+  # T-ALERT-013: Should fire on high P99
+  - interval: 1m
+    input_series:
+      - series: 'fetch_duration_seconds_bucket{le="10"}'
+        values: "0+95x15"
+      - series: 'fetch_duration_seconds_bucket{le="15"}'
+        values: "0+98x15"
+      - series: 'fetch_duration_seconds_bucket{le="30"}'
+        values: "0+100x15"
+      - series: 'fetch_duration_seconds_bucket{le="+Inf"}'
+        values: "0+100x15"
+    alert_rule_test:
+      - eval_time: 10m
+        alertname: P99LatencyCritical
+        exp_alerts:
+          - exp_labels:
+              severity: critical
+            exp_annotations:
+              summary: "P99 fetch latency above 15s (22.5s)"
+              description: "P99 fetch latency is 22.5s over the last 5 minutes. Threshold: 15s (1.5x FETCH_TIMEOUT_MS). Indicates systemic degradation."
+              runbook_url: "https://github.com/ipf/ipf/wiki/Runbooks#critical-latency"
+
+  # T-ALERT-013: Should NOT fire when P99 below threshold
+  - interval: 1m
+    input_series:
+      - series: 'fetch_duration_seconds_bucket{le="10"}'
+        values: "0+98x15"
+      - series: 'fetch_duration_seconds_bucket{le="15"}'
+        values: "0+100x15"
+      - series: 'fetch_duration_seconds_bucket{le="30"}'
+        values: "0+100x15"
+      - series: 'fetch_duration_seconds_bucket{le="+Inf"}'
+        values: "0+100x15"
+    alert_rule_test:
+      - eval_time: 10m
+        alertname: P99LatencyCritical
+        exp_alerts: []

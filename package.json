@@ -16,7 +16,8 @@
     "verify:gates": "./scripts/verify-gate-compliance.sh",
     "verify:specs": "./scripts/verify-spec-update.sh",
     "verify:session": "./scripts/verify-session-compliance.sh",
-    "verify:all": "./scripts/verify-guard-chain.sh && ./scripts/verify-gate-compliance.sh && ./scripts/verify-spec-update.sh && ./scripts/verify-session-compliance.sh"
+    "verify:all": "./scripts/verify-guard-chain.sh && ./scripts/verify-gate-compliance.sh && ./scripts/verify-spec-update.sh && ./scripts/verify-session-compliance.sh",
+    "test:alerts": "promtool check rules infra/prometheus/alert-rules.yml && promtool test rules infra/prometheus/alert-rules-fetch.test.yml infra/prometheus/alert-rules-ops.test.yml"
   },
   "devDependencies": {
     "turbo": "^2.8.0",

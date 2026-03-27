@@ -1,0 +1,261 @@
+# IPF Crawler — Alert Rule Tests Part 2 (Capacity & Operations)
+# Implements: REQ-ALERT-013 (fire + no-fire), REQ-ALERT-015 (edge cases)
+# Covers: FrontierCapacity, FrontierGrowth, Utilization, WorkerDown,
+#         CoordinatorRestart, ZeroDiscovery
+# Run: promtool test rules alert-rules-ops.test.yml
+
+rule_files:
+  - alert-rules.yml
+
+evaluation_interval: 1m
+
+tests:
+  # =========================================================================
+  # REQ-ALERT-006: FrontierCapacity — warning when frontier > 5000 for 5m
+  # =========================================================================
+
+  # T-ALERT-013: Should fire on large frontier
+  - interval: 1m
+    input_series:
+      - series: "frontier_size"
+        values: "6000x15"
+    alert_rule_test:
+      - eval_time: 7m
+        alertname: FrontierCapacity
+        exp_alerts:
+          - exp_labels:
+              severity: warning
+            exp_annotations:
+              summary: "Frontier size exceeds capacity threshold (6000)"
+              description: "Frontier contains 6000 URLs, exceeding the 5000 threshold for 5 minutes. This is 50% of the retention window."
+              runbook_url: "https://github.com/ipf/ipf/wiki/Runbooks#frontier-capacity"
+
+  # T-ALERT-013: Should NOT fire when frontier below threshold
+  - interval: 1m
+    input_series:
+      - series: "frontier_size"
+        values: "4000x15"
+    alert_rule_test:
+      - eval_time: 7m
+        alertname: FrontierCapacity
+        exp_alerts: []
+
+  # REQ-ALERT-015: Edge case — exactly 5000 should NOT fire (>5000)
+  - interval: 1m
+    input_series:
+      - series: "frontier_size"
+        values: "5000x15"
+    alert_rule_test:
+      - eval_time: 7m
+        alertname: FrontierCapacity
+        exp_alerts: []
+
+  # =========================================================================
+  # REQ-ALERT-007: FrontierGrowth — warning when growth > 100 URLs/min
+  # =========================================================================
+
+  # T-ALERT-013: Should fire on rapid growth
+  - interval: 1m
+    input_series:
+      - series: "frontier_size"
+        values: "1000+200x15"
+    alert_rule_test:
+      - eval_time: 6m
+        alertname: FrontierGrowth
+        exp_alerts:
+          - exp_labels:
+              severity: warning
+            exp_annotations:
+              summary: "Frontier growing rapidly (200 URLs/min)"
+              description: "Frontier is growing at 200 URLs/min over the last 3 minutes. Threshold: 100 URLs/min (10x normal discovery rate)."
+              runbook_url: "https://github.com/ipf/ipf/wiki/Runbooks#frontier-growth"
+
+  # T-ALERT-013: Should NOT fire on slow growth
+  - interval: 1m
+    input_series:
+      - series: "frontier_size"
+        values: "1000+10x15"
+    alert_rule_test:
+      - eval_time: 6m
+        alertname: FrontierGrowth
+        exp_alerts: []
+
+  # =========================================================================
+  # REQ-ALERT-008: HighUtilization — warning when avg util > 80% for 3m
+  # =========================================================================
+
+  # T-ALERT-013: Should fire on high utilization
+  - interval: 1m
+    input_series:
+      - series: 'worker_utilization_ratio{instance="worker-1"}'
+        values: "0.9x10"
+      - series: 'worker_utilization_ratio{instance="worker-2"}'
+        values: "0.85x10"
+    alert_rule_test:
+      - eval_time: 5m
+        alertname: HighUtilization
+        exp_alerts:
+          - exp_labels:
+              severity: warning
+            exp_annotations:
+              summary: "High worker utilization (87.5%)"
+              description: "Average worker utilization is 87.5% over the last 3 minutes. Threshold: 80%. Consider scaling up workers."
+              runbook_url: "https://github.com/ipf/ipf/wiki/Runbooks#high-utilization"
+
+  # T-ALERT-013: Should NOT fire on moderate utilization
+  - interval: 1m
+    input_series:
+      - series: 'worker_utilization_ratio{instance="worker-1"}'
+        values: "0.7x10"
+      - series: 'worker_utilization_ratio{instance="worker-2"}'
+        values: "0.6x10"
+    alert_rule_test:
+      - eval_time: 5m
+        alertname: HighUtilization
+        exp_alerts: []
+
+  # =========================================================================
+  # REQ-ALERT-009: LowUtilization — info when avg util < 20% for 10m
+  # =========================================================================
+
+  # T-ALERT-013: Should fire on sustained low utilization
+  - interval: 1m
+    input_series:
+      - series: 'worker_utilization_ratio{instance="worker-1"}'
+        values: "0.1x20"
+      - series: 'worker_utilization_ratio{instance="worker-2"}'
+        values: "0.15x20"
+    alert_rule_test:
+      - eval_time: 12m
+        alertname: LowUtilization
+        exp_alerts:
+          - exp_labels:
+              severity: info
+            exp_annotations:
+              summary: "Low worker utilization (12.5%)"
+              description: "Average worker utilization is 12.5% for 10 minutes. Threshold: below 20%. Consider scaling down."
+              runbook_url: "https://github.com/ipf/ipf/wiki/Runbooks#low-utilization"
+
+  # T-ALERT-013: Should NOT fire when utilization is zero (idle)
+  - interval: 1m
+    input_series:
+      - series: 'worker_utilization_ratio{instance="worker-1"}'
+        values: "0x20"
+    alert_rule_test:
+      - eval_time: 15m
+        alertname: LowUtilization
+        exp_alerts: []
+
+  # =========================================================================
+  # REQ-ALERT-010: WorkerDown — critical when instance unreachable for 1m
+  # =========================================================================
+
+  # T-ALERT-013: Should fire when worker is down
+  - interval: 1m
+    input_series:
+      - series: 'up{job="crawler", instance="worker-1:9090"}'
+        values: "0x10"
+    alert_rule_test:
+      - eval_time: 3m
+        alertname: WorkerDown
+        exp_alerts:
+          - exp_labels:
+              severity: critical
+              job: crawler
+              instance: "worker-1:9090"
+            exp_annotations:
+              summary: "Worker instance worker-1:9090 is down"
+              description: "Worker instance worker-1:9090 has been unreachable for 1 minute. Grace period for transient network issues exceeded."
+              runbook_url: "https://github.com/ipf/ipf/wiki/Runbooks#worker-down"
+
+  # T-ALERT-013: Should NOT fire when worker is up
+  - interval: 1m
+    input_series:
+      - series: 'up{job="crawler", instance="worker-1:9090"}'
+        values: "1x10"
+    alert_rule_test:
+      - eval_time: 3m
+        alertname: WorkerDown
+        exp_alerts: []
+
+  # =========================================================================
+  # REQ-ALERT-011: CoordinatorRestart — warning immediately on restart
+  # =========================================================================
+
+  # T-ALERT-013: Should fire on coordinator restart
+  - interval: 15s
+    input_series:
+      - series: "coordinator_restarts_total"
+        values: "0x8 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20"
+    alert_rule_test:
+      - eval_time: 4m
+        alertname: CoordinatorRestart
+        exp_alerts:
+          - exp_labels:
+              severity: warning
+            exp_annotations:
+              summary: "Coordinator restart detected"
+              description: "Coordinator restart detected (4 restart(s) in the last minute). State continuity may be at risk if HA is not active."
+              runbook_url: "https://github.com/ipf/ipf/wiki/Runbooks#coordinator-restart"
+
+  # T-ALERT-013: Should NOT fire when no restarts
+  - interval: 1m
+    input_series:
+      - series: "coordinator_restarts_total"
+        values: "5x10"
+    alert_rule_test:
+      - eval_time: 3m
+        alertname: CoordinatorRestart
+        exp_alerts: []
+
+  # =========================================================================
+  # REQ-ALERT-012: ZeroDiscovery — warning when no discoveries for 10m
+  # =========================================================================
+
+  # T-ALERT-013: Should fire on zero discoveries with active fetching
+  - interval: 1m
+    input_series:
+      - series: "frontier_size"
+        values: "500x25"
+      - series: 'fetches_total{status="success"}'
+        values: "0+10x25"
+      - series: "urls_discovered_total"
+        values: "100x25"
+    alert_rule_test:
+      - eval_time: 20m
+        alertname: ZeroDiscovery
+        exp_alerts:
+          - exp_labels:
+              severity: warning
+            exp_annotations:
+              summary: "No URLs discovered despite successful fetches"
+              description: "Zero URLs discovered in the last 10 minutes despite successful fetches and a frontier of 500 URLs. Crawl may have reached a dead end."
+              runbook_url: "https://github.com/ipf/ipf/wiki/Runbooks#zero-discovery"
+
+  # T-ALERT-013: Should NOT fire when URLs are being discovered
+  - interval: 1m
+    input_series:
+      - series: "frontier_size"
+        values: "500x25"
+      - series: 'fetches_total{status="success"}'
+        values: "0+10x25"
+      - series: "urls_discovered_total"
+        values: "0+5x25"
+    alert_rule_test:
+      - eval_time: 20m
+        alertname: ZeroDiscovery
+        exp_alerts: []
+
+  # REQ-ALERT-015: Edge case — small frontier (≤100), zero discovery → no alert
+  - interval: 1m
+    input_series:
+      - series: "frontier_size"
+        values: "50x25"
+      - series: 'fetches_total{status="success"}'
+        values: "0+10x25"
+      - series: "urls_discovered_total"
+        values: "100x25"
+    alert_rule_test:
+      - eval_time: 20m
+        alertname: ZeroDiscovery
+        exp_alerts: []
