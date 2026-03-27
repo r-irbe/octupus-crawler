@@ -22,8 +22,8 @@
 | G7: State update | ✅ | — | Updated this file |
 | G8: RALPH review | ✅ | c824fa5 | 7 findings, all resolved, APPROVED |
 | G9: Worklog | ✅ | — | 2026-03-27-completion-detection.md |
-| G10: Report | 🔄 | — | In progress |
-| G11: Spec update | ⏳ | — | |
+| G10: Report | ✅ | — | Presented to user |
+| G11: Spec update | ✅ | 3d40ff3 | tasks.md + design.md updated with RALPH findings |
 
 ## Key Contracts
 
