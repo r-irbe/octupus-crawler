@@ -9,7 +9,7 @@
 - Run `pnpm verify:guards` (NOT raw turbo commands) before every commit
 - Run `pnpm verify:gates` + Review Agent with full RALPH loop before merging to main
 - Run `pnpm verify:session` before declaring work complete
-- Run `pnpm verify:specs` after G10 to ensure living specs are current
+- Run `pnpm verify:specs` after G10 to ensure living specs are current — propagate G8 RALPH findings into specs
 - Create feature branch `work/<task-slug>` before writing code
 - Create/update state tracker in `docs/memory/session/`
 - Use separate subagents for implementation vs review (multi-package work)

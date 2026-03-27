@@ -19,6 +19,12 @@ G8 **always** requires a Review Agent running the full PR Review Council RALPH l
 
 **Iteration**: If any sustained Critical or Major findings remain, fix them and re-run the RALPH loop. Repeat until the verdict is APPROVED (no sustained Critical/Major). Self-review alone is never sufficient for G8.
 
+**G8→G11 Spec Propagation**: Every RALPH finding that results in a code change MUST be propagated to specs in G11. Record each finding's impact for G11:
+- Architectural changes → update `design.md`
+- New constraints or invariants discovered → update `requirements.md`
+- New/modified tasks → update `tasks.md`
+- Changes to enforcement rules or cross-cutting concerns → update specs of ALL affected features (e.g., agentic-setup)
+
 ## Review Perspectives
 
 ### 1. Security Auditor

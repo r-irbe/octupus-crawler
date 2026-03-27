@@ -104,7 +104,7 @@ These gates are **NON-NEGOTIABLE**. Skipping any gate is a protocol violation re
 | G8 | **Review** | Run `pnpm verify:gates` + launch Review Agent with full PR Review Council RALPH loop (3 rounds: Analysis → Deliberation → Vote) until all sustained Critical/Major findings are resolved. No betterments or issues may remain unaddressed. | Review summary |
 | G9 | **Worklog** | Create `docs/worklogs/YYYY-MM-DD-topic.md` | File path |
 | G10 | **Report** | Run `pnpm verify:session` + present to user: what changed, tests added, ADR compliance, known gaps | Summary message |
-| G11 | **Spec Update** | Run `pnpm verify:specs` — update `tasks.md` checkboxes (`[ ]` → `[x]`) for completed tasks. Update `design.md`/`requirements.md` if implementation diverged (living specs). | Updated spec files |
+| G11 | **Spec Update** | Run `pnpm verify:specs` — update `tasks.md` checkboxes (`[ ]` → `[x]`) for completed tasks. Update `design.md`/`requirements.md` if implementation diverged (living specs). **Propagate G8 findings**: any RALPH review finding that resulted in code changes, design improvements, or new constraints MUST be reflected in the relevant spec files (design.md for architectural changes, requirements.md for new constraints, tasks.md for new/modified tasks). Also update specs for any **other** features affected by G8 changes (e.g., agentic-setup specs when enforcement rules change). | Updated spec files |
 
 ### Agent Delegation (tools with subagent support)
 
@@ -216,7 +216,7 @@ src/features/<feature>/
 12. **Review-by-explanation**: Before approving AI-generated code, verify you can explain the implementation to a colleague — prevents critical thinking atrophy (Generation-then-Comprehension pattern: 86% comprehension vs 50% for copy-paste delegation)
 13. **Sliding window context**: Current task = full context; completed tasks = compressed summaries; state tracker = always full
 14. **Human-written context files**: AI may draft AGENTS.md / CLAUDE.md / instructions, but human reviews and rewrites before they become authoritative (ETH Zurich finding)
-15. **Living specs**: When code diverges from `design.md` or `requirements.md`, update the spec in the same commit. Stale specs are flagged by G11 (`pnpm verify:specs`).
+15. **Living specs**: When code diverges from `design.md` or `requirements.md`, update the spec in the same commit. G8 RALPH review fixes MUST be propagated to specs in G11. Stale specs are flagged by G11 (`pnpm verify:specs`).
 
 ### NEVER (hard boundaries — these are architectural invariants)
 
@@ -326,7 +326,7 @@ This is not optional — skipping the feedback loop leads to context rot (ADR-02
 3. Spec-first: read `requirements.md` / `design.md` / `tasks.md` before writing code
 4. State tracker: create and update `docs/memory/session/YYYY-MM-DD-<slug>-state.md`
 5. No `any`, no mocked infra, no barrel imports, no `eslint-disable` without justification
-6. Spec update: run `pnpm verify:specs` after G10 — update `tasks.md` checkboxes + living specs
+6. Spec update: run `pnpm verify:specs` after G10 — update `tasks.md` checkboxes + living specs + propagate G8 findings
 
 ---
 
