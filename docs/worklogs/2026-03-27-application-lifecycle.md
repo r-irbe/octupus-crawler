@@ -13,6 +13,8 @@ New package `packages/application-lifecycle/` implementing startup sequencing, g
 | Hash | Description |
 | --- | --- |
 | `676b1c1` | feat(application-lifecycle): implement startup, shutdown, seeding, worker processing |
+| `c1e9514` | docs(application-lifecycle): update tasks.md checkboxes, worklog, state tracker |
+| `0f52abf` | fix(application-lifecycle): G8 RALPH review fixes + enforce mandatory RALPH loop |
 
 ### Files Created
 
@@ -53,3 +55,14 @@ New package `packages/application-lifecycle/` implementing startup sequencing, g
 
 - Using recording logger pattern (push to calls array) instead of vi.fn() avoids `this: void` lint issues and `exactOptionalPropertyTypes` problems with mock types
 - Port 0 for readiness probe tests lets OS assign port but makes HTTP assertions harder — state-based testing is more reliable
+- G8 RALPH loop caught a real type safety gap (F-3: `exitCodeForReason` used raw string union instead of `ShutdownReason['_tag']`) — validates the mandatory review requirement
+
+## G8 RALPH Review
+
+Full PR Review Council RALPH loop run (3 rounds). 7 findings:
+- F-3 (Major, FIXED): `exitCodeForReason` type safety gap → now uses `ShutdownReason['_tag']`
+- F-5 (Minor, FIXED): teardown timeout silently swallowed failures → added warning log
+- F-6 (Minor, FIXED): readiness probe missing EADDRINUSE handler → added error listener
+- F-1, F-2, F-4, F-7: Minor/Informational — noted for future
+
+G8 enforcement also updated: AGENTS.md, CLAUDE.md, copilot-instructions.md, review-code SKILL.md now mandate RALPH loop for every G8.
