@@ -14,7 +14,7 @@ graph LR
         FD[fetch_duration_seconds]
         FS[frontier_size]
         SJ[stalled_jobs_total]
-        AJ[active_jobs]
+        UP[up job=crawler]
         WU[worker_utilization_ratio]
         UD[urls_discovered_total]
         CR[coordinator_restarts_total]
@@ -44,7 +44,7 @@ graph LR
     FS --> R7
     WU --> R8
     WU --> R9
-    AJ --> R10
+    UP --> R10
     CR --> R11
     UD --> R12
     FT --> R12
@@ -54,8 +54,8 @@ graph LR
 
 | Alert | PromQL Condition | Severity | Duration |
 | --- | --- | --- | --- |
-| HighErrorRate | `rate(fetches_total{status="error"}[2m]) / rate(fetches_total[2m]) > 0.5 AND rate(fetches_total[2m]) > 0.1` | warning | 2m |
-| ZeroFetchRate | `frontier_size > 0 AND rate(fetches_total{status="success"}[5m]) == 0` | critical | 5m |
+| HighErrorRate | `(sum(rate(fetches_total{status="error"}[2m])) / sum(rate(fetches_total[2m]))) > 0.5 AND sum(rate(fetches_total[2m])) > 0.1` | warning | 2m |
+| ZeroFetchRate | `frontier_size > 0 AND on() sum(rate(fetches_total{status="success"}[5m])) == 0` | critical | 5m |
 | StalledJobs | `rate(stalled_jobs_total[2m]) > 0.05` | warning | 2m |
 | P95LatencyHigh | `histogram_quantile(0.95, rate(fetch_duration_seconds_bucket[3m])) > 10` | warning | 3m |
 | P99LatencyCritical | `histogram_quantile(0.99, rate(fetch_duration_seconds_bucket[5m])) > 15` | critical | 5m |
@@ -65,7 +65,9 @@ graph LR
 | LowUtilization | `avg(worker_utilization_ratio) < 0.2 AND avg(worker_utilization_ratio) > 0` | info | 10m |
 | WorkerDown | `up{job="crawler"} == 0` | critical | 1m |
 | CoordinatorRestart | `increase(coordinator_restarts_total[1m]) > 0` | warning | 0m |
-| ZeroDiscovery | `frontier_size > 100 AND rate(fetches_total{status="success"}[10m]) > 0 AND rate(urls_discovered_total[10m]) == 0` | warning | 10m |
+| ZeroDiscovery | `frontier_size > 100 AND on() sum(rate(fetches_total{status="success"}[10m])) > 0 AND on() sum(rate(urls_discovered_total[10m])) == 0` | warning | 10m |
+
+> **Implementation note**: HighErrorRate uses `sum()` to aggregate across label dimensions before division (prevents label leakage from `rate()` retaining the `status` label). ZeroFetchRate/ZeroDiscovery use `on()` in `and` clauses to match series with different label sets (frontier_size has no labels vs. fetches_total with status label).
 
 ## 3. Alert Testing Strategy
 
