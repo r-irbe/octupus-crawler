@@ -20,6 +20,7 @@ Chronological work session logs documenting what was done, decisions made, and o
 | [2026-03-26: HTTP Fetching Implementation](2026-03-26-http-fetching-implementation.md) | HTTP Fetching: redirect loop, SSRF per-hop, politeness, stream processing, 63 tests | Complete | 2026-03-26 |
 | [2026-03-26: Crawl Pipeline Implementation](2026-03-26-crawl-pipeline.md) | Crawl Pipeline: URL normalization, pipeline stages, link discovery, 64 tests (60 unit + 4 property) | Complete | 2026-03-26 |
 | [2026-03-26: URL Frontier Implementation](2026-03-26-url-frontier.md) | URL Frontier: SHA-256 dedup, BFS priority, QueueBackend port, collision detection, 45 tests (41 unit + 4 property) | Complete | 2026-03-26 |
+| [2026-03-27: G11 Spec Update Gate](2026-03-27-g11-spec-update-gate.md) | G11 gate: verify-spec-update.sh, pnpm verify:specs, 5 stale specs backfilled, agentic-setup specs updated | Complete | 2026-03-27 |
 
 ## Index
 
@@ -37,6 +38,7 @@ Chronological work session logs documenting what was done, decisions made, and o
 - [2026-03-26: HTTP Fetching Implementation](2026-03-26-http-fetching-implementation.md) — Implemented @ipf/http-fetching: manual redirect loop, per-hop SSRF, politeness controller, stream processing, error classification, 63 tests, 4 review findings fixed
 - [2026-03-26: Crawl Pipeline Implementation](2026-03-26-crawl-pipeline.md) — Implemented @ipf/crawl-pipeline: URL normalization, pipeline stages, link discovery, 64 tests (60 unit + 4 property)
 - [2026-03-26: URL Frontier Implementation](2026-03-26-url-frontier.md) — Implemented @ipf/url-frontier: SHA-256 dedup, BFS priority, QueueBackend hexagonal port, collision detection, 45 tests (41 unit + 4 property)
+- [2026-03-27: G11 Spec Update Gate](2026-03-27-g11-spec-update-gate.md) — Added G11 Spec Update gate: verify-spec-update.sh script, pnpm verify:specs, wired into AGENTS.md/CLAUDE.md/copilot-instructions.md, backfilled 5 stale specs, updated agentic-setup specs
 
 ---
 
