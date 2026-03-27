@@ -226,3 +226,31 @@ tests:
       - eval_time: 10m
         alertname: P99LatencyCritical
         exp_alerts: []
+
+  # =========================================================================
+  # REQ-ALERT-015: Metric absence edge cases — no data should not fire
+  # =========================================================================
+
+  # No fetches_total data → HighErrorRate should not fire
+  - interval: 1m
+    input_series: []
+    alert_rule_test:
+      - eval_time: 5m
+        alertname: HighErrorRate
+        exp_alerts: []
+
+  # No frontier_size or fetches data → ZeroFetchRate should not fire
+  - interval: 1m
+    input_series: []
+    alert_rule_test:
+      - eval_time: 10m
+        alertname: ZeroFetchRate
+        exp_alerts: []
+
+  # No histogram data → P95LatencyHigh should not fire
+  - interval: 1m
+    input_series: []
+    alert_rule_test:
+      - eval_time: 6m
+        alertname: P95LatencyHigh
+        exp_alerts: []

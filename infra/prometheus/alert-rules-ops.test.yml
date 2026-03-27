@@ -259,3 +259,31 @@ tests:
       - eval_time: 20m
         alertname: ZeroDiscovery
         exp_alerts: []
+
+  # =========================================================================
+  # REQ-ALERT-015: Metric absence edge cases — no data should not fire
+  # =========================================================================
+
+  # No frontier_size data → FrontierCapacity should not fire
+  - interval: 1m
+    input_series: []
+    alert_rule_test:
+      - eval_time: 7m
+        alertname: FrontierCapacity
+        exp_alerts: []
+
+  # No worker_utilization_ratio data → HighUtilization should not fire
+  - interval: 1m
+    input_series: []
+    alert_rule_test:
+      - eval_time: 5m
+        alertname: HighUtilization
+        exp_alerts: []
+
+  # No up data → WorkerDown should not fire
+  - interval: 1m
+    input_series: []
+    alert_rule_test:
+      - eval_time: 3m
+        alertname: WorkerDown
+        exp_alerts: []

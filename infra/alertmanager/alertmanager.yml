@@ -1,6 +1,12 @@
 # IPF Crawler — Alertmanager Routing Configuration
 # Implements: REQ-ALERT-016 (severity-based routing)
 # Design: docs/specs/alerting/design.md §4
+#
+# DEPLOYMENT NOTE: This is a template. Environment variables (${VAR}) are NOT
+# natively expanded by Alertmanager. Inject secrets via one of:
+#   1. Kustomize secretGenerator + volume mount (preferred, ADR-004)
+#   2. envsubst preprocessing: envsubst < alertmanager.yml > alertmanager-final.yml
+#   3. External Secrets Operator → K8s Secret → volume mount
 
 global:
   resolve_timeout: 5m

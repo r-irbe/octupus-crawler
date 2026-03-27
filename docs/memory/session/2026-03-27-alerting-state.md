@@ -16,11 +16,11 @@
 | G2: Branch | ✅ | — | `work/alerting` from main@842b2c1 |
 | G3: Specs | ✅ | — | 17 reqs (REQ-ALERT-001–017), 18 tasks, 3 phases |
 | G4: State tracker | ✅ | — | This file |
-| Implementation | 🔄 | — | In progress |
-| G5: Guard functions | ⏳ | — | |
-| G6: Commit | ⏳ | — | |
-| G7: State update | ⏳ | — | |
-| G8: RALPH review | ⏳ | — | |
+| Implementation | ✅ | 709e4c4 | 12 rules, 2 test files, Alertmanager config, CI script |
+| G5: Guard functions | ✅ | — | Attempt 1/3: typecheck+lint+test PASS (583 tests), promtool PASS |
+| G6: Commit | ✅ | 709e4c4 | 6 files, 771 insertions |
+| G7: State update | ✅ | — | This update |
+| G8: RALPH review | 🔄 | — | In progress |
 | G9: Worklog | ⏳ | — | |
 | G10: Report | ⏳ | — | |
 | G11: Spec update | ⏳ | — | |
@@ -41,10 +41,16 @@
 
 | # | Decision | Rationale |
 | --- | --- | --- |
-| | | |
+| D1 | Used `sum()` in HighErrorRate PromQL | Prevents label leakage from `rate()` retaining status label |
+| D2 | Used `on()` in ZeroFetchRate/ZeroDiscovery | Allows `and` to match across series with different label sets |
+| D3 | Split tests into 2 files | 300-line hard limit; fetch.test.yml + ops.test.yml |
+| D4 | 15s input interval for CoordinatorRestart test | `increase()` needs >=2 samples in 1m window |
 
 ## Problems
 
 | # | Problem | Resolution |
 | --- | --- | --- |
-| | | |
+| P1 | HighErrorRate label leakage | Wrapped rate() in sum() to drop labels |
+| P2 | `and` label matching failure | Added `on()` to ignore label differences |
+| P3 | CoordinatorRestart not firing | Needed higher-frequency samples (15s) for increase() |
+| P4 | promtool requires exact annotation matching | Added full exp_annotations in all fire tests |
