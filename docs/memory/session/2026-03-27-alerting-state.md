@@ -20,10 +20,10 @@
 | G5: Guard functions | ✅ | — | Attempt 1/3: typecheck+lint+test PASS (583 tests), promtool PASS |
 | G6: Commit | ✅ | 709e4c4 | 6 files, 771 insertions |
 | G7: State update | ✅ | — | This update |
-| G8: RALPH review | 🔄 | — | In progress |
-| G9: Worklog | ⏳ | — | |
-| G10: Report | ⏳ | — | |
-| G11: Spec update | ⏳ | — | |
+| G8: RALPH review | ✅ | 65978b6 | APPROVED after fixes (F-001, F-007 resolved; F-004, F-005 → G11) |
+| G9: Worklog | ✅ | ad0cdbc | docs/worklogs/2026-03-27-alerting.md |
+| G10: Report | ✅ | — | Presented to user |
+| G11: Spec update | ✅ | ba76108 | tasks.md 18/18, design.md PromQL + Mermaid fixes |
 
 ## Key Metric Names (from observability package)
 
