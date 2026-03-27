@@ -193,6 +193,64 @@ sequenceDiagram
     end
 ```
 
+### Copilot Agent Hooks
+
+VS Code Copilot has its own hook system (`.github/hooks/*.json`) with the same lifecycle events as Claude Code. Key difference: hooks receive stdin JSON with `tool_name` and `tool_input` fields, and return JSON via stdout with `hookSpecificOutput`.
+
+```jsonc
+// .github/hooks/gates.json
+{
+  "hooks": {
+    "PreToolUse": [{
+      "type": "command",
+      "command": "./scripts/hooks/copilot-pre-tool-use.sh",
+      "timeout": 300
+    }],
+    "PostToolUse": [{
+      "type": "command",
+      "command": "./scripts/hooks/copilot-post-tool-use.sh",
+      "timeout": 30
+    }],
+    "Stop": [{
+      "type": "command",
+      "command": "./scripts/hooks/copilot-stop.sh",
+      "timeout": 10
+    }]
+  }
+}
+```
+
+Scripts parse `tool_name` from stdin JSON and filter internally (unlike Claude matchers). Non-matching tools get silent pass-through (exit 0, no output).
+
+Covers: REQ-AGENT-107 to 112
+
+### Three-Layer Enforcement Architecture
+
+```mermaid
+graph TD
+    subgraph Layer1["Layer 1: Tool-Native Hooks"]
+        COPILOT[".github/hooks/gates.json<br/>(Copilot PreToolUse/PostToolUse/Stop)"]
+        CLAUDE[".claude/settings.json<br/>(Claude PreToolUse/PostToolUse/Stop)"]
+    end
+
+    subgraph Layer2["Layer 2: Git Hook (Universal)"]
+        PRECOMMIT[".githooks/pre-commit<br/>G2 (branch) + G4 (state tracker)"]
+    end
+
+    subgraph Layer3["Layer 3: VS Code Config"]
+        VSCODE[".vscode/settings.json<br/>chat.hookFilesLocations:<br/>.github/hooks=true<br/>.claude/settings.json=false"]
+    end
+
+    COPILOT -->|blocks commit/push| GIT[Git Operations]
+    CLAUDE -->|blocks commit/push| GIT
+    PRECOMMIT -->|blocks commit| GIT
+    VSCODE -->|disables Claude hooks<br/>in VS Code| CLAUDE
+
+    style VSCODE fill:#ffa,stroke:#aa0
+```
+
+**Why disable Claude hooks in VS Code?** VS Code ignores Claude's matcher syntax (`"matcher": "Bash(git commit)"`), causing ALL Claude hooks to fire on EVERY tool invocation — including reads, searches, and file edits. This would run full guard functions on every operation. The `.vscode/settings.json` disables Claude hook loading; Copilot uses its own hooks from `.github/hooks/` which filter by `tool_name` internally.
+
 ---
 
 ## 3. TDD Agent Workflow Architecture
@@ -1280,7 +1338,7 @@ All 106 requirements map to design sections. Requirements grouped by design sect
 | Design Section | Requirements Covered |
 | --- | --- |
 | §1 Context File Architecture | REQ-AGENT-001–007, 047–050, 054–060 |
-| §2 Enforcement Hooks | REQ-AGENT-008–013, 070 |
+| §2 Enforcement Hooks | REQ-AGENT-008–013, 070, 107–112 |
 | §3 TDD Agent Workflow | REQ-AGENT-020–025 |
 | §4 Multi-Agent Orchestration | REQ-AGENT-026–031 |
 | §5 CI/CD Pipeline | REQ-AGENT-037–041 |
@@ -1300,4 +1358,4 @@ All 106 requirements map to design sections. Requirements grouped by design sect
 | §19 Advanced Reasoning | REQ-AGENT-103–106 |
 | §3 TDD (shared: REQ-014–019) | REQ-AGENT-014–019 (spec workflow → TDD lifecycle) |
 
-**Coverage**: 106/106 requirements have corresponding design sections (100%).
+**Coverage**: 112/112 requirements have corresponding design sections (100%).

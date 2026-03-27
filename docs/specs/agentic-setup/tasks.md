@@ -214,6 +214,15 @@
 - [x] **T-AGENT-114**: Wire G11 check into `scripts/verify-session-compliance.sh` → REQ-AGENT-071
 - [x] **T-AGENT-115**: Backfill stale tasks.md checkboxes for 5 implemented packages (crawl-pipeline, http-fetching, ssrf-guard, testing-quality, url-frontier) → REQ-AGENT-073
 
+## Phase 26: Copilot Hook Parity & Universal Enforcement
+
+- [x] **T-AGENT-116**: Create `.github/hooks/gates.json` with PreToolUse, PostToolUse, Stop hook definitions pointing to shell scripts → REQ-AGENT-107
+- [x] **T-AGENT-117**: Create `scripts/hooks/copilot-pre-tool-use.sh` — parse stdin JSON, block `git commit` without G2/G4/G5, block `git push` to main, require confirmation for `--force` → REQ-AGENT-107, REQ-AGENT-108
+- [x] **T-AGENT-118**: Create `scripts/hooks/copilot-post-tool-use.sh` — run `pnpm tsc --noEmit` after file-editing tools, warn on files >300 lines → REQ-AGENT-109
+- [x] **T-AGENT-119**: Create `scripts/hooks/copilot-stop.sh` — check uncommitted changes and missing state tracker, guard against `stop_hook_active` infinite loop → REQ-AGENT-110
+- [x] **T-AGENT-120**: Create `.vscode/settings.json` with `chat.hookFilesLocations` disabling `.claude/settings.json` and `.claude/settings.local.json` → REQ-AGENT-111
+- [x] **T-AGENT-121**: Update AGENTS.md and `.github/copilot-instructions.md` with three-layer enforcement documentation (Copilot hooks + Git hooks + Claude hooks) → REQ-AGENT-107, REQ-AGENT-111
+
 ---
 
 ## Dependencies
@@ -296,10 +305,10 @@
 
 | Metric | Count |
 | --- | --- |
-| Total tasks | 115 (T-AGENT-000a to T-AGENT-115) |
-| Completed | 97 |
+| Total tasks | 121 (T-AGENT-000a to T-AGENT-121) |
+| Completed | 103 |
 | Deferred | 18 |
-| Completion rate | 84.3% |
+| Completion rate | 85.1% |
 
 ### Deferred Tasks
 
@@ -320,4 +329,4 @@
 | D-3 | `agent-constraints.sh` as bash (not .ts) | Shell script for CI pipeline portability |
 | D-4 | Security generators in `packages/testing/` | Co-located with other test utilities per project layout |
 
-> **Provenance**: Created 2026-03-25. Updated 2026-03-25: added Phases 13–20 (38 new tasks) from research. Updated 2026-03-26: renumbered original Phase 20 validation tasks, added Phases 20–24 (25 new tasks, T-AGENT-085 to 109) from cross-validation against all 22 ADRs, REQUIREMENTS-AGNOSTIC.md, arch.md, code.md, 13 feature specs, and docs infrastructure. Total: 109 tasks across 24 phases. Updated 2026-03-27: marked 91/109 tasks complete, 18 deferred, added completion summary and key decisions from implementation worklog. Updated 2026-03-27: added Phase 25 (G11 Spec Update Gate — T-AGENT-110 to T-AGENT-115), annotated T-AGENT-068/070 with concrete implementation references. Total: 115 tasks, 97 complete, 84.3%.
+> **Provenance**: Created 2026-03-25. Updated 2026-03-25: added Phases 13–20 (38 new tasks) from research. Updated 2026-03-26: renumbered original Phase 20 validation tasks, added Phases 20–24 (25 new tasks, T-AGENT-085 to 109) from cross-validation against all 22 ADRs, REQUIREMENTS-AGNOSTIC.md, arch.md, code.md, 13 feature specs, and docs infrastructure. Total: 109 tasks across 24 phases. Updated 2026-03-27: marked 91/109 tasks complete, 18 deferred, added completion summary and key decisions from implementation worklog. Updated 2026-03-27: added Phase 25 (G11 Spec Update Gate — T-AGENT-110 to T-AGENT-115), annotated T-AGENT-068/070 with concrete implementation references. Updated 2026-03-27: added Phase 26 (Copilot Hook Parity — T-AGENT-116 to T-AGENT-121). Total: 121 tasks, 103 complete, 85.1%.

@@ -10,6 +10,8 @@ REPO_ROOT=$(git rev-parse --show-toplevel 2>/dev/null || pwd)
 INPUT=$(cat)
 
 # ── Parse JSON from stdin using node (always available in this repo) ──
+# Trust boundary: JSON input comes from VS Code's hook system (trusted).
+# Shell parameter $1 is from script-internal function calls (trusted).
 json_field() {
   echo "$INPUT" | node -e "
     const chunks = [];
@@ -44,9 +46,10 @@ EOF
   fi
 
   # G5: Run guard functions (typecheck + lint + test)
-  if ! pnpm turbo typecheck --output-logs=errors-only 2>/dev/null && \
-     pnpm turbo lint --output-logs=errors-only 2>/dev/null && \
-     pnpm turbo test --output-logs=errors-only 2>/dev/null; then
+  # Note: grouped with { } so ! negates the entire chain, not just the first command
+  if ! { pnpm turbo typecheck --output-logs=errors-only 2>/dev/null && \
+         pnpm turbo lint --output-logs=errors-only 2>/dev/null && \
+         pnpm turbo test --output-logs=errors-only 2>/dev/null; }; then
     cat <<'EOF'
 {"hookSpecificOutput":{"hookEventName":"PreToolUse","permissionDecision":"deny","permissionDecisionReason":"Guard functions failed (G5). Fix typecheck/lint/test errors before committing."}}
 EOF

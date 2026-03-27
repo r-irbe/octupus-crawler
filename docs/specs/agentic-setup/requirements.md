@@ -799,6 +799,51 @@ And the commit hook verifies trailer presence
 
 ---
 
+## 17. Copilot Hook Parity & Universal Enforcement
+
+**REQ-AGENT-107** (Ubiquitous)
+The system shall provide Copilot agent hooks in `.github/hooks/gates.json` that enforce the same Guard Function gates as the Claude Code hooks. A `PreToolUse` hook shall block `git commit` via `run_in_terminal` unless G2 (branch naming), G4 (state tracker), and G5 (guard functions) pass.
+
+**REQ-AGENT-108** (Ubiquitous)
+The Copilot `PreToolUse` hook shall block `git push` to `main` via `run_in_terminal` and shall require user confirmation (`permissionDecision: "ask"`) for `git push --force` on any branch.
+
+**REQ-AGENT-109** (Ubiquitous)
+The Copilot `PostToolUse` hook shall run `pnpm tsc --noEmit` after file-editing tools (`create_file`, `replace_string_in_file`, `multi_replace_string_in_file`) and inject type errors as `additionalContext`. It shall warn when a file exceeds the 300-line hard limit.
+
+**REQ-AGENT-110** (Ubiquitous)
+The Copilot `Stop` hook shall check for uncommitted changes and missing state tracker. It shall block session end (`decision: "block"`) when violations exist. It shall check `stop_hook_active` to prevent infinite loop re-triggering.
+
+**REQ-AGENT-111** (Ubiquitous)
+The system shall provide a `.vscode/settings.json` that disables loading hooks from `.claude/settings.json` and `.claude/settings.local.json` via `chat.hookFilesLocations`. This prevents Claude hooks from firing on every Copilot tool invocation (VS Code ignores Claude matcher syntax).
+
+**REQ-AGENT-112** (Ubiquitous)
+Hook scripts shall parse Copilot's stdin JSON input using `node` (available in this repo) to extract `tool_name`, `tool_input`, and `stop_hook_active` fields. Scripts shall exit 0 for non-matching tools (silent pass-through), and return Copilot-format JSON output (`hookSpecificOutput` with `permissionDecision` or `additionalContext`).
+
+### Acceptance Criteria — Copilot Hook Parity
+
+```gherkin
+Given a Copilot agent session with hooks configured
+When the agent runs "git commit" via run_in_terminal without passing guard functions
+Then the PreToolUse hook returns permissionDecision "deny"
+And the commit is blocked
+
+Given a Copilot agent session
+When the agent invokes read_file or grep_search
+Then the PreToolUse hook exits 0 silently (no JSON output)
+And tool execution is not affected
+
+Given a Copilot agent session completing work
+When uncommitted changes exist
+Then the Stop hook returns decision "block" with uncommitted count
+And when stop_hook_active is true, the Stop hook exits 0 (no infinite loop)
+
+Given VS Code with .vscode/settings.json
+When Copilot loads hooks
+Then .github/hooks/ is enabled and .claude/settings.json is disabled
+```
+
+---
+
 ## Requirement Count Summary
 
 | Domain | Count |
@@ -824,7 +869,8 @@ And the commit hook verifies trailer presence
 | API Contract & Resilience Enforcement (REQ-AGENT-095 to 099) | 5 |
 | Security Property Testing (REQ-AGENT-100 to 102) | 3 |
 | Advanced Reasoning & Cross-Cutting (REQ-AGENT-103 to 106) | 4 |
-| **Total** | **106** |
+| Copilot Hook Parity & Universal Enforcement (REQ-AGENT-107 to 112) | 6 |
+| **Total** | **112** |
 
 ---
 
@@ -898,4 +944,4 @@ And the commit hook verifies trailer presence
 
 ---
 
-> **Provenance**: Created 2026-03-25. Updated 2026-03-25: added sections 11–16 from research. Updated 2026-03-26: added sections 18–21 (18 new requirements, REQ-AGENT-089 to 106) from cross-validation against all 22 ADRs, REQUIREMENTS-AGNOSTIC.md §12 security gaps, arch.md 12-phase plan, code.md patterns, 13 feature specs, and full docs infrastructure (agents, skills, instructions, automation, conventions, guidelines, memory, patterns). Total: 106 requirements.
+> **Provenance**: Created 2026-03-25. Updated 2026-03-25: added sections 11–16 from research. Updated 2026-03-26: added sections 18–21 (18 new requirements, REQ-AGENT-089 to 106) from cross-validation against all 22 ADRs, REQUIREMENTS-AGNOSTIC.md §12 security gaps, arch.md 12-phase plan, code.md patterns, 13 feature specs, and full docs infrastructure (agents, skills, instructions, automation, conventions, guidelines, memory, patterns). Total: 106 requirements. Updated 2026-03-27: added §17 Copilot Hook Parity (REQ-AGENT-107 to 112). Total: 112 requirements.
