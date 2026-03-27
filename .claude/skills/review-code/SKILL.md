@@ -9,6 +9,16 @@ description: Multi-perspective code review with anti-sycophancy and dissent requ
 
 Structured multi-perspective review with anti-sycophancy safeguards. Run each perspective sequentially.
 
+## RALPH Loop (Mandatory for G8)
+
+G8 **always** requires a Review Agent running the full PR Review Council RALPH loop:
+
+1. **Round 1 — Analysis**: Each perspective reviews independently, produces structured findings
+2. **Round 2 — Deliberation**: Findings debated, severities adjusted, evidence challenged
+3. **Round 3 — Vote**: Each finding voted Accept/Reject (>75% consensus to sustain)
+
+**Iteration**: If any sustained Critical or Major findings remain, fix them and re-run the RALPH loop. Repeat until the verdict is APPROVED (no sustained Critical/Major). Self-review alone is never sufficient for G8.
+
 ## Review Perspectives
 
 ### 1. Security Auditor

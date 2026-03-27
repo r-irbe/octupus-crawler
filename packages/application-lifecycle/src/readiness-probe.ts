@@ -37,6 +37,10 @@ export function createReadinessProbe(port: number, logger: Logger): ReadinessPro
     res.end();
   });
 
+  server.on('error', (err: NodeJS.ErrnoException) => {
+    logger.fatal('Readiness probe failed to start', { port, error: err.message, code: err.code });
+  });
+
   server.listen(port, () => {
     logger.info('Readiness probe listening', { port });
   });

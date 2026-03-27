@@ -105,7 +105,10 @@ async function executeTeardown(
         throw new TeardownError(entry.name, err);
       }
     })),
-    rejectAfter(timeoutMs, 'teardown').then(() => [] as PromiseSettledResult<string>[]),
+    rejectAfter(timeoutMs, 'teardown').then(() => {
+      logger.warn('Teardown timed out, some components may not have cleaned up', { timeoutMs });
+      return [] as PromiseSettledResult<string>[];
+    }),
   ]);
 
   for (const result of settled) {

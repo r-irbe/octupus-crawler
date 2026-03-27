@@ -101,7 +101,7 @@ These gates are **NON-NEGOTIABLE**. Skipping any gate is a protocol violation re
 
 | # | Gate | Action | Artifact |
 | --- | --- | --- | --- |
-| G8 | **Review** | Run `pnpm verify:gates` + PR Review self-check or launch Review Agent for multi-package changes | Review summary |
+| G8 | **Review** | Run `pnpm verify:gates` + launch Review Agent with full PR Review Council RALPH loop (3 rounds: Analysis → Deliberation → Vote) until all sustained Critical/Major findings are resolved. No betterments or issues may remain unaddressed. | Review summary |
 | G9 | **Worklog** | Create `docs/worklogs/YYYY-MM-DD-topic.md` | File path |
 | G10 | **Report** | Run `pnpm verify:session` + present to user: what changed, tests added, ADR compliance, known gaps | Summary message |
 | G11 | **Spec Update** | Run `pnpm verify:specs` — update `tasks.md` checkboxes (`[ ]` → `[x]`) for completed tasks. Update `design.md`/`requirements.md` if implementation diverged (living specs). | Updated spec files |
@@ -281,7 +281,7 @@ pnpm verify:all                       # Run all verification scripts sequentiall
 
 ## PR Review Process
 
-PRs reviewed by [AI council](docs/conventions/pr-review-council.md): 6 voting members, >75% consensus, checks ADR compliance + test coverage + security. Reviewers must explain the implementation before approving (SHOULD #12).
+PRs reviewed by [AI council](docs/conventions/pr-review-council.md): 6 voting members, >75% consensus, checks ADR compliance + test coverage + security. The RALPH loop (Analysis → Deliberation → Vote) runs iteratively until all sustained Critical/Major findings are resolved — no unaddressed betterments or issues may remain. Reviewers must explain the implementation before approving (SHOULD #12). G8 always requires a Review Agent — self-review alone is never sufficient.
 
 ## Human-AI Task Allocation
 

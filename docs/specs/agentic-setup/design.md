@@ -427,6 +427,13 @@ tools: [read, search, bash]
 - You MUST find at least one genuine concern before approving
 - Unanimous approval on first pass triggers additional scrutiny
 - Record all concerns in structured format
+
+### 5. RALPH Loop (Mandatory for G8)
+- G8 ALWAYS requires a Review Agent running the full RALPH loop
+- Round 1 (Analysis) → Round 2 (Deliberation) → Round 3 (Vote)
+- If any sustained Critical/Major findings remain → fix → re-run
+- Iterate until verdict is APPROVED (no sustained Critical/Major)
+- Self-review alone is NEVER sufficient for G8
 ```
 
 Covers: REQ-AGENT-029, REQ-AGENT-030, REQ-AGENT-051 to 053
