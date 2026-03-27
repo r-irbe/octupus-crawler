@@ -99,6 +99,7 @@ describe('JobEventSource contract', () => {
   it('can be implemented with event handlers and close', () => {
     const handlers: string[] = [];
     const source: JobEventSource = {
+      onActive: (handler) => { handlers.push('active'); handler('job-0'); },
       onCompleted: (handler) => { handlers.push('completed'); handler('job-1'); },
       onFailed: (handler) => { handlers.push('failed'); handler('job-2', new Error('e')); },
       onStalled: (handler) => { handlers.push('stalled'); handler('job-3'); },

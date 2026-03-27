@@ -1,0 +1,31 @@
+{
+  "name": "@ipf/worker-management",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./utilization-tracker": "./src/utilization-tracker.ts",
+    "./job-consumer-adapter": "./src/job-consumer-adapter.ts",
+    "./stalled-job-config": "./src/stalled-job-config.ts",
+    "./worker-metrics": "./src/worker-metrics.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src/",
+    "test": "vitest run",
+    "clean": "rm -rf dist .turbo"
+  },
+  "dependencies": {
+    "neverthrow": "^8.2.0",
+    "@ipf/core": "workspace:*"
+  },
+  "devDependencies": {
+    "@ipf/eslint-config": "workspace:*",
+    "@ipf/testing": "workspace:*",
+    "@fast-check/vitest": "^0.3.0",
+    "@types/node": "^25.5.0",
+    "typescript": "^6.0.0",
+    "vitest": "^4.0.0",
+    "eslint": "^10.0.0"
+  }
+}
