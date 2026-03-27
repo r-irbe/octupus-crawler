@@ -78,7 +78,10 @@ State is derived from live queue queries, not cached:
 function deriveState(queueCounts: QueueCounts, isCancelled: boolean): CrawlState {
   if (isCancelled) return 'cancelled'
   if (queueCounts.paused) return 'paused'
-  if (queueCounts.pending === 0 && queueCounts.done > 0) return 'completed'
+  // pending MUST include delayed jobs (RALPH F-001)
+  const pending = queueCounts.waiting + queueCounts.active + queueCounts.delayed
+  if (pending === 0 && queueCounts.done > 0) return 'completed'
+  if (pending === 0 && queueCounts.done === 0) return 'idle'
   return 'running'
 }
 ```
@@ -90,6 +93,7 @@ Covers: REQ-DIST-017
 ```typescript
 class ControlPlaneAdapter implements ControlPlane {
   private cancelPromise: Promise<void> | null = null
+  private cancelResult: Result<void, QueueError> | undefined
 
   async cancel(): AsyncResult<void, QueueError> {
     // Deduplicate concurrent cancel calls
@@ -97,7 +101,8 @@ class ControlPlaneAdapter implements ControlPlane {
       this.cancelPromise = this.doCancel()
     }
     await this.cancelPromise
-    return ok(undefined)
+    // RALPH F-002: propagate obliterate error, don't swallow
+    return this.cancelResult ?? ok(undefined)
   }
 }
 ```
@@ -113,9 +118,12 @@ Covers: REQ-DIST-019
 | Completion semantics | pending=0 AND done>0 | Accounts for all job states |
 | Abort threshold | 25 failures | ~12 min tolerance for transient outages |
 | Cancel idempotency | Promise deduplication | Thread-safe convergence (REQ-DIST-019) |
+| Cancel error propagation | Propagate Result from obliterate | RALPH F-002: interface contract requires callers can detect failure |
 | Once guard | Boolean flag | Prevents overlapping polls (REQ-DIST-016) |
+| Poll scheduling | Recursive setTimeout (not setInterval) | RALPH F-003: prevents overlapping ticks under slow network |
 | Leader election | Redis SETNX with TTL | Simple, state-store-native HA (REQ-DIST-023) |
 | Lease renewal | lease_ttl / 3 interval | Prevents unnecessary failover (REQ-DIST-026) |
+| Leader release | get + conditional del (TOCTOU) | RALPH F-004: not atomic — requires future compareAndDelete for full safety |
 
 ## 7. Coordinator High Availability
 
