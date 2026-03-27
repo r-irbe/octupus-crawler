@@ -11,9 +11,12 @@
 - Run `pnpm verify:session` before declaring work complete
 - Run `pnpm verify:specs` after G10 to ensure living specs are current
 - Create feature branch `work/<task-slug>` before writing code
+- Create state tracker `docs/memory/session/YYYY-MM-DD-<slug>-state.md` BEFORE first commit on a branch
 - Read relevant `requirements.md` / `design.md` / `tasks.md` before writing code
 - Use path-scoped instructions from `.github/instructions/`
 - Verify Guard Functions would pass: `tsc`, `eslint`, `vitest`
+
+> **Enforcement**: A git pre-commit hook (`.githooks/pre-commit`) blocks commits that violate G2 (branch naming) or G4 (state tracker). This runs for ALL tools — Copilot, Claude, terminal. Installed automatically by `pnpm install` via the `prepare` script.
 
 ### Ask First
 

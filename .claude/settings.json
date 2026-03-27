@@ -6,6 +6,15 @@
         "hooks": [
           {
             "type": "command",
+            "command": "./scripts/verify-pre-commit-gates.sh"
+          }
+        ]
+      },
+      {
+        "matcher": "Bash(git commit)",
+        "hooks": [
+          {
+            "type": "command",
             "command": "pnpm turbo typecheck && pnpm turbo lint && pnpm turbo test"
           }
         ]

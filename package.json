@@ -11,6 +11,7 @@
     "lint": "turbo run lint",
     "typecheck": "turbo run typecheck",
     "clean": "turbo run clean",
+    "prepare": "./scripts/setup-hooks.sh",
     "verify:guards": "./scripts/verify-guard-chain.sh",
     "verify:gates": "./scripts/verify-gate-compliance.sh",
     "verify:specs": "./scripts/verify-spec-update.sh",

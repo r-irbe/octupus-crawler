@@ -29,15 +29,17 @@
 | 9 | Create state tracker (G4) | `done` | — | Remediated post-commit |
 | 10 | Create worklog (G9) | `done` | — | Remediated post-commit |
 | 11 | Run verify:gates (G8) | `done` | — | Remediated post-commit |
+| 12 | Add git pre-commit hook enforcement | `done` | — | .githooks/pre-commit + scripts/verify-pre-commit-gates.sh |
+| 13 | Wire prepare script + Claude/Copilot | `done` | — | package.json prepare, .claude/settings.json, copilot-instructions.md |
 
 ## Current State
 
 | Field | Value |
 | --- | --- |
-| Current task # | 11 (remediation) |
+| Current task # | 13 (pre-commit enforcement) |
 | Last completed gate | G11 |
 | Guard function status | `pass` (attempt 1/3) — 441 tests |
-| Commits on branch | 1 (b8a4722) |
+| Commits on branch | 2 (b8a4722, 6211fc6) |
 | Tests passing | 441/441 |
 | Blockers | none |
 
@@ -48,6 +50,7 @@
 | 1 | Bash script not TypeScript for verify-spec-update.sh | CI pipeline portability, consistent with existing verify scripts | ADR-018 |
 | 2 | Fail only on 0-checked specs with source files | Partial completion is normal during development; only zero-progress is a violation | ADR-020 |
 | 3 | `declare -A PKG_TO_SPEC` for name mapping | Some packages map to different spec dirs (core→core-contracts, config→core-contracts, testing→testing-quality) | — |
+| 4 | Git pre-commit hook via `core.hooksPath` not husky | No extra dependency; `.githooks/` committed to repo, activated by `pnpm install` `prepare` script | ADR-018 |
 
 ## Problems & Solutions
 

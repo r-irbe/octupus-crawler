@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+# Git pre-commit hook — enforces mandatory gates before every commit
+# Installed by: scripts/setup-hooks.sh
+# Calls: scripts/verify-pre-commit-gates.sh (G2 branch, G4 state tracker)
+
+set -euo pipefail
+
+# Find repo root (handles being called from subdirectories)
+REPO_ROOT=$(git rev-parse --show-toplevel)
+
+exec "$REPO_ROOT/scripts/verify-pre-commit-gates.sh"
