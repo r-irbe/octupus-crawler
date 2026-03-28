@@ -21,10 +21,10 @@
 
 | # | Task | Status | Commit | Notes |
 | --- | --- | --- | --- | --- |
-| 1 | Mark all 12 Phase 6 tasks complete in tasks.md | `pending` | — | Tests already exist from impl phases |
-| 2 | Run guard functions (G5) | `pending` | — | — |
-| 3 | Commit (G6) | `pending` | — | — |
-| 4 | RALPH review (G8) | `pending` | — | Mandatory PR review council |
+| 1 | Mark all 12 Phase 6 tasks complete in tasks.md | `done` | 96d31ce | Tests already exist from impl phases |
+| 2 | Run guard functions (G5) | `done` | 96d31ce | 686 tests pass, fixed guard script regex |
+| 3 | Commit (G6) | `done` | 96d31ce | — |
+| 4 | RALPH review (G8) | `in-progress` | — | Mandatory PR review council |
 | 5 | Worklog + report (G9, G10) | `pending` | — | — |
 | 6 | Spec update (G11) | `pending` | — | — |
 
@@ -32,11 +32,11 @@
 
 | Field | Value |
 | --- | --- |
-| Current task # | 1 |
-| Last completed gate | G4 (state tracker created) |
-| Guard function status | `not-run` |
-| Commits on branch | 0 |
-| Tests passing | — |
+| Current task # | 4 |
+| Last completed gate | G7 (state tracker updated) |
+| Guard function status | `pass` |
+| Commits on branch | 1 (96d31ce) |
+| Tests passing | 686 |
 | Blockers | none |
 
 ## Decisions Log

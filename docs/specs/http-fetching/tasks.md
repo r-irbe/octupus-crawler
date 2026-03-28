@@ -56,7 +56,7 @@
 - [x] **T-FETCH-032**: Unit test for per-domain promise-chain concurrency safety → REQ-FETCH-020
 - [x] **T-FETCH-033**: Unit test for TLD+1 domain grouping → REQ-FETCH-021
 - [x] **T-FETCH-034**: Unit test for all fetcher metric recording → REQ-FETCH-022
-- [x] **T-FETCH-035**: Integration test for SSRF pinned IP connection → REQ-FETCH-023
+- [x] **T-FETCH-035**: Unit test for SSRF pinned IP connection → REQ-FETCH-023
 - [x] **T-FETCH-036**: Unit test for stream drain error handling during redirect → REQ-FETCH-024
 
 ---
@@ -74,4 +74,4 @@
 
 ---
 
-> **Provenance**: Created 2026-03-25. Implementation Agent task decomposition per ADR-020. Updated 2026-03-25: added Phase 5 (REQ-FETCH-020–024 concurrency safety, TLD+1, metrics, SSRF integration, drain handling). Updated 2026-03-26: checked completed tasks per G11 spec update gate.
+> **Provenance**: Created 2026-03-25. Implementation Agent task decomposition per ADR-020. Updated 2026-03-25: added Phase 5 (REQ-FETCH-020–024 concurrency safety, TLD+1, metrics, SSRF integration, drain handling). Updated 2026-03-26: checked completed tasks per G11 spec update gate. Updated 2026-03-28: marked Phase 6 test tasks complete (coverage validated against 63 existing tests). Fixed T-FETCH-035 label per RALPH F-004.
