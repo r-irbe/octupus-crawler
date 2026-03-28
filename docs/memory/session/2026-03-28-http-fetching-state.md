@@ -24,18 +24,18 @@
 | 1 | Mark all 12 Phase 6 tasks complete in tasks.md | `done` | 96d31ce | Tests already exist from impl phases |
 | 2 | Run guard functions (G5) | `done` | 96d31ce | 686 tests pass, fixed guard script regex |
 | 3 | Commit (G6) | `done` | 96d31ce | — |
-| 4 | RALPH review (G8) | `in-progress` | — | Mandatory PR review council |
-| 5 | Worklog + report (G9, G10) | `pending` | — | — |
-| 6 | Spec update (G11) | `pending` | — | — |
+| 4 | RALPH review (G8) | `done` | 01d0b9e | F-004 sustained → fixed |
+| 5 | Worklog + report (G9, G10) | `done` | f5847a4 | — |
+| 6 | Spec update (G11) | `done` | f5847a4 | Provenance + T-FETCH-035 label |
 
 ## Current State
 
 | Field | Value |
 | --- | --- |
-| Current task # | 4 |
-| Last completed gate | G7 (state tracker updated) |
+| Current task # | done |
+| Last completed gate | G11 (spec update) |
 | Guard function status | `pass` |
-| Commits on branch | 1 (96d31ce) |
+| Commits on branch | 3 (96d31ce, 01d0b9e, f5847a4) |
 | Tests passing | 686 |
 | Blockers | none |
 
