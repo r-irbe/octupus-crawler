@@ -29,6 +29,7 @@ Chronological work session logs documenting what was done, decisions made, and o
 | [2026-03-28: Testing Quality](2026-03-28-testing-quality.md) | Testing quality: coverage thresholds, JUnit reporters, CI pipeline, Testcontainer helpers, integration tests | Complete | 2026-03-28 |
 | [2026-03-28: Virtual Memory](2026-03-28-virtual-memory.md) | Virtual memory: context budget, chunking, distillation, eviction, paging, 8 modules, 69 tests | Complete | 2026-03-28 |
 | [2026-03-28: HTTP Fetching Completion](2026-03-28-http-fetching-completion.md) | HTTP Fetching Phase 6: marked 12 test tasks complete (63 existing tests), guard script regex fix | Complete | 2026-03-28 |
+| [2026-03-28: Worker Management Completion](2026-03-28-worker-management-completion.md) | Worker Management Phase 4: 7 integration tests, 2 tasks deferred (BullMQ), RALPH review fixes | Complete | 2026-03-28 |
 | [2026-03-28: SSRF Guard Hardening](2026-03-28-ssrf-guard-hardening.md) | SSRF fetch hardening: redirect limiting, body size, cumulative timeout, per-redirect SSRF, 81 tests | Complete | 2026-03-28 |
 
 ## Index
