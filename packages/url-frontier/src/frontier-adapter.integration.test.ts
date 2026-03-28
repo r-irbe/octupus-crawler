@@ -44,7 +44,7 @@ function createRedisQueueBackend(client: RedisClientType, prefix: string): Queue
     },
 
     async close(): Promise<void> {
-      // Clean up test keys
+      // test-only: KEYS is O(N), never use in production
       const keys = await client.keys(`${prefix}:*`);
       if (keys.length > 0) {
         await client.del(keys);

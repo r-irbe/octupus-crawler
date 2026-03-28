@@ -87,7 +87,11 @@ jobs:
       # REQ-TEST-023: Performance baseline check
       - name: Check Performance Baseline
         run: |
-          DURATION=${{ env.unit_duration }}
+          DURATION="${{ env.unit_duration }}"
+          if [ -z "$DURATION" ]; then
+            echo "::notice::No unit test duration recorded, skipping baseline check"
+            exit 0
+          fi
           BASELINE=30
           THRESHOLD=$(( BASELINE * 120 / 100 ))
           if [ "$DURATION" -gt "$THRESHOLD" ]; then
@@ -123,7 +127,7 @@ jobs:
           REDIS_URL: redis://localhost:6379
         run: |
           START=$(date +%s)
-          pnpm turbo test:integration 2>/dev/null || echo "No integration tests configured yet"
+          pnpm turbo test:integration
           END=$(date +%s)
           DURATION=$((END - START))
           echo "::notice::Integration test duration: ${DURATION}s (baseline: ≤120s)"

@@ -2,22 +2,28 @@
 // Validates: REQ-TEST-005 (real infra), REQ-TEST-006 (no mocks),
 //            REQ-TEST-024 (deterministic cleanup)
 
-import { describe, it, expect, afterAll } from 'vitest';
+import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { createClient } from 'redis';
 import { startRedisContainer, type ManagedRedisContainer } from './redis-container.js';
 
 describe('Redis Testcontainer', () => {
-  let container: ManagedRedisContainer;
+  let container: ManagedRedisContainer | undefined;
+
+  beforeAll(async () => {
+    container = await startRedisContainer();
+  }, 30_000);
 
   afterAll(async () => {
     // REQ-TEST-024: deterministic cleanup even if tests fail
-    await container.stop();
+    if (container) {
+      await container.stop();
+    }
   });
 
   // Validates REQ-TEST-005: integration tests use real Redis via Testcontainers
-  it('starts a Redis container and connects', async () => {
-    container = await startRedisContainer();
-
+  it('connects and pings', async () => {
+    expect(container).toBeDefined();
+    if (!container) return;
     const client = createClient({ url: container.connection.url });
     try {
       await client.connect();
@@ -26,10 +32,12 @@ describe('Redis Testcontainer', () => {
     } finally {
       await client.quit();
     }
-  }, 30_000);
+  });
 
   // Validates REQ-TEST-006: real SET/GET operations, no mocking
   it('performs real Redis operations', async () => {
+    expect(container).toBeDefined();
+    if (!container) return;
     const client = createClient({ url: container.connection.url });
     try {
       await client.connect();
@@ -43,7 +51,7 @@ describe('Redis Testcontainer', () => {
     } finally {
       await client.quit();
     }
-  }, 10_000);
+  });
 
   // Validates REQ-TEST-024: stop() is idempotent
   it('stop() is idempotent', async () => {

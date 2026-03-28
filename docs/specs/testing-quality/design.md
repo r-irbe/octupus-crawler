@@ -67,22 +67,40 @@ Covers: REQ-TEST-001 to 008, REQ-TEST-021, REQ-TEST-022
 
 ## 2. Vitest Configuration
 
+### 2.1 Coverage Tier Model (REQ-TEST-009, REQ-TEST-011)
+
+Two coverage tiers enforce different quality bars based on package criticality:
+
+| Tier | Line | Branch | Packages |
+| --- | --- | --- | --- |
+| **Domain** (pure logic, security) | 90% | 85% | `core`, `url-frontier`, `crawl-pipeline`, `completion-detection`, `worker-management`, `ssrf-guard` |
+| **Base** (infra, config, utilities) | 80% | 75% | `config`, `observability`, `http-fetching`, `application-lifecycle`, `testing` |
+
+Domain-tier packages contain pure functions, value objects, and security-critical logic (REQ-TEST-011).
+`ssrf-guard` is classified as domain-tier because its IP range validation is pure, security-critical domain logic (per G8 review council finding F-013).
+
+### 2.2 Configuration Example
+
 ```typescript
-// vitest.config.ts
+// vitest.config.ts (base tier)
 import { defineConfig } from 'vitest/config'
 
 export default defineConfig({
   test: {
     // Co-located test files (REQ-TEST-003)
     include: ['src/**/*.test.ts'],
+    // Exclude integration tests from default run
+    exclude: ['src/**/*.integration.test.ts'],
 
     // Coverage thresholds (REQ-TEST-009 to 012)
     coverage: {
       provider: 'v8',
       reporter: ['text', 'lcov', 'json-summary'],
+      include: ['src/**/*.ts'],
+      exclude: ['src/**/*.test.ts', 'src/**/*.property.test.ts', 'src/**/*.integration.test.ts'],
       thresholds: {
-        lines: 80,
-        branches: 75,
+        lines: 80,   // domain tier: 90
+        branches: 75, // domain tier: 85
       },
     },
 
