@@ -19,9 +19,7 @@
     "bullmq": "^5.52.0",
     "neverthrow": "^8.2.0",
     "zod": "^4.0.0",
-    "@ipf/core": "workspace:*",
-    "@ipf/url-frontier": "workspace:*",
-    "@ipf/completion-detection": "workspace:*"
+    "@ipf/core": "workspace:*"
   },
   "devDependencies": {
     "@ipf/eslint-config": "workspace:*",

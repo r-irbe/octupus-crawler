@@ -34,9 +34,9 @@
 
 - [x] **T-DIST-011**: Distributed test: idempotent enqueue (same URL = same job ID) → REQ-DIST-001
 - [x] **T-DIST-012**: Unit test: depth-to-priority mapping → REQ-DIST-002
-- [ ] **T-DIST-013**: Distributed test: retry with backoff timing → REQ-DIST-003 *(deferred: requires Redis/BullMQ adapter)*
-- [ ] **T-DIST-014**: Integration test: batch enqueue round-trip count → REQ-DIST-004 *(deferred: requires Redis/BullMQ adapter)*
-- [ ] **T-DIST-015**: Distributed test: retention window eviction → REQ-DIST-005 *(deferred: requires Redis/BullMQ adapter)*
+- [x] **T-DIST-013**: Distributed test: retry with backoff timing → REQ-DIST-003 — *1 test in frontier-bullmq.integration.test.ts*
+- [x] **T-DIST-014**: Integration test: batch enqueue round-trip count → REQ-DIST-004 — *2 tests in frontier-bullmq.integration.test.ts*
+- [x] **T-DIST-015**: Distributed test: retention window eviction → REQ-DIST-005 — *1 test in frontier-bullmq.integration.test.ts*
 - [x] **T-DIST-019**: Property test: URL normalization idempotence (normalize(normalize(url)) === normalize(url)) → REQ-DIST-007 *(satisfied by crawl-pipeline's `url-normalizer.property.test.ts`)*
 - [x] **T-DIST-020**: Unit test: collision resistance documentation accuracy → REQ-DIST-008
 - [x] **T-DIST-021**: Integration test: collision counter increment on addBulk discrepancy → REQ-DIST-009

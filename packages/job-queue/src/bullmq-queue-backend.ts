@@ -6,8 +6,28 @@ import { ok, err } from 'neverthrow';
 import type { AsyncResult } from '@ipf/core/types/result';
 import type { QueueError } from '@ipf/core/errors/queue-error';
 import { createQueueError } from '@ipf/core/errors/queue-error';
-import type { QueueBackend, JobSpec, BulkAddResult } from '@ipf/url-frontier/queue-backend';
 import type { QueueConfig, BullMQConnection } from './connection-config.js';
+
+// SYNC: must match @ipf/url-frontier/src/queue-backend.ts types.
+// Mirrored here to avoid circular dependency (job-queue → url-frontier → job-queue).
+// Integration tests in url-frontier verify structural compatibility at compile time.
+export type JobData = { readonly url: string; readonly depth: number };
+export type JobSpec = {
+  readonly jobId: string;
+  readonly data: JobData;
+  readonly priority: number;
+  readonly attempts: number;
+  readonly backoffType: 'exponential';
+  readonly backoffDelay: number;
+  readonly removeOnComplete: number;
+  readonly removeOnFail: number;
+};
+export type BulkAddResult = { readonly added: number; readonly submitted: number };
+export type QueueBackend = {
+  addBulk(jobs: readonly JobSpec[]): AsyncResult<BulkAddResult, QueueError>;
+  getQueueSize(): AsyncResult<{ pending: number; active: number; total: number }, QueueError>;
+  close(): Promise<void>;
+};
 
 export type QueueBackendDeps = {
   readonly connection: BullMQConnection;

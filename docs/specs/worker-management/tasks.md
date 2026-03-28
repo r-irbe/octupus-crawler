@@ -28,8 +28,8 @@
 - [x] **T-WORK-007**: Unit test for utilization ratio calculation and floor guard → REQ-DIST-011
 - [x] **T-WORK-008**: Unit test for start guard (second call throws) → REQ-DIST-010
 - [x] **T-WORK-009**: Integration test for configurable concurrency → REQ-DIST-007
-- [ ] **T-WORK-010**: Distributed test for stalled job recovery → REQ-DIST-008 _(deferred: requires BullMQ infrastructure adapter)_
-- [ ] **T-WORK-014**: Integration test for worker crash recovery and re-registration → REQ-DIST-012 _(deferred: requires BullMQ infrastructure adapter)_
+- [x] **T-WORK-010**: Distributed test for stalled job recovery → REQ-DIST-008 — *1 test in worker-bullmq.integration.test.ts*
+- [x] **T-WORK-014**: Integration test for worker crash recovery and re-registration → REQ-DIST-012 — *1 test in worker-bullmq.integration.test.ts*
 - [x] **T-WORK-015**: Unit test for counter inconsistency detection and reset → REQ-DIST-013
 - [x] **T-WORK-016**: Integration test for worker metrics exposure → REQ-DIST-014
 

@@ -44,7 +44,7 @@
 - [x] **T-COORD-020**: Unit test for empty-queue warning (two consecutive polls) → REQ-DIST-013
 - [x] **T-COORD-021**: Unit test for restart detection metric → REQ-DIST-014
 - [x] **T-COORD-022**: Unit test for backoff escalation and abort threshold → REQ-DIST-015
-- [ ] **T-COORD-023**: Distributed test for pause/resume with in-flight jobs → REQ-DIST-018 *(deferred: requires Redis/BullMQ adapter)*
+- [x] **T-COORD-023**: Distributed test for pause/resume with in-flight jobs → REQ-DIST-018 — *2 tests in control-plane-bullmq.integration.test.ts*
 - [x] **T-COORD-024**: Unit test for idempotent cancel → REQ-DIST-019
 - [x] **T-COORD-025**: Integration test for state-store connection with auth → REQ-DIST-021 — *2 tests in leader-election.integration.test.ts*
 - [x] **T-COORD-026**: Distributed test for leader election (two coordinators) → REQ-DIST-023 — *4 tests in leader-election.integration.test.ts*

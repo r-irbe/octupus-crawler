@@ -3,12 +3,10 @@
 
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { startRedisContainer, type ManagedRedisContainer } from '@ipf/testing/containers/redis';
-import { createBullMQQueueBackend } from './bullmq-queue-backend.js';
+import { createBullMQQueueBackend, type QueueBackend, type JobSpec } from './bullmq-queue-backend.js';
 import { createBullMQJobConsumer, type CrawlJobData } from './bullmq-job-consumer.js';
-import { createBullMQQueueAdapter } from './bullmq-queue-adapter.js';
+import { createBullMQQueueAdapter, type QueueAdapter } from './bullmq-queue-adapter.js';
 import { BullMQConnectionSchema, QueueConfigSchema, type BullMQConnection } from './connection-config.js';
-import type { QueueBackend, JobSpec } from '@ipf/url-frontier/queue-backend';
-import type { QueueAdapter } from '@ipf/completion-detection/control-plane-adapter';
 import type { JobConsumer } from '@ipf/core/contracts/job-consumer';
 import type { Job } from 'bullmq';
 

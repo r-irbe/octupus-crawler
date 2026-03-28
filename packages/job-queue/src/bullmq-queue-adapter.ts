@@ -6,8 +6,18 @@ import { ok, err } from 'neverthrow';
 import type { AsyncResult } from '@ipf/core/types/result';
 import type { QueueError } from '@ipf/core/errors/queue-error';
 import { createQueueError } from '@ipf/core/errors/queue-error';
-import type { QueueAdapter } from '@ipf/completion-detection/control-plane-adapter';
 import type { BullMQConnection, QueueConfig } from './connection-config.js';
+
+// SYNC: must match @ipf/completion-detection/src/control-plane-adapter.ts QueueAdapter.
+// Mirrored here to avoid circular dependency (job-queue → completion-detection → job-queue).
+// Integration tests in completion-detection verify structural compatibility at compile time.
+export type QueueAdapter = {
+  getJobCounts(): AsyncResult<{ waiting: number; active: number; completed: number; failed: number; delayed: number; paused: number }, QueueError>;
+  pause(): AsyncResult<void, QueueError>;
+  resume(): AsyncResult<void, QueueError>;
+  obliterate(): AsyncResult<void, QueueError>;
+  close(): Promise<void>;
+};
 
 export type QueueAdapterDeps = {
   readonly connection: BullMQConnection;

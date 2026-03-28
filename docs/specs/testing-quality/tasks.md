@@ -29,7 +29,7 @@
 ## Phase 4: Integration Tests
 
 - [x] **T-TEST-013**: Write integration tests for frontier (enqueue, dequeue, dedup) with real Redis → REQ-TEST-005, REQ-TEST-008
-- [ ] **T-TEST-014**: ~~Write integration tests for worker job processing with real queue~~ → REQ-TEST-008 *(deferred: requires BullMQ adapter — blocked on `packages/redis` + BullMQ infrastructure)*
+- [x] **T-TEST-014**: Write integration tests for worker job processing with real queue → REQ-TEST-008 — *covered by worker-bullmq.integration.test.ts + frontier-bullmq.integration.test.ts*
 - [ ] **T-TEST-015**: ~~Write integration tests for graceful shutdown with real connections~~ → REQ-TEST-008 *(deferred: requires running service with real Redis/BullMQ connections)*
 - [ ] **T-TEST-016**: ~~Write integration tests for metrics endpoint scraping~~ → REQ-TEST-008 *(deferred: requires running service with Prometheus metrics endpoint)*
 
