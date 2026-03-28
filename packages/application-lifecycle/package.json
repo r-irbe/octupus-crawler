@@ -12,7 +12,8 @@
     "./process-handlers": "./src/process-handlers.ts",
     "./readiness-probe": "./src/readiness-probe.ts",
     "./abort-handler": "./src/abort-handler.ts",
-    "./startup-orchestrator": "./src/startup-orchestrator.ts"
+    "./startup-orchestrator": "./src/startup-orchestrator.ts",
+    "./consumer-phase": "./src/consumer-phase.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
@@ -28,8 +29,10 @@
   },
   "devDependencies": {
     "@ipf/eslint-config": "workspace:*",
+    "@ipf/job-queue": "workspace:*",
     "@ipf/testing": "workspace:*",
     "@types/node": "^25.5.0",
+    "bullmq": "^5.52.0",
     "typescript": "^6.0.0",
     "vitest": "^4.0.0",
     "eslint": "^10.0.0"

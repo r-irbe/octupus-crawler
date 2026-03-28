@@ -12,7 +12,8 @@
     "./metrics-server": "./src/metrics-server.ts",
     "./tracer": "./src/tracer.ts",
     "./in-memory-exporter": "./src/in-memory-exporter.ts",
-    "./trace-propagation": "./src/trace-propagation.ts"
+    "./trace-propagation": "./src/trace-propagation.ts",
+    "./readiness-check": "./src/readiness-check.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",

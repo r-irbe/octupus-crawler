@@ -43,7 +43,7 @@
 - [x] **T-OBS-027**: Implement parent-based trace sampling with configurable rate (`samplingRate`, default 0.1) → REQ-OBS-027
 - [x] **T-OBS-028**: Implement batch processor with configurable queue/batch/delay/timeout → REQ-OBS-028
 - [x] **T-OBS-029**: Implement BullMQ job data trace propagation (W3C `traceparent` inject/extract) → REQ-OBS-029 — *implemented in trace-propagation.ts*
-- [ ] **T-OBS-030**: ⏸️ DEFERRED — Implement enhanced `/readyz` with Redis ping + PostgreSQL SELECT 1 + optional OTel check → REQ-OBS-030 — *blocked on Redis/PG infrastructure*
+- [x] **T-OBS-030**: Implement enhanced `/readyz` with Redis ping + PostgreSQL SELECT 1 + optional OTel check → REQ-OBS-030
 
 ## Phase 6: Tests
 
@@ -55,7 +55,7 @@
 - [x] **T-OBS-031**: Unit test for trace sampling configuration → REQ-OBS-027 — *4 tests in tracer.unit.test.ts*
 - [x] **T-OBS-032**: Unit test for batch processor flush behavior → REQ-OBS-028 — *1 test in tracer-spans.unit.test.ts*
 - [x] **T-OBS-033**: Integration test for job queue trace propagation (producer→consumer span link) → REQ-OBS-029 — *2 tests in trace-propagation.integration.test.ts*
-- [ ] **T-OBS-034**: ⏸️ DEFERRED — Integration test for `/readyz` with Redis/PG/OTel checks → REQ-OBS-030 — *blocked on T-OBS-030*
+- [x] **T-OBS-034**: Integration test for `/readyz` with Redis/PG/OTel checks → REQ-OBS-030
 
 ---
 

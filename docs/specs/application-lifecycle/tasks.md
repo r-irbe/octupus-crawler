@@ -18,7 +18,7 @@
 - [x] **T-LIFE-006**: Implement observability initialization before app wiring → REQ-LIFE-003
 - [x] **T-LIFE-007**: Configure logger with worker ID and service name bindings → REQ-LIFE-004
 - [x] **T-LIFE-008**: Start tracer before crawl begins → REQ-LIFE-005
-- [ ] **T-LIFE-009**: Start job consumer before seeding → REQ-LIFE-006 *(deferred: requires BullMQ adapter)*
+- [x] **T-LIFE-009**: Start job consumer before seeding → REQ-LIFE-006
 
 ## Phase 3: Seeding
 
@@ -71,12 +71,12 @@
 - [x] **T-LIFE-035**: Unit test for idempotent shutdown → REQ-LIFE-018
 - [x] **T-LIFE-036**: Unit test for settle-all teardown with partial failure → REQ-LIFE-020, 021
 - [x] **T-LIFE-037**: Unit test for queue_error re-throw → REQ-LIFE-026
-- [ ] **T-LIFE-038**: Scenario test for full startup → completion → shutdown → REQ-LIFE-001 to 017 *(deferred: requires all infrastructure wired)*
-- [ ] **T-LIFE-045**: Integration test for readiness probe 503 during shutdown → REQ-LIFE-029 *(deferred: requires HTTP server)*
+- [x] **T-LIFE-038**: Scenario test for full startup → completion → shutdown → REQ-LIFE-001 to 017
+- [x] **T-LIFE-045**: Integration test for readiness probe 503 during shutdown → REQ-LIFE-029
 - [x] **T-LIFE-046**: Unit test for deterministic abort timing → REQ-LIFE-030
 - [x] **T-LIFE-047**: Scenario test for drain timeout with job abandonment → REQ-LIFE-031
 - [x] **T-LIFE-048**: Code review verification of resource ownership matrix → REQ-LIFE-032
-- [ ] **T-LIFE-049**: Integration test for sequential startup ordering → REQ-LIFE-033 *(deferred: requires infrastructure adapters)*
+- [x] **T-LIFE-049**: Integration test for sequential startup ordering → REQ-LIFE-033
 - [x] **T-LIFE-050**: Scenario test for partial startup failure with reverse teardown → REQ-LIFE-034
 
 ---

@@ -38,12 +38,18 @@ importers:
       '@ipf/eslint-config':
         specifier: workspace:*
         version: link:../eslint-config
+      '@ipf/job-queue':
+        specifier: workspace:*
+        version: link:../job-queue
       '@ipf/testing':
         specifier: workspace:*
         version: link:../testing
       '@types/node':
         specifier: ^25.5.0
         version: 25.5.0
+      bullmq:
+        specifier: ^5.52.0
+        version: 5.71.1
       eslint:
         specifier: ^10.0.0
         version: 10.1.0

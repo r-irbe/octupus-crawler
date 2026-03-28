@@ -130,7 +130,22 @@ jobs:
           pnpm turbo test:integration
           END=$(date +%s)
           DURATION=$((END - START))
+          echo "integration_duration=$DURATION" >> "$GITHUB_ENV"
           echo "::notice::Integration test duration: ${DURATION}s (baseline: ≤120s)"
+
+      # REQ-TEST-020: Integration test performance baseline (T-TEST-022)
+      - name: Check Integration Performance Baseline
+        run: |
+          DURATION="${{ env.integration_duration }}"
+          if [ -z "$DURATION" ]; then
+            echo "::notice::No integration test duration recorded, skipping baseline check"
+            exit 0
+          fi
+          BASELINE=120
+          THRESHOLD=$(( BASELINE * 120 / 100 ))
+          if [ "$DURATION" -gt "$THRESHOLD" ]; then
+            echo "::warning::Integration test duration (${DURATION}s) exceeds 20% regression threshold (${THRESHOLD}s)"
+          fi
 
   alert-tests:
     needs: lint

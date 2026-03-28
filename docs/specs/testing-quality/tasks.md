@@ -30,7 +30,7 @@
 
 - [x] **T-TEST-013**: Write integration tests for frontier (enqueue, dequeue, dedup) with real Redis → REQ-TEST-005, REQ-TEST-008
 - [x] **T-TEST-014**: Write integration tests for worker job processing with real queue → REQ-TEST-008 — *covered by worker-bullmq.integration.test.ts + frontier-bullmq.integration.test.ts*
-- [ ] **T-TEST-015**: ~~Write integration tests for graceful shutdown with real connections~~ → REQ-TEST-008 *(deferred: requires running service with real Redis/BullMQ connections)*
+- [x] **T-TEST-015**: Write integration tests for graceful shutdown with real connections → REQ-TEST-008
 - [ ] **T-TEST-016**: ~~Write integration tests for metrics endpoint scraping~~ → REQ-TEST-008 *(deferred: requires running service with Prometheus metrics endpoint)*
 
 ## Phase 5: CI Pipeline
@@ -43,7 +43,7 @@
 ## Phase 6: Performance & Cleanup
 
 - [x] **T-TEST-021**: Benchmark unit test suite completes in < 30s → REQ-TEST-019
-- [ ] **T-TEST-022**: ~~Benchmark integration tests complete in < 120s~~ → REQ-TEST-020 *(deferred: requires BullMQ integration tests from T-TEST-014)*
+- [x] **T-TEST-022**: Benchmark integration tests complete in < 120s → REQ-TEST-020
 - [x] **T-TEST-023**: Establish performance baselines in CI (unit ≤30s, integration ≤120s, Testcontainer startup ≤15s) with 20% regression warning → REQ-TEST-023
 - [x] **T-TEST-024**: Implement deterministic Testcontainer cleanup in `afterAll` with global orphan timeout → REQ-TEST-024
 
