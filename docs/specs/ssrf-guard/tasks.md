@@ -21,15 +21,15 @@
 
 ## Phase 3: Fetch Hardening
 
-- [ ] **T-SEC-009**: Implement redirect counter with configurable limit → REQ-SEC-008
-- [ ] **T-SEC-010**: Implement streaming body size limiter with `Content-Length` pre-flight → REQ-SEC-009
-- [ ] **T-SEC-011**: Implement cumulative timeout via AbortSignal → REQ-SEC-010
-- [ ] **T-SEC-012**: Implement per-redirect SSRF validation hook → REQ-SEC-004
+- [x] **T-SEC-009**: Implement redirect counter with configurable limit → REQ-SEC-008
+- [x] **T-SEC-010**: Implement streaming body size limiter with `Content-Length` pre-flight → REQ-SEC-009
+- [x] **T-SEC-011**: Implement cumulative timeout via AbortSignal → REQ-SEC-010
+- [x] **T-SEC-012**: Implement per-redirect SSRF validation hook → REQ-SEC-004
 
 ## Phase 4: Container Security
 
-- [ ] **T-SEC-013**: Configure Dockerfile for non-root execution → REQ-SEC-012
-- [ ] **T-SEC-014**: Configure production install (no dev deps, no install scripts) → REQ-SEC-013
+- [x] **T-SEC-013**: Configure Dockerfile for non-root execution → REQ-SEC-012
+- [x] **T-SEC-014**: Configure production install (no dev deps, no install scripts) → REQ-SEC-013
 
 ## Phase 5: SSRF Metrics & DNS Enhancements
 
@@ -42,19 +42,19 @@
 
 ## Phase 6: Tests
 
-- [ ] **T-SEC-015**: Property tests for IPv4 range checking (all private ranges blocked) → REQ-SEC-001
-- [ ] **T-SEC-016**: Unit tests for IPv6 blocking → REQ-SEC-002
-- [ ] **T-SEC-017**: Unit tests for IPv4-mapped IPv6 normalization → GAP-SEC-001
-- [ ] **T-SEC-018**: Scenario test: redirect chain with private IP mid-chain → REQ-SEC-004
-- [ ] **T-SEC-019**: Unit test for DNS fail-open and fail-closed policies → REQ-SEC-006
-- [ ] **T-SEC-020**: Unit test for ALLOW_PRIVATE_IPS bypass → REQ-SEC-007
-- [ ] **T-SEC-021**: Scenario test: body size limit with streaming response → REQ-SEC-009
-- [ ] **T-SEC-022**: Container test: verify non-root execution → REQ-SEC-012
-- [ ] **T-SEC-029**: Unit test for `ssrf_checks_total` counter labels → REQ-SEC-014
-- [ ] **T-SEC-030**: Unit test for DNS resolution histogram recording → REQ-SEC-015
-- [ ] **T-SEC-031**: Property test for multi-IP DNS validation (no false negatives) → REQ-SEC-016
-- [ ] **T-SEC-032**: Unit test for DNS timeout and fail-policy behavior → REQ-SEC-017
-- [ ] **T-SEC-033**: Integration test for pinned IP returned in validation result → REQ-SEC-018, REQ-SEC-019
+- [x] **T-SEC-015**: Property tests for IPv4 range checking (all private ranges blocked) → REQ-SEC-001
+- [x] **T-SEC-016**: Unit tests for IPv6 blocking → REQ-SEC-002
+- [x] **T-SEC-017**: Unit tests for IPv4-mapped IPv6 normalization → GAP-SEC-001
+- [x] **T-SEC-018**: Scenario test: redirect chain with private IP mid-chain → REQ-SEC-004
+- [x] **T-SEC-019**: Unit test for DNS fail-open and fail-closed policies → REQ-SEC-006
+- [x] **T-SEC-020**: Unit test for ALLOW_PRIVATE_IPS bypass → REQ-SEC-007
+- [x] **T-SEC-021**: Scenario test: body size limit with streaming response → REQ-SEC-009
+- [x] **T-SEC-022**: Container test: verify non-root execution → REQ-SEC-012
+- [x] **T-SEC-029**: Unit test for `ssrf_checks_total` counter labels → REQ-SEC-014
+- [x] **T-SEC-030**: Unit test for DNS resolution histogram recording → REQ-SEC-015
+- [x] **T-SEC-031**: Property test for multi-IP DNS validation (no false negatives) → REQ-SEC-016
+- [x] **T-SEC-032**: Unit test for DNS timeout and fail-policy behavior → REQ-SEC-017
+- [x] **T-SEC-033**: Integration test for pinned IP returned in validation result → REQ-SEC-018, REQ-SEC-019
 
 ---
 

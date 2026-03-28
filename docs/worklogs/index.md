@@ -28,6 +28,7 @@ Chronological work session logs documenting what was done, decisions made, and o
 | [2026-03-28: Infrastructure](2026-03-28-infrastructure.md) | Infrastructure: Dockerfile, compose, K8s manifests, monitoring, 9 runbooks, RALPH review | Complete | 2026-03-28 |
 | [2026-03-28: Testing Quality](2026-03-28-testing-quality.md) | Testing quality: coverage thresholds, JUnit reporters, CI pipeline, Testcontainer helpers, integration tests | Complete | 2026-03-28 |
 | [2026-03-28: Virtual Memory](2026-03-28-virtual-memory.md) | Virtual memory: context budget, chunking, distillation, eviction, paging, 8 modules, 69 tests | Complete | 2026-03-28 |
+| [2026-03-28: SSRF Guard Hardening](2026-03-28-ssrf-guard-hardening.md) | SSRF fetch hardening: redirect limiting, body size, cumulative timeout, per-redirect SSRF, 81 tests | Complete | 2026-03-28 |
 
 ## Index
 
