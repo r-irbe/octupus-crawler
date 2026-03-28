@@ -6,7 +6,9 @@
 
 ## Current State
 
-- **Phase**: G4 complete — about to implement
+- **Phase**: G7 complete — committed `fb4f56d`, proceeding to G8 RALPH
+- **Tests**: 16 new (8 OTel rule + 8 Redis integration)
+- **Guard Functions**: typecheck ✅ lint ✅ test ✅
 
 ## Plan
 
@@ -21,8 +23,8 @@
 
 | Task | Spec | Status | Notes |
 | --- | --- | --- | --- |
-| T-AGENT-089 | agentic-setup | not-started | ESLint rule for OTel first-import |
-| T-AGENT-106 | agentic-setup | not-started | Verification test using RuleTester |
-| T-COORD-025 | completion-detection | not-started | Redis Testcontainer + auth |
-| T-COORD-026 | completion-detection | not-started | Two coordinators competing for lease |
-| T-COORD-027 | completion-detection | not-started | Leader crash, standby takeover |
+| T-AGENT-089 | agentic-setup | ✅ done | Custom ESLint rule in rules/otel-first-import.js |
+| T-AGENT-106 | agentic-setup | ✅ done | 8 Linter API tests |
+| T-COORD-025 | completion-detection | ✅ done | 2 Redis connection+isolation tests |
+| T-COORD-026 | completion-detection | ✅ done | 4 leader election tests |
+| T-COORD-027 | completion-detection | ✅ done | 2 failover tests |
