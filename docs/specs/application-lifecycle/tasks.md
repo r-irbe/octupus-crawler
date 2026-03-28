@@ -15,10 +15,10 @@
 
 - [x] **T-LIFE-004**: Implement config validation gate (exit 1 on failure) → REQ-LIFE-001
 - [x] **T-LIFE-005**: Implement seed URL validation (exit 1 on empty list) → REQ-LIFE-002
-- [ ] **T-LIFE-006**: Implement observability initialization before app wiring → REQ-LIFE-003
-- [ ] **T-LIFE-007**: Configure logger with worker ID and service name bindings → REQ-LIFE-004
-- [ ] **T-LIFE-008**: Start tracer before crawl begins → REQ-LIFE-005
-- [ ] **T-LIFE-009**: Start job consumer before seeding → REQ-LIFE-006
+- [x] **T-LIFE-006**: Implement observability initialization before app wiring → REQ-LIFE-003
+- [x] **T-LIFE-007**: Configure logger with worker ID and service name bindings → REQ-LIFE-004
+- [x] **T-LIFE-008**: Start tracer before crawl begins → REQ-LIFE-005
+- [ ] **T-LIFE-009**: Start job consumer before seeding → REQ-LIFE-006 *(deferred: requires BullMQ adapter)*
 
 ## Phase 3: Seeding
 
@@ -44,15 +44,15 @@
 - [x] **T-LIFE-023**: Implement Phase 2 teardown (Promise.allSettled) → REQ-LIFE-019, REQ-LIFE-020
 - [x] **T-LIFE-024**: Log teardown failures with component name → REQ-LIFE-021
 - [x] **T-LIFE-025**: Define typed ShutdownReason discriminated union → REQ-LIFE-022
-- [ ] **T-LIFE-026**: Implement coordinator close (clear interval, settle promise) → REQ-LIFE-023
-- [ ] **T-LIFE-027**: Ensure coordinator does not close shared resources → REQ-LIFE-024
+- [x] **T-LIFE-026**: Implement coordinator close (clear interval, settle promise) → REQ-LIFE-023
+- [x] **T-LIFE-027**: Ensure coordinator does not close shared resources → REQ-LIFE-024
 
 ## Phase 6: Worker Processing
 
 - [x] **T-LIFE-028**: Implement job payload validation (Zod/type guard) → REQ-LIFE-025
 - [x] **T-LIFE-029**: Re-throw queue_error for queue retry → REQ-LIFE-026
 - [x] **T-LIFE-030**: Record metrics for success and failure → REQ-LIFE-027
-- [ ] **T-LIFE-031**: Create single fetcher instance, reused across jobs → REQ-LIFE-028
+- [x] **T-LIFE-031**: Create single fetcher instance, reused across jobs → REQ-LIFE-028
 
 ## Phase 7: Resource Ownership & Startup Ordering
 
@@ -71,12 +71,12 @@
 - [x] **T-LIFE-035**: Unit test for idempotent shutdown → REQ-LIFE-018
 - [x] **T-LIFE-036**: Unit test for settle-all teardown with partial failure → REQ-LIFE-020, 021
 - [x] **T-LIFE-037**: Unit test for queue_error re-throw → REQ-LIFE-026
-- [ ] **T-LIFE-038**: Scenario test for full startup → completion → shutdown → REQ-LIFE-001 to 017
-- [ ] **T-LIFE-045**: Integration test for readiness probe 503 during shutdown → REQ-LIFE-029
+- [ ] **T-LIFE-038**: Scenario test for full startup → completion → shutdown → REQ-LIFE-001 to 017 *(deferred: requires all infrastructure wired)*
+- [ ] **T-LIFE-045**: Integration test for readiness probe 503 during shutdown → REQ-LIFE-029 *(deferred: requires HTTP server)*
 - [x] **T-LIFE-046**: Unit test for deterministic abort timing → REQ-LIFE-030
 - [x] **T-LIFE-047**: Scenario test for drain timeout with job abandonment → REQ-LIFE-031
 - [x] **T-LIFE-048**: Code review verification of resource ownership matrix → REQ-LIFE-032
-- [ ] **T-LIFE-049**: Integration test for sequential startup ordering → REQ-LIFE-033
+- [ ] **T-LIFE-049**: Integration test for sequential startup ordering → REQ-LIFE-033 *(deferred: requires infrastructure adapters)*
 - [x] **T-LIFE-050**: Scenario test for partial startup failure with reverse teardown → REQ-LIFE-034
 
 ---
@@ -96,4 +96,4 @@
 
 ---
 
-> **Provenance**: Created 2026-03-25. Implementation Agent task decomposition per ADR-020. Updated 2026-03-25: added Phase 7 (REQ-LIFE-029–034 resource ownership, startup ordering, shutdown semantics).
+> **Provenance**: Created 2026-03-25. Implementation Agent task decomposition per ADR-020. Updated 2026-03-25: added Phase 7 (REQ-LIFE-029–034 resource ownership, startup ordering, shutdown semantics). Updated 2026-03-28: T-LIFE-006/007/008/026/027/031 implemented; T-LIFE-009/038/045/049 deferred.
