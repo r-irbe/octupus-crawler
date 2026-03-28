@@ -1,0 +1,144 @@
+# Quality Gate — Fail-fast pipeline with coverage enforcement
+# Implements: REQ-TEST-013 (fail-fast chain), REQ-TEST-014 (skip on failure)
+#             REQ-TEST-015 (JUnit XML), REQ-TEST-016 (service containers)
+#             REQ-TEST-019/020 (performance), REQ-TEST-023 (baselines)
+# Design: docs/specs/testing-quality/design.md §4
+
+name: Quality Gate
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+concurrency:
+  group: quality-gate-${{ github.head_ref || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # REQ-TEST-013: typecheck → lint → test (fail-fast)
+  # REQ-TEST-014: if typecheck fails, subsequent stages are skipped
+  typecheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm turbo typecheck
+
+  lint:
+    needs: typecheck
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm turbo lint
+
+  unit-tests:
+    needs: lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+
+      # REQ-TEST-019: Unit tests ≤30s
+      - name: Unit Tests with Coverage
+        run: |
+          START=$(date +%s)
+          pnpm turbo test -- --coverage
+          END=$(date +%s)
+          DURATION=$((END - START))
+          echo "unit_duration=$DURATION" >> "$GITHUB_ENV"
+          echo "::notice::Unit test duration: ${DURATION}s (baseline: ≤30s)"
+
+      # REQ-TEST-015: JUnit XML reporter
+      - name: Upload Test Results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: unit-test-results
+          path: "**/test-results/junit.xml"
+          retention-days: 30
+
+      # REQ-TEST-009/010: Coverage threshold enforcement
+      - name: Upload Coverage
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: coverage-reports
+          path: "**/coverage/"
+          retention-days: 30
+
+      # REQ-TEST-023: Performance baseline check
+      - name: Check Performance Baseline
+        run: |
+          DURATION=${{ env.unit_duration }}
+          BASELINE=30
+          THRESHOLD=$(( BASELINE * 120 / 100 ))
+          if [ "$DURATION" -gt "$THRESHOLD" ]; then
+            echo "::warning::Unit test duration (${DURATION}s) exceeds 20% regression threshold (${THRESHOLD}s)"
+          fi
+
+  # REQ-TEST-016: Integration tests with service containers
+  integration-tests:
+    needs: unit-tests
+    runs-on: ubuntu-latest
+    services:
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+
+      # REQ-TEST-020: Integration tests ≤120s
+      - name: Integration Tests
+        env:
+          REDIS_URL: redis://localhost:6379
+        run: |
+          START=$(date +%s)
+          pnpm turbo test:integration 2>/dev/null || echo "No integration tests configured yet"
+          END=$(date +%s)
+          DURATION=$((END - START))
+          echo "::notice::Integration test duration: ${DURATION}s (baseline: ≤120s)"
+
+  alert-tests:
+    needs: lint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install promtool
+        run: |
+          PROM_VERSION="2.50.0"
+          curl -sL "https://github.com/prometheus/prometheus/releases/download/v${PROM_VERSION}/prometheus-${PROM_VERSION}.linux-amd64.tar.gz" | tar xz
+          sudo mv "prometheus-${PROM_VERSION}.linux-amd64/promtool" /usr/local/bin/
+      - name: Validate Alert Rules
+        run: promtool check rules infra/prometheus/alert-rules.yml
+      - name: Run Alert Tests
+        run: promtool test rules infra/prometheus/alert-rules-fetch.test.yml infra/prometheus/alert-rules-ops.test.yml

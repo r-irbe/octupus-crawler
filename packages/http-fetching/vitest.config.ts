@@ -5,5 +5,14 @@ export default defineConfig({
     globals: false,
     include: ['src/**/*.test.ts'],
     passWithNoTests: true,
+    coverage: {
+      provider: 'v8',
+      include: ['src/**/*.ts'],
+      exclude: ['src/**/*.test.ts', 'src/**/*.property.test.ts'],
+      thresholds: { lines: 80, branches: 75 },
+      reporter: ['text', 'lcov', 'json-summary'],
+    },
+    reporters: ['default', 'junit'],
+    outputFile: { junit: './test-results/junit.xml' },
   },
 });

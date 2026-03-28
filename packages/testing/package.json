@@ -7,21 +7,26 @@
     "./generators/rfc6890": "./src/generators/rfc6890.generator.ts",
     "./generators/ssrf-payload": "./src/generators/ssrf-payload.generator.ts",
     "./generators/dns-rebinding": "./src/generators/dns-rebinding.generator.ts",
+    "./containers/redis": "./src/containers/redis-container.ts",
     "./property-test-template": "./src/property-test-template.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
     "lint": "eslint src/",
     "test": "vitest run",
+    "test:integration": "vitest run --include 'src/**/*.integration.test.ts'",
     "clean": "rm -rf dist .turbo"
   },
   "dependencies": {
-    "@fast-check/vitest": "^0.3.0"
+    "@fast-check/vitest": "^0.3.0",
+    "testcontainers": "^11.13.0"
   },
   "devDependencies": {
     "@ipf/eslint-config": "workspace:*",
+    "@types/node": "^25.5.0",
+    "eslint": "^10.0.0",
+    "redis": "^5.11.0",
     "typescript": "^6.0.0",
-    "vitest": "^4.0.0",
-    "eslint": "^10.0.0"
+    "vitest": "^4.0.0"
   }
 }
