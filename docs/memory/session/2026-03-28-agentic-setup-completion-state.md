@@ -6,7 +6,9 @@
 
 ## Current State
 
-- **Phase**: G4 complete — about to implement
+- **Phase**: G7 complete — committed `75a9c6e`, proceeding to G8 RALPH
+- **Tests**: 21 pass (13 generator + 8 ESLint verification)
+- **Guard Functions**: typecheck ✅ lint ✅ test ✅
 
 ## Plan
 
@@ -26,8 +28,8 @@
 | T-AGENT-088 | already-done | infra→application restriction exists in eslint.config.js |
 | T-AGENT-090 | already-done | no-explicit-any configured as error |
 | T-AGENT-091 | already-done | Spectral job in CI workflow, no-ops without specs |
-| T-AGENT-105 | implementable | Write ESLint verification test |
-| T-AGENT-108 | implementable | Write generator verification test |
+| T-AGENT-105 | ✅ done | 8 verification tests in eslint-rules-verification.unit.test.ts |
+| T-AGENT-108 | ✅ done | 13 property tests in security-generators.unit.test.ts |
 | T-AGENT-089 | still-blocked | No apps/\* scaffolding |
 | T-AGENT-106 | still-blocked | No apps/\* scaffolding |
 | T-AGENT-107 | still-blocked | No API specs |
