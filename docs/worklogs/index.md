@@ -26,6 +26,7 @@ Chronological work session logs documenting what was done, decisions made, and o
 | [2026-03-27: Completion Detection](2026-03-27-completion-detection.md) | Completion detection: backoff, poll loop, control plane, leader election, 38 tests | Complete | 2026-03-27 |
 | [2026-03-27: Alerting](2026-03-27-alerting.md) | Alerting: 12 PromQL alert rules, promtool tests, Alertmanager routing, 30+ test cases | Complete | 2026-03-27 |
 | [2026-03-28: Infrastructure](2026-03-28-infrastructure.md) | Infrastructure: Dockerfile, compose, K8s manifests, monitoring, 9 runbooks, RALPH review | Complete | 2026-03-28 |
+| [2026-03-28: Testing Quality](2026-03-28-testing-quality.md) | Testing quality: coverage thresholds, JUnit reporters, CI pipeline, Testcontainer helpers, integration tests | Complete | 2026-03-28 |
 
 ## Index
 
