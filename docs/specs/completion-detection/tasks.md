@@ -46,9 +46,9 @@
 - [x] **T-COORD-022**: Unit test for backoff escalation and abort threshold → REQ-DIST-015
 - [ ] **T-COORD-023**: Distributed test for pause/resume with in-flight jobs → REQ-DIST-018 *(deferred: requires Redis/BullMQ adapter)*
 - [x] **T-COORD-024**: Unit test for idempotent cancel → REQ-DIST-019
-- [ ] **T-COORD-025**: Integration test for state-store connection with auth → REQ-DIST-021 *(deferred: requires Redis Testcontainer)*
-- [ ] **T-COORD-026**: Distributed test for leader election (two coordinators) → REQ-DIST-023 *(deferred: requires Redis Testcontainer)*
-- [ ] **T-COORD-027**: Distributed test for failover (leader crash, standby takeover) → REQ-DIST-024 *(deferred: requires Redis Testcontainer)*
+- [x] **T-COORD-025**: Integration test for state-store connection with auth → REQ-DIST-021 — *2 tests in leader-election.integration.test.ts*
+- [x] **T-COORD-026**: Distributed test for leader election (two coordinators) → REQ-DIST-023 — *4 tests in leader-election.integration.test.ts*
+- [x] **T-COORD-027**: Distributed test for failover (leader crash, standby takeover) → REQ-DIST-024 — *2 tests in leader-election.integration.test.ts*
 
 ---
 

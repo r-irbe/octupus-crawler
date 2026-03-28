@@ -171,7 +171,7 @@
 - [x] **T-AGENT-086**: Add Zod schema-first directive to `.github/instructions/api-layer.instructions.md` — schema must be defined before handler function, code review checklist item → REQ-AGENT-090
 - [x] **T-AGENT-087**: Create ESLint rule `@ipf/no-infra-in-domain` in `packages/eslint-config/` — block `domain/` from importing `infrastructure/` or `infra/` → REQ-AGENT-091 — *implemented via `import-x/no-restricted-paths` zones in eslint.config.js*
 - [x] **T-AGENT-088**: Create ESLint rule `@ipf/no-app-in-infra` in `packages/eslint-config/` — block `infrastructure/` from importing `application/` → REQ-AGENT-091 — *implemented via `import-x/no-restricted-paths` zones in eslint.config.js*
-- [ ] **T-AGENT-089**: ⏸️ DEFERRED — Create ESLint rule `@ipf/otel-first-import` in `packages/eslint-config/` — verify first import in `apps/*/src/main.ts` is `'./otel'` → REQ-AGENT-092 — *deferred to eslint-config package*
+- [x] **T-AGENT-089**: Create ESLint rule `@ipf/otel-first-import` in `packages/eslint-config/` — verify first import in `apps/*/src/main.ts` is `'./otel'` → REQ-AGENT-092 — *custom rule in eslint-config/rules/otel-first-import.js, wired into eslint.config.js for apps/*/src/main.ts*
 - [x] **T-AGENT-090**: Verify `@typescript-eslint/no-explicit-any` is configured as error (not warning) across all packages in `packages/eslint-config/` → REQ-AGENT-094 — *verified: eslint.config.js has `'@typescript-eslint/no-explicit-any': 'error'`*
 
 ## Phase 21: API Contract & Resilience Enforcement
@@ -200,7 +200,7 @@
 ## Phase 24: Final Validation
 
 - [x] **T-AGENT-105**: Verify ESLint layer boundary rules block cross-layer imports in a test scenario → REQ-AGENT-091 — *8 verification tests in packages/testing/src/eslint-rules-verification.unit.test.ts*
-- [ ] **T-AGENT-106**: ⏏️ DEFERRED — Verify OTel first-import rule catches violations → REQ-AGENT-092 — *requires packages/eslint-config custom rules*
+- [x] **T-AGENT-106**: Verify OTel first-import rule catches violations → REQ-AGENT-092 — *8 tests in packages/testing/src/otel-first-import-rule.unit.test.ts using ESLint Linter API*
 - [ ] **T-AGENT-107**: ⏏️ DEFERRED — Verify Spectral catches API contract drift → REQ-AGENT-095 — *requires API specs to validate against*
 - [x] **T-AGENT-108**: Verify security property generators produce valid fast-check arbitraries for all RFC 6890 ranges → REQ-AGENT-100, REQ-AGENT-102 — *13 tests in packages/testing/src/generators/security-generators.unit.test.ts*
 - [ ] **T-AGENT-109**: ⏏️ DEFERRED — Run full end-to-end: feature request → spec-writer → TDD → review → merge using all mechanisms → REQ-AGENT-083, REQ-AGENT-020, REQ-AGENT-071, REQ-AGENT-089 — *requires live environment with implemented features*

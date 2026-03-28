@@ -25,6 +25,7 @@
     "@ipf/eslint-config": "workspace:*",
     "@ipf/testing": "workspace:*",
     "@types/node": "^25.5.0",
+    "redis": "^5.11.0",
     "typescript": "^6.0.0",
     "vitest": "^4.0.0",
     "eslint": "^10.0.0"

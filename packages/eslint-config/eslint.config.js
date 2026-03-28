@@ -5,6 +5,7 @@
 
 import tseslint from 'typescript-eslint';
 import importX from 'eslint-plugin-import-x';
+import { otelFirstImport } from './rules/otel-first-import.js';
 
 export default tseslint.config(
   {
@@ -156,6 +157,18 @@ export default tseslint.config(
           message: 'Contracts layer must contain only types/interfaces — no runtime instantiation (REQ-ARCH-002).',
         },
       ],
+    },
+  },
+
+  // --- T-AGENT-089: OTel first-import rule (REQ-AGENT-092) ---
+  // First import in service entry points must be './otel'
+  {
+    files: ['apps/*/src/main.ts'],
+    plugins: {
+      '@ipf': { rules: { 'otel-first-import': otelFirstImport } },
+    },
+    rules: {
+      '@ipf/otel-first-import': 'error',
     },
   },
 );
