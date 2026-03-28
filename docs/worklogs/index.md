@@ -39,6 +39,7 @@ Chronological work session logs documenting what was done, decisions made, and o
 | [2025-07-18: Deferred Batch](2025-07-18-deferred-batch.md) | Infrastructure verification tasks deferred (Docker), 39 total deferred across all specs | Complete | 2025-07-18 |
 | [2026-03-28: Agentic Setup Completion](2026-03-28-agentic-setup-completion.md) | Agentic setup: 7 tasks completed (5 already-done + 2 verification tests), 21 new tests | Complete | 2026-03-28 |
 | [2026-03-28: Deferred Unblock](2026-03-28-deferred-unblock.md) | OTel ESLint rule + Redis leader election integration tests, 5 deferred tasks unblocked | Complete | 2026-03-28 |
+| [2026-03-28: Job Queue Infrastructure](2026-03-28-job-queue-infrastructure.md) | BullMQ adapter package: QueueBackend, JobConsumer, QueueAdapter, 23 tests | Complete | 2026-03-28 |
 
 ## Index
 

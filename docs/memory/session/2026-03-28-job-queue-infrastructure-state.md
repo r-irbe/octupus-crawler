@@ -6,7 +6,9 @@
 
 ## Current State
 
-- **Phase**: G4 complete — scaffolding package
+- **Phase**: G7 — committed at `ddd094d`
+- **All guard functions pass**: typecheck, lint, 23 tests (14 unit + 9 integration)
+- **Pending**: G8 RALPH review, G9 worklog, G10 report, G11 spec update
 
 ## Plan
 
@@ -14,8 +16,8 @@ Build `packages/job-queue` — BullMQ adapters for the 3 hexagonal port interfac
 1. `BullMQQueueBackend` → implements `QueueBackend` (url-frontier)
 2. `BullMQJobConsumer` → implements `JobConsumer` (core contract)
 3. `BullMQQueueAdapter` → implements `QueueAdapter` (completion-detection ControlPlane)
-4. Unit tests with mocked BullMQ
-5. Integration tests with Redis Testcontainer
+4. Unit tests for connection-config Zod validation
+5. Integration tests with Redis Testcontainer (end-to-end job processing)
 
 ## ADRs
 
@@ -27,10 +29,16 @@ Build `packages/job-queue` — BullMQ adapters for the 3 hexagonal port interfac
 
 | File | Status | Description |
 | --- | --- | --- |
-| package.json | not-started | Package scaffold with bullmq dep |
-| bullmq-queue-backend.ts | not-started | QueueBackend adapter |
-| bullmq-job-consumer.ts | not-started | JobConsumer adapter |
-| bullmq-queue-adapter.ts | not-started | QueueAdapter for control plane |
-| connection-config.ts | not-started | Zod-validated BullMQ connection config |
-| *.unit.test.ts | not-started | Unit tests |
-| *.integration.test.ts | not-started | Redis Testcontainer integration tests |
+| package.json | done | Package scaffold with bullmq dep |
+| connection-config.ts | done | Zod-validated BullMQ connection + queue config |
+| bullmq-queue-backend.ts | done | QueueBackend adapter (addBulk, getQueueSize, close) |
+| bullmq-job-consumer.ts | done | JobConsumer adapter (Worker start/close lifecycle) |
+| bullmq-queue-adapter.ts | done | QueueAdapter for control plane operations |
+| connection-config.unit.test.ts | done | 14 unit tests for config validation |
+| bullmq-adapters.integration.test.ts | done | 9 integration tests with Redis Testcontainer |
+
+## Commits
+
+| Hash | Message |
+| --- | --- |
+| `ddd094d` | feat(job-queue): add BullMQ adapter package |
