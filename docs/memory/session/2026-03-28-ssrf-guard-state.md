@@ -19,23 +19,23 @@
 
 | # | Task | Status | Commit | Notes |
 | --- | --- | --- | --- | --- |
-| 1 | T-SEC-009: Redirect counter (limit=5) | `pending` | — | REQ-SEC-008 |
-| 2 | T-SEC-010: Streaming body size limiter | `pending` | — | REQ-SEC-009 |
-| 3 | T-SEC-011: Cumulative timeout AbortSignal | `pending` | — | REQ-SEC-010 |
-| 4 | T-SEC-012: Per-redirect SSRF validation hook | `pending` | — | REQ-SEC-004 |
-| 5 | T-SEC-013: Dockerfile non-root | `pending` | — | REQ-SEC-012 |
-| 6 | T-SEC-014: Production install | `pending` | — | REQ-SEC-013 |
-| 7 | Phase 6: Tests (mark covered + add missing) | `pending` | — | 19 test tasks |
+| 1 | T-SEC-009: Redirect counter (limit=5) | `done` | e651261 | REQ-SEC-008 |
+| 2 | T-SEC-010: Streaming body size limiter | `done` | e651261 | REQ-SEC-009 |
+| 3 | T-SEC-011: Cumulative timeout AbortSignal | `done` | e651261 | REQ-SEC-010 |
+| 4 | T-SEC-012: Per-redirect SSRF validation hook | `done` | e651261 | REQ-SEC-004 |
+| 5 | T-SEC-013: Dockerfile non-root | `skipped` | — | Already in infra/docker/Dockerfile |
+| 6 | T-SEC-014: Production install | `skipped` | — | Already in infra/docker/Dockerfile |
+| 7 | Phase 6: Tests (mark covered + add missing) | `done` | e651261 | 80 tests, 7 files |
 
 ## Current State
 
 | Field | Value |
 | --- | --- |
-| Current task # | — |
-| Last completed gate | G4 |
-| Guard function status | `not-run` |
-| Commits on branch | 0 |
-| Tests passing | — |
+| Current task # | G8 (RALPH review) |
+| Last completed gate | G7 |
+| Guard function status | `pass` |
+| Commits on branch | 1 (e651261) |
+| Tests passing | 80/80 (7 files) |
 | Blockers | none |
 
 ## Decisions Log

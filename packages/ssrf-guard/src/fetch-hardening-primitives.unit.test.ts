@@ -8,8 +8,8 @@ import {
   createBodySizeLimiter,
   checkContentLength,
   createCumulativeTimeout,
-  validateRedirectTarget,
 } from './fetch-hardening.js';
+import { validateRedirectTarget } from './hardened-fetch.js';
 import type { DnsResolver } from './ssrf-validator.js';
 import { DEFAULT_SSRF_CONFIG, NULL_SSRF_METRICS } from './ssrf-types.js';
 

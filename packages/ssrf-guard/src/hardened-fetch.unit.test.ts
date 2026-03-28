@@ -5,9 +5,9 @@
 import { describe, it, expect } from 'vitest';
 import {
   hardenedFetch,
-  type FetchHardeningConfig,
   type FetchFn,
-} from './fetch-hardening.js';
+} from './hardened-fetch.js';
+import type { FetchHardeningConfig } from './fetch-hardening.js';
 import type { DnsResolver } from './ssrf-validator.js';
 import { DEFAULT_SSRF_CONFIG, NULL_SSRF_METRICS } from './ssrf-types.js';
 
@@ -126,6 +126,21 @@ describe('hardenedFetch', () => {
     expect(result.isErr()).toBe(true);
     if (result.isErr()) {
       expect(result.error._tag).toBe('body_too_large');
+    }
+  });
+
+  // F-009: Validates REQ-SEC-011: Scheme-changing redirect blocked (http→ftp)
+  it('blocks redirect to disallowed scheme', async () => {
+    const fetchFn: FetchFn = () =>
+      Promise.resolve(redirectResponse('ftp://internal.corp/secret'));
+
+    const result = await hardenedFetch(
+      new URL('http://example.com'), publicResolver, fetchFn,
+      DEFAULT_SSRF_CONFIG, config, NULL_SSRF_METRICS,
+    );
+    expect(result.isErr()).toBe(true);
+    if (result.isErr()) {
+      expect(result.error._tag).toBe('ssrf_blocked');
     }
   });
 });
