@@ -6,7 +6,8 @@
   "exports": {
     "./ip-range-checker": "./src/ip-range-checker.ts",
     "./ssrf-validator": "./src/ssrf-validator.ts",
-    "./ssrf-types": "./src/ssrf-types.ts"
+    "./ssrf-types": "./src/ssrf-types.ts",
+    "./fetch-hardening": "./src/fetch-hardening.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
