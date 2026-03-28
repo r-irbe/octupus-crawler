@@ -1,6 +1,7 @@
 packages:
   - "apps/*"
   - "packages/*"
+allowBuild: msgpackr-extract@*
 allowBuilds:
   "'": true
   '[': true

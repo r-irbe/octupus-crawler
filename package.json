@@ -30,8 +30,19 @@
       "@typescript-eslint/typescript-estree>typescript": "^6.0.0"
     },
     "onlyBuiltDependencies": [
-      "unrs-resolver",
-      "protobufjs"
+      "'",
+      "[",
+      "]",
+      "b",
+      "f",
+      "j",
+      "msgpackr-extract",
+      "o",
+      "p",
+      "r",
+      "s",
+      "t",
+      "u"
     ]
   }
 }
