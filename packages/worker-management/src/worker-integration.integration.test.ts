@@ -95,6 +95,7 @@ describe('Concurrency tracking integration (REQ-DIST-007)', () => {
     adapter = undefined;
   });
 
+  // Validates REQ-DIST-007: at most N jobs processed simultaneously
   it('tracks up to maxConcurrency simultaneous jobs', async () => {
     const events = new TestEventSource();
     const metrics = new TestMetricsRecorder();
@@ -129,6 +130,7 @@ describe('Concurrency tracking integration (REQ-DIST-007)', () => {
     expect(adapter.tracker.ratio).toBeCloseTo(0.6);
   });
 
+  // Validates REQ-DIST-007: interleaved lifecycle events correctly tracked
   it('handles concurrent start/complete interleaving', async () => {
     const events = new TestEventSource();
     const metrics = new TestMetricsRecorder();
@@ -159,7 +161,8 @@ describe('Concurrency tracking integration (REQ-DIST-007)', () => {
     expect(adapter.processedTotal).toBe(3);
   });
 
-  it('reports correct utilization at each concurrency level', () => {
+  // Validates REQ-DIST-007: utilization ratio updates at each concurrency level
+  it('reports correct utilization at each concurrency level', async () => {
     const events = new TestEventSource();
     const metrics = new TestMetricsRecorder();
 
@@ -170,6 +173,7 @@ describe('Concurrency tracking integration (REQ-DIST-007)', () => {
       maxConcurrency: 4,
       stalledConfig: createStalledJobConfig(),
     });
+    await adapter.start();
 
     events.fireActive('j1');
     expect(metrics.utilizationHistory).toContain(0.25);
@@ -188,6 +192,7 @@ describe('Concurrency tracking integration (REQ-DIST-007)', () => {
 // --- T-WORK-016: Worker metrics exposure integration ---
 
 describe('Worker metrics exposure integration (REQ-DIST-014)', () => {
+  // Validates REQ-DIST-014: worker_active_jobs, worker_utilization_ratio, worker_jobs_processed_total
   it('exposes all worker metrics through adapter→reporter chain', async () => {
     const events = new TestEventSource();
     const metrics = new TestMetricsRecorder();
@@ -239,6 +244,7 @@ describe('Worker metrics exposure integration (REQ-DIST-014)', () => {
     reporter.stop();
   });
 
+  // Validates REQ-DIST-014: stalled jobs metric exposure
   it('exposes stalled job metrics', async () => {
     const events = new TestEventSource();
     const metrics = new TestMetricsRecorder();
@@ -260,6 +266,7 @@ describe('Worker metrics exposure integration (REQ-DIST-014)', () => {
     await adapter.close();
   });
 
+  // Validates REQ-DIST-013, REQ-DIST-014: counter reset detection and metric
   it('reports counter reset metric on inconsistency', async () => {
     const events = new TestEventSource();
     const metrics = new TestMetricsRecorder();
