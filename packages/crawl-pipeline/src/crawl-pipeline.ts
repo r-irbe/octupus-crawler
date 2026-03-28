@@ -2,20 +2,18 @@
 // Implements: T-CRAWL-012, REQ-CRAWL-005, REQ-CRAWL-006
 
 import { ok, err } from 'neverthrow';
-import type { CrawlUrl } from '@ipf/core/domain/crawl-url';
 import type { Fetcher, FetchConfig } from '@ipf/core/contracts/fetcher';
 import type { Frontier } from '@ipf/core/contracts/frontier';
 import type { Logger } from '@ipf/core/contracts/logger';
 import type { CrawlError } from '@ipf/core/errors/crawl-error';
 import type { AsyncResult } from '@ipf/core/types/result';
-import { parseCrawlUrl } from './crawl-url-factory.js';
 import type {
   CrawlFrontierEntry,
-  CrawlFetchResult,
   CrawlResult,
   PipelineConfig,
 } from './crawl-types.js';
 import { validateEntry } from './validate-stage.js';
+import { fetchEntry } from './fetch-stage.js';
 import { discoverLinks, type ResultLinkExtractor } from './discover-stage.js';
 import { enqueueUrls } from './enqueue-stage.js';
 
@@ -44,15 +42,10 @@ export async function executePipeline(
   });
   if (validated.isErr()) return err(validated.error);
 
-  // Stage 2: Fetch (with timing — F-CP-002)
-  const fetchStart = performance.now();
-  const fetchResult = await deps.fetcher.fetch(entry.url, deps.fetchConfig);
-  const fetchDurationMs = performance.now() - fetchStart;
-  if (fetchResult.isErr()) return err(fetchResult.error);
-
-  // Map core FetchResult → pipeline CrawlFetchResult
-  const coreFetch = fetchResult.value;
-  const crawlFetch = mapFetchResult(entry, coreFetch, fetchDurationMs);
+  // Stage 2: Fetch (delegates to Fetcher contract — T-CRAWL-009)
+  const fetched = await fetchEntry(entry, deps.fetcher, deps.fetchConfig);
+  if (fetched.isErr()) return err(fetched.error);
+  const crawlFetch = fetched.value;
 
   // Stage 3: Discover
   const discovered = discoverLinks(crawlFetch, deps.extractor, deps.logger);
@@ -74,46 +67,3 @@ export async function executePipeline(
   });
 }
 
-/** Map core's FetchResult to pipeline's CrawlFetchResult (T-CRAWL-022). */
-function mapFetchResult(
-  entry: CrawlFrontierEntry,
-  coreFetch: { statusCode: number; body: string; headers: Record<string, string>; url: string },
-  durationMs: number,
-): CrawlFetchResult {
-  // Determine finalUrl: if the returned URL differs from the requested, it was a redirect
-  let finalUrl: CrawlUrl | null = null;
-  if (coreFetch.url !== entry.url.normalized && coreFetch.url !== entry.url.raw) {
-    const parsed = parseCrawlUrl(coreFetch.url);
-    if (parsed.isOk()) {
-      finalUrl = parsed.value;
-    }
-  }
-
-  // F-CP-009: case-insensitive content-type lookup (headers may not be lowercase)
-  const contentType = findHeaderCaseInsensitive(coreFetch.headers, 'content-type');
-
-  return {
-    requestedUrl: entry.url,
-    finalUrl,
-    statusCode: coreFetch.statusCode,
-    contentType,
-    body: coreFetch.body,
-    fetchTimestamp: Date.now(),
-    fetchDurationMs: durationMs,
-  };
-}
-
-/** Case-insensitive header lookup. */
-function findHeaderCaseInsensitive(
-  headers: Record<string, string>,
-  target: string,
-): string | null {
-  const lower = target.toLowerCase();
-  for (const key of Object.keys(headers)) {
-    if (key.toLowerCase() === lower) {
-      const val = headers[key];
-      if (val !== undefined) return val;
-    }
-  }
-  return null;
-}
