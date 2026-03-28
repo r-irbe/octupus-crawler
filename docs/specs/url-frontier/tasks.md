@@ -26,7 +26,7 @@
 
 ## Phase 4: URL Normalization & Collision Resilience
 
-- [ ] **T-DIST-016**: Implement comprehensive URL normalization (scheme/host lowercasing, default port removal, path encoding normalization, fragment removal, query param sorting, trailing slash) → REQ-DIST-007
+- [x] **T-DIST-016**: Implement comprehensive URL normalization (scheme/host lowercasing, default port removal, path encoding normalization, fragment removal, query param sorting, trailing slash) → REQ-DIST-007 *(satisfied by crawl-pipeline's `normalizeUrl` per ADR-015 — frontier hashes pre-normalized URLs)*
 - [x] **T-DIST-017**: Document SHA-256 truncation collision resistance analysis (2^64 birthday bound, <10^{-10} for ≤10^9 URLs) → REQ-DIST-008
 - [x] **T-DIST-018**: Implement `url_frontier_collisions_total` counter metric (detect via addBulk discrepancy) → REQ-DIST-009
 
@@ -34,10 +34,10 @@
 
 - [x] **T-DIST-011**: Distributed test: idempotent enqueue (same URL = same job ID) → REQ-DIST-001
 - [x] **T-DIST-012**: Unit test: depth-to-priority mapping → REQ-DIST-002
-- [ ] **T-DIST-013**: Distributed test: retry with backoff timing → REQ-DIST-003
-- [ ] **T-DIST-014**: Integration test: batch enqueue round-trip count → REQ-DIST-004
-- [ ] **T-DIST-015**: Distributed test: retention window eviction → REQ-DIST-005
-- [ ] **T-DIST-019**: Property test: URL normalization idempotence (normalize(normalize(url)) === normalize(url)) → REQ-DIST-007
+- [ ] **T-DIST-013**: Distributed test: retry with backoff timing → REQ-DIST-003 *(deferred: requires Redis/BullMQ adapter)*
+- [ ] **T-DIST-014**: Integration test: batch enqueue round-trip count → REQ-DIST-004 *(deferred: requires Redis/BullMQ adapter)*
+- [ ] **T-DIST-015**: Distributed test: retention window eviction → REQ-DIST-005 *(deferred: requires Redis/BullMQ adapter)*
+- [x] **T-DIST-019**: Property test: URL normalization idempotence (normalize(normalize(url)) === normalize(url)) → REQ-DIST-007 *(satisfied by crawl-pipeline's `url-normalizer.property.test.ts`)*
 - [x] **T-DIST-020**: Unit test: collision resistance documentation accuracy → REQ-DIST-008
 - [x] **T-DIST-021**: Integration test: collision counter increment on addBulk discrepancy → REQ-DIST-009
 
@@ -55,4 +55,4 @@
 
 ---
 
-> **Provenance**: Created 2026-03-25. Implementation Agent task decomposition per ADR-020. Updated 2026-03-25: added Phase 4 (REQ-DIST-007–009 URL normalization, collision analysis, collision metric). Updated 2026-03-26: checked completed tasks per G11 spec update gate.
+> **Provenance**: Created 2026-03-25. Implementation Agent task decomposition per ADR-020. Updated 2026-03-25: added Phase 4 (REQ-DIST-007–009 URL normalization, collision analysis, collision metric). Updated 2026-03-26: checked completed tasks per G11 spec update gate. Updated 2026-03-28: T-DIST-016/019 satisfied by crawl-pipeline; T-DIST-013/014/015 deferred (Redis).
