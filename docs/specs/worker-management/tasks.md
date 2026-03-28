@@ -27,11 +27,11 @@
 
 - [x] **T-WORK-007**: Unit test for utilization ratio calculation and floor guard → REQ-DIST-011
 - [x] **T-WORK-008**: Unit test for start guard (second call throws) → REQ-DIST-010
-- [ ] **T-WORK-009**: Integration test for configurable concurrency → REQ-DIST-007
-- [ ] **T-WORK-010**: Distributed test for stalled job recovery → REQ-DIST-008
-- [ ] **T-WORK-014**: Integration test for worker crash recovery and re-registration → REQ-DIST-012
+- [x] **T-WORK-009**: Integration test for configurable concurrency → REQ-DIST-007
+- [ ] **T-WORK-010**: Distributed test for stalled job recovery → REQ-DIST-008 _(deferred: requires BullMQ infrastructure adapter)_
+- [ ] **T-WORK-014**: Integration test for worker crash recovery and re-registration → REQ-DIST-012 _(deferred: requires BullMQ infrastructure adapter)_
 - [x] **T-WORK-015**: Unit test for counter inconsistency detection and reset → REQ-DIST-013
-- [ ] **T-WORK-016**: Integration test for worker metrics exposure → REQ-DIST-014
+- [x] **T-WORK-016**: Integration test for worker metrics exposure → REQ-DIST-014
 
 ---
 
@@ -46,4 +46,4 @@
 
 ---
 
-> **Provenance**: Created 2026-03-25. Implementation Agent task decomposition per ADR-020. Updated 2026-03-25: added Phase 3 (REQ-DIST-012–014 crash recovery, counter guard, metrics). Updated 2026-03-27: marked 12/16 tasks complete (Phases 1-3 + unit tests), 4 integration/distributed tests remaining.
+> **Provenance**: Created 2026-03-25. Implementation Agent task decomposition per ADR-020. Updated 2026-03-25: added Phase 3 (REQ-DIST-012–014 crash recovery, counter guard, metrics). Updated 2026-03-27: marked 12/16 tasks complete (Phases 1-3 + unit tests), 4 integration/distributed tests remaining. Updated 2026-03-28: added T-WORK-009 + T-WORK-016 integration tests; T-WORK-010 + T-WORK-014 deferred (blocked on BullMQ adapter).
