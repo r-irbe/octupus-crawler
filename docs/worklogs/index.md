@@ -36,6 +36,7 @@ Chronological work session logs documenting what was done, decisions made, and o
 | [2026-03-28: SSRF Guard Hardening](2026-03-28-ssrf-guard-hardening.md) | SSRF fetch hardening: redirect limiting, body size, cumulative timeout, per-redirect SSRF, 81 tests | Complete | 2026-03-28 |
 | [2025-07-18: Testing Quality Deferred](2025-07-18-testing-quality-deferred.md) | Testing quality: 4 remaining tasks deferred (BullMQ/infra blocked), RALPH approved | Complete | 2025-07-18 |
 | [2025-07-18: Crawl Pipeline Fetch Stage](2025-07-18-crawl-pipeline-fetch-stage.md) | Crawl pipeline: extract fetch stage to dedicated module, T-CRAWL-009 complete, 100% spec | Complete | 2025-07-18 |
+| [2025-07-18: Deferred Batch](2025-07-18-deferred-batch.md) | Infrastructure verification tasks deferred (Docker), 39 total deferred across all specs | Complete | 2025-07-18 |
 
 ## Index
 
