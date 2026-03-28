@@ -46,18 +46,18 @@
 
 ## Phase 6: Tests
 
-- [ ] **T-FETCH-018**: Unit tests for politeness delay enforcement and LRU eviction → REQ-FETCH-009 to 013
-- [ ] **T-FETCH-019**: Scenario tests for redirect chain following (success, limit exceeded) → REQ-FETCH-004, REQ-FETCH-008
-- [ ] **T-FETCH-020**: Scenario test for relative Location resolution → REQ-FETCH-005
-- [ ] **T-FETCH-021**: Scenario test for 3xx without Location → REQ-FETCH-006
-- [ ] **T-FETCH-022**: Scenario test for body size limit (Content-Length pre-flight + streaming) → REQ-FETCH-014, REQ-FETCH-015
-- [ ] **T-FETCH-023**: Unit tests for all 9 error classification variants → REQ-FETCH-018
-- [ ] **T-FETCH-024**: Unit test for duration tracking → REQ-FETCH-019
-- [ ] **T-FETCH-032**: Unit test for per-domain promise-chain concurrency safety → REQ-FETCH-020
-- [ ] **T-FETCH-033**: Unit test for TLD+1 domain grouping → REQ-FETCH-021
-- [ ] **T-FETCH-034**: Unit test for all fetcher metric recording → REQ-FETCH-022
-- [ ] **T-FETCH-035**: Integration test for SSRF pinned IP connection → REQ-FETCH-023
-- [ ] **T-FETCH-036**: Unit test for stream drain error handling during redirect → REQ-FETCH-024
+- [x] **T-FETCH-018**: Unit tests for politeness delay enforcement and LRU eviction → REQ-FETCH-009 to 013
+- [x] **T-FETCH-019**: Scenario tests for redirect chain following (success, limit exceeded) → REQ-FETCH-004, REQ-FETCH-008
+- [x] **T-FETCH-020**: Scenario test for relative Location resolution → REQ-FETCH-005
+- [x] **T-FETCH-021**: Scenario test for 3xx without Location → REQ-FETCH-006
+- [x] **T-FETCH-022**: Scenario test for body size limit (Content-Length pre-flight + streaming) → REQ-FETCH-014, REQ-FETCH-015
+- [x] **T-FETCH-023**: Unit tests for all 9 error classification variants → REQ-FETCH-018
+- [x] **T-FETCH-024**: Unit test for duration tracking → REQ-FETCH-019
+- [x] **T-FETCH-032**: Unit test for per-domain promise-chain concurrency safety → REQ-FETCH-020
+- [x] **T-FETCH-033**: Unit test for TLD+1 domain grouping → REQ-FETCH-021
+- [x] **T-FETCH-034**: Unit test for all fetcher metric recording → REQ-FETCH-022
+- [x] **T-FETCH-035**: Integration test for SSRF pinned IP connection → REQ-FETCH-023
+- [x] **T-FETCH-036**: Unit test for stream drain error handling during redirect → REQ-FETCH-024
 
 ---
 

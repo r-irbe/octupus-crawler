@@ -44,7 +44,7 @@ while [[ "$ATTEMPT" -lt "$MAX_ATTEMPTS" && "$PASSED" == "false" ]]; do
     echo "▸ lint..."
     if pnpm turbo lint --force 2>&1 | tee /tmp/ipf-lint.log | tail -3; then
       LINT_FAILED=$(grep -c "Failed" /tmp/ipf-lint.log || true)
-      LINT_ERRORS=$(grep -cE "[0-9]+ error" /tmp/ipf-lint.log || true)
+      LINT_ERRORS=$(grep -cE "[1-9][0-9]* error" /tmp/ipf-lint.log || true)
       if [[ "$LINT_FAILED" -gt 0 || "$LINT_ERRORS" -gt 0 ]]; then
         echo "  ✗ lint FAILED"
         GATE_FAILED="lint"
