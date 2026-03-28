@@ -151,20 +151,36 @@ function extractDistilledSections(content: string): readonly string[] {
 
 function parseTaskEntries(content: string): readonly TaskEntry[] {
   const entries: TaskEntry[] = [];
-  // Match patterns like: - [x] **T-VMEM-001**: ... or ### T-VMEM-001: completed
-  const pattern = /^-\s+\[([ xX])\]\s+\*\*([^*]+)\*\*/gm;
-  let match = pattern.exec(content);
+  const lines = content.split('\n');
 
-  while (match) {
-    const checkbox = match[1];
-    const id = match[2] ?? '';
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    if (!line) continue;
+    const taskMatch = /^-\s+\[([ xX])\]\s+\*\*([^*]+)\*\*/.exec(line);
+    if (!taskMatch) continue;
+
+    const checkbox = taskMatch[1];
+    const id = taskMatch[2] ?? '';
+    let commitHash: string | undefined;
+    let notes: string | undefined;
+
+    // Look ahead for commit/notes in subsequent lines
+    for (let j = i + 1; j < lines.length && j <= i + 5; j++) {
+      const nextLine = lines[j];
+      if (!nextLine) continue;
+      if (/^-\s+\[/.test(nextLine)) break;
+      const commitMatch = /\*\*Commit\*\*:\s*(\S+)/.exec(nextLine);
+      if (commitMatch) commitHash = commitMatch[1];
+      const noteMatch = /\*\*(?:Decision|Context|Notes?)\*\*:\s*(.+)/.exec(nextLine);
+      if (noteMatch) notes = noteMatch[1];
+    }
+
     entries.push({
       id: id.trim(),
       status: checkbox === ' ' ? 'not-started' : 'completed',
-      commitHash: undefined,
-      notes: undefined,
+      commitHash,
+      notes,
     });
-    match = pattern.exec(content);
   }
 
   return entries;

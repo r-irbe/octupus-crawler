@@ -112,18 +112,23 @@ describe('context-budget', () => {
       const events: ThresholdEvent[] = [];
       budget.onThreshold((e) => events.push(e));
 
-      // Add enough to trigger warning (70K+)
+      // Add enough to trigger both warning (70K+) and eviction (50K+)
       budget.add(75_000, 0);
 
-      expect(events.length).toBeGreaterThan(0);
-      const event = events[0];
-      expect(event).toBeDefined();
-      expect(event!._tag).toBe('ThresholdEvent');
-      expect(event!.threshold).toBe('warning');
-      expect(event!.utilizationPct).toBe(75);
-      expect(event!.totalTokens).toBe(75_000);
-      expect(event!.recommendedAction).toContain('Compress');
-      expect(event!.timestamp).toBeGreaterThan(0);
+      // Both thresholds fire independently
+      expect(events.length).toBe(2);
+      const warning = events.find((e) => e.threshold === 'warning');
+      expect(warning).toBeDefined();
+      expect(warning!._tag).toBe('ThresholdEvent');
+      expect(warning!.threshold).toBe('warning');
+      expect(warning!.utilizationPct).toBe(75);
+      expect(warning!.totalTokens).toBe(75_000);
+      expect(warning!.recommendedAction).toContain('Compress');
+      expect(warning!.timestamp).toBeGreaterThan(0);
+
+      const eviction = events.find((e) => e.threshold === 'eviction');
+      expect(eviction).toBeDefined();
+      expect(eviction!.recommendedAction).toContain('Evict');
     });
 
     it('emits eviction event below warning threshold', () => {

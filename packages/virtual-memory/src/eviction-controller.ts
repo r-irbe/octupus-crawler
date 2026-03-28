@@ -79,9 +79,12 @@ export function createEvictionController(
 
   function isExcluded(path: string): boolean {
     if (exclusions.has(path)) return true;
-    // Check if any exclusion pattern is a prefix
+    // Check if any path segment contains an exclusion keyword
+    const segments = path.split('/');
     for (const excl of exclusions) {
-      if (path.startsWith(excl)) return true;
+      for (const seg of segments) {
+        if (seg.includes(excl)) return true;
+      }
     }
     return false;
   }

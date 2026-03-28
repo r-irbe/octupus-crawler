@@ -92,7 +92,8 @@ export function createContextBudget(model: ModelFamily): ContextBudgetTracker {
   function checkThresholds(): void {
     if (currentUsage >= warningThreshold) {
       emitThreshold('warning', 'Compress completed task context or restart session');
-    } else if (currentUsage >= evictionThreshold) {
+    }
+    if (currentUsage >= evictionThreshold) {
       emitThreshold('eviction', 'Evict least-recently-referenced context');
     }
   }
