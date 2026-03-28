@@ -21,7 +21,7 @@
 ## Phase 3: Pipeline Stages
 
 - [x] **T-CRAWL-008**: Implement validate stage (depth guard + domain allow-list) → REQ-CRAWL-007, REQ-CRAWL-008
-- [ ] **T-CRAWL-009**: Implement fetch stage (delegates to Fetcher contract) → REQ-CRAWL-005
+- [x] **T-CRAWL-009**: Implement fetch stage (delegates to Fetcher contract) → REQ-CRAWL-005
 - [x] **T-CRAWL-010**: Implement discover stage (content-type gate, link extraction, relative URL resolution, per-page dedup) → REQ-CRAWL-009, REQ-CRAWL-010, REQ-CRAWL-011, REQ-CRAWL-012
 - [x] **T-CRAWL-011**: Implement enqueue stage (child depth calc, batch enqueue, error mapping) → REQ-CRAWL-014, REQ-CRAWL-015
 - [x] **T-CRAWL-012**: Compose stages via `Result.andThen()` chaining → REQ-CRAWL-005, REQ-CRAWL-006
