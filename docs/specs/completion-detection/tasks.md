@@ -65,4 +65,4 @@
 
 ---
 
-> **Provenance**: Created 2026-03-25. Implementation Agent task decomposition per ADR-020. Updated 2026-03-28: T-COORD-011/012/013/016 implemented; T-COORD-023/025/026/027 deferred (blocked on Redis/BullMQ adapter).
+> **Provenance**: Created 2026-03-25. Implementation Agent task decomposition per ADR-020. Updated 2026-03-28: T-COORD-011/012/013/016 implemented. Updated 2026-03-29: T-COORD-023/025/026/027 completed (Redis/BullMQ adapter available via @ipf/job-queue).

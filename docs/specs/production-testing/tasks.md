@@ -31,7 +31,7 @@
 - [x] **T-PROD-013**: Create `packages/testing/src/load/k6-helpers.ts` — Redis seeding, metrics scraping utilities → design.md §4.1
 - [x] **T-PROD-014**: Create `packages/testing/src/load/throughput.k6.js` — sustained 100 URL/s for 60s, SLO assertions → REQ-PROD-009, REQ-PROD-012
 - [x] **T-PROD-015**: Create `packages/testing/src/load/backpressure.k6.js` — burst 10,000 URLs, monitor queue depth and memory → REQ-PROD-010, REQ-PROD-011, REQ-PROD-013
-- [ ] **T-PROD-016**: Add `pnpm k6:load` script to root `package.json` _(deferred — k6 not yet installed)_ → REQ-PROD-014
+- [x] **T-PROD-016**: Add `pnpm k6:load` and `pnpm k6:backpressure` scripts to root `package.json` → REQ-PROD-014 → REQ-PROD-014
 
 ## Phase 5: Scaling E2E Tests
 

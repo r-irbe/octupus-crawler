@@ -287,3 +287,5 @@ jobs:
               echo "::warning::Unit test ratio ${UNIT_PCT}% is below 50% minimum"
             fi
           fi
+
+  # k8s-e2e job extracted to .github/workflows/k8s-e2e.yml (file size budget)

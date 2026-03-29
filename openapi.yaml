@@ -1,0 +1,296 @@
+openapi: "3.1.0"
+info:
+  title: IPF Crawler API
+  version: "1.0.0"
+  description: |
+    Public management API for the IPF distributed web crawler.
+    Contract-first design per ADR-017.
+  contact:
+    name: IPF Team
+  license:
+    name: MIT
+
+servers:
+  - url: http://localhost:3000
+    description: Local development
+
+paths:
+  /api/v1/crawls:
+    post:
+      operationId: createCrawl
+      summary: Create a new crawl session
+      tags: [crawls]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CrawlRequest"
+      responses:
+        "201":
+          description: Crawl session created
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CrawlSession"
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    get:
+      operationId: listCrawls
+      summary: List crawl sessions
+      tags: [crawls]
+      parameters:
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+      responses:
+        "200":
+          description: Paginated crawl sessions
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CrawlList"
+
+  /api/v1/crawls/{id}:
+    get:
+      operationId: getCrawlById
+      summary: Get crawl session by ID
+      tags: [crawls]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        "200":
+          description: Crawl session details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/CrawlSession"
+        "404":
+          description: Crawl session not found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /api/v1/seed:
+    post:
+      operationId: seedUrl
+      summary: Seed a URL into the frontier
+      tags: [seed]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/SeedRequest"
+      responses:
+        "200":
+          description: URL seeded successfully
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/SeedResponse"
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+
+  /health/live:
+    get:
+      operationId: healthLive
+      summary: Liveness probe
+      tags: [health]
+      responses:
+        "200":
+          description: Service is alive
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+
+  /health/ready:
+    get:
+      operationId: healthReady
+      summary: Readiness probe
+      tags: [health]
+      responses:
+        "200":
+          description: Service is ready
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+        "503":
+          description: Service is not ready
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+
+  /metrics:
+    get:
+      operationId: getMetrics
+      summary: Prometheus metrics endpoint
+      tags: [observability]
+      responses:
+        "200":
+          description: Prometheus-format metrics
+          content:
+            text/plain:
+              schema:
+                type: string
+
+components:
+  schemas:
+    CrawlRequest:
+      type: object
+      required:
+        - name
+        - seedUrls
+      properties:
+        name:
+          type: string
+          minLength: 1
+          description: Human-readable crawl session name
+        seedUrls:
+          type: array
+          items:
+            type: string
+            format: uri
+          minItems: 1
+          description: Initial URLs to crawl
+        maxDepth:
+          type: integer
+          minimum: 0
+          maximum: 10
+          default: 3
+          description: Maximum link-follow depth
+        maxPages:
+          type: integer
+          minimum: 1
+          default: 10000
+          description: Maximum pages to crawl
+
+    CrawlSession:
+      type: object
+      required:
+        - id
+        - status
+        - createdAt
+      properties:
+        id:
+          type: string
+          format: uuid
+        status:
+          type: string
+          enum:
+            - active
+            - completed
+            - failed
+            - paused
+        createdAt:
+          type: string
+          format: date-time
+        pagesProcessed:
+          type: integer
+          minimum: 0
+        pagesTotal:
+          type: integer
+          minimum: 0
+
+    CrawlList:
+      type: object
+      required:
+        - items
+        - total
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/CrawlSession"
+        total:
+          type: integer
+          minimum: 0
+        limit:
+          type: integer
+        offset:
+          type: integer
+
+    SeedRequest:
+      type: object
+      required:
+        - url
+      properties:
+        url:
+          type: string
+          format: uri
+          description: URL to add to the frontier
+        depth:
+          type: integer
+          minimum: 0
+          default: 0
+          description: Current depth of the URL
+
+    SeedResponse:
+      type: object
+      required:
+        - accepted
+      properties:
+        accepted:
+          type: boolean
+        message:
+          type: string
+
+    HealthStatus:
+      type: object
+      required:
+        - status
+      properties:
+        status:
+          type: string
+          enum:
+            - healthy
+            - degraded
+            - unhealthy
+        checks:
+          type: object
+          additionalProperties:
+            type: string
+
+    ErrorResponse:
+      type: object
+      required:
+        - statusCode
+        - error
+        - message
+      properties:
+        statusCode:
+          type: integer
+        error:
+          type: string
+        message:
+          type: string
+        correlationId:
+          type: string
+          format: uuid

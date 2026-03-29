@@ -96,4 +96,4 @@
 
 ---
 
-> **Provenance**: Created 2026-03-25. Implementation Agent task decomposition per ADR-020. Updated 2026-03-25: added Phase 7 (REQ-LIFE-029–034 resource ownership, startup ordering, shutdown semantics). Updated 2026-03-28: T-LIFE-006/007/008/026/027/031 implemented; T-LIFE-009/038/045/049 deferred.
+> **Provenance**: Created 2026-03-25. Implementation Agent task decomposition per ADR-020. Updated 2026-03-25: added Phase 7 (REQ-LIFE-029–034 resource ownership, startup ordering, shutdown semantics). Updated 2026-03-28: T-LIFE-006/007/008/026/027/031 implemented. Updated 2026-03-29: T-LIFE-009/038/045/049 completed.

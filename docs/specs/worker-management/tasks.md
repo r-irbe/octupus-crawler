@@ -46,4 +46,4 @@
 
 ---
 
-> **Provenance**: Created 2026-03-25. Implementation Agent task decomposition per ADR-020. Updated 2026-03-25: added Phase 3 (REQ-DIST-012–014 crash recovery, counter guard, metrics). Updated 2026-03-27: marked 12/16 tasks complete (Phases 1-3 + unit tests), 4 integration/distributed tests remaining. Updated 2026-03-28: added T-WORK-009 + T-WORK-016 integration tests; T-WORK-010 + T-WORK-014 deferred (blocked on BullMQ adapter).
+> **Provenance**: Created 2026-03-25. Implementation Agent task decomposition per ADR-020. Updated 2026-03-25: added Phase 3 (REQ-DIST-012–014 crash recovery, counter guard, metrics). Updated 2026-03-27: marked 12/16 tasks complete (Phases 1-3 + unit tests), 4 integration/distributed tests remaining. Updated 2026-03-28: added T-WORK-009 + T-WORK-016 integration tests. Updated 2026-03-29: T-WORK-010/014 completed (BullMQ adapter available via @ipf/job-queue).

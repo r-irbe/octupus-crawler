@@ -55,4 +55,4 @@
 
 ---
 
-> **Provenance**: Created 2026-03-25. Implementation Agent task decomposition per ADR-020. Updated 2026-03-25: added Phase 4 (REQ-DIST-007–009 URL normalization, collision analysis, collision metric). Updated 2026-03-26: checked completed tasks per G11 spec update gate. Updated 2026-03-28: T-DIST-016/019 satisfied by crawl-pipeline; T-DIST-013/014/015 deferred (Redis).
+> **Provenance**: Created 2026-03-25. Implementation Agent task decomposition per ADR-020. Updated 2026-03-25: added Phase 4 (REQ-DIST-007–009 URL normalization, collision analysis, collision metric). Updated 2026-03-26: checked completed tasks per G11 spec update gate. Updated 2026-03-28: T-DIST-016/019 satisfied by crawl-pipeline. Updated 2026-03-29: T-DIST-013/014/015 completed (Redis available via @ipf/redis).

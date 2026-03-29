@@ -21,7 +21,9 @@
     "k8s:setup": "./scripts/setup-local.sh",
     "k8s:teardown": "./scripts/teardown-local.sh",
     "k8s:build": "./scripts/build-and-push.sh",
-    "k8s:e2e": "cd packages/testing && pnpm vitest run --config vitest.e2e.config.ts"
+    "k8s:e2e": "cd packages/testing && pnpm vitest run --config vitest.e2e.config.ts",
+    "k6:load": "k6 run packages/testing/src/load/throughput.k6.js --out json=packages/testing/test-results/k6-throughput.json",
+    "k6:backpressure": "k6 run packages/testing/src/load/backpressure.k6.js --out json=packages/testing/test-results/k6-backpressure.json"
   },
   "dependencies": {
     "tsx": "^4.19.0"

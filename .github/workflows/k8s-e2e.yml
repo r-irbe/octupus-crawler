@@ -1,0 +1,49 @@
+name: K8s E2E Tests
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+    branches: [main]
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref }}
+  cancel-in-progress: true
+
+jobs:
+  k8s-e2e:
+    # Optional E2E stage — only runs when k3d is available
+    # Implements: T-K8E-020, REQ-K8E-024, REQ-K8E-025
+    if: startsWith(github.head_ref, 'work/') || startsWith(github.head_ref, 'copilot/') || startsWith(github.head_ref, 'agent/')
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+
+      - name: Install k3d
+        run: |
+          curl -s https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh | bash
+          k3d version
+
+      - name: Setup local cluster
+        run: pnpm k8s:setup
+
+      - name: Build and push images
+        run: pnpm k8s:build
+
+      - name: Verify Kustomize overlay
+        run: ./scripts/verify-kustomize-e2e.sh
+
+      - name: Run E2E tests
+        run: pnpm k8s:e2e
+        timeout-minutes: 10
+
+      - name: Teardown cluster
+        if: always()
+        run: pnpm k8s:teardown

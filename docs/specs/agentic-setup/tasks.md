@@ -201,7 +201,7 @@
 
 - [x] **T-AGENT-105**: Verify ESLint layer boundary rules block cross-layer imports in a test scenario → REQ-AGENT-091 — *8 verification tests in packages/testing/src/eslint-rules-verification.unit.test.ts*
 - [x] **T-AGENT-106**: Verify OTel first-import rule catches violations → REQ-AGENT-092 — *8 tests in packages/testing/src/otel-first-import-rule.unit.test.ts using ESLint Linter API*
-- [ ] **T-AGENT-107**: ⏏️ DEFERRED — Verify Spectral catches API contract drift → REQ-AGENT-095 — *requires API specs to validate against*
+- [x] **T-AGENT-107**: Verify Spectral catches API contract drift → REQ-AGENT-095 — *openapi.yaml created with .spectral.yml; CI architecture-conformance job lints it*
 - [x] **T-AGENT-108**: Verify security property generators produce valid fast-check arbitraries for all RFC 6890 ranges → REQ-AGENT-100, REQ-AGENT-102 — *13 tests in packages/testing/src/generators/security-generators.unit.test.ts*
 - [ ] **T-AGENT-109**: ⏏️ DEFERRED — Run full end-to-end: feature request → spec-writer → TDD → review → merge using all mechanisms → REQ-AGENT-083, REQ-AGENT-020, REQ-AGENT-071, REQ-AGENT-089 — *requires live environment with implemented features*
 
