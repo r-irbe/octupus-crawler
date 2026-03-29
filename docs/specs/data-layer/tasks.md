@@ -27,8 +27,8 @@
 - [x] **T-DATA-012**: Create `src/connection/pool.ts` — PostgreSQL connection pool with configurable min/max/timeouts → REQ-DATA-015, REQ-DATA-017
 - [x] **T-DATA-013**: Implement `Symbol.dispose` on pool for `using` keyword cleanup → REQ-DATA-018
 - [x] **T-DATA-014**: Create `src/connection/s3-client.ts` — S3/MinIO client factory with endpoint configuration → REQ-DATA-022
-- [ ] **T-DATA-015**: Create `src/connection/circuit-breaker.ts` — cockatiel circuit breaker for DB calls → REQ-DATA-020
-- [ ] **T-DATA-016**: Implement graceful shutdown: drain queries, close pools on SIGTERM → REQ-DATA-019
+- [x] **T-DATA-015**: Create `src/connection/circuit-breaker.ts` — cockatiel circuit breaker for DB calls → REQ-DATA-020
+- [x] **T-DATA-016**: Implement graceful shutdown: drain queries, close pools on SIGTERM → REQ-DATA-019
 
 ## Phase 4: Repository Implementations
 
