@@ -39,19 +39,10 @@
       "@typescript-eslint/typescript-estree>typescript": "^6.0.0"
     },
     "onlyBuiltDependencies": [
-      "'",
-      "[",
-      "]",
-      "b",
-      "f",
-      "j",
       "msgpackr-extract",
-      "o",
-      "p",
-      "r",
-      "s",
-      "t",
-      "u"
+      "prisma",
+      "@prisma/client",
+      "@prisma/engines"
     ]
   }
 }

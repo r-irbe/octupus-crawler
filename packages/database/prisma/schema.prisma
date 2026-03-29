@@ -1,0 +1,66 @@
+// Prisma schema — single source of truth for database structure
+// Implements: T-DATA-002 (REQ-DATA-008) — Prisma for schema/type generation/migrations
+//             T-DATA-006 (REQ-DATA-002, REQ-DATA-004, REQ-DATA-005) — model definitions
+// Design: docs/specs/data-layer/design.md §Schema Design
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated"
+}
+
+model CrawlUrl {
+  id          BigInt    @id @default(autoincrement())
+  url         String
+  urlHash     String    @unique @map("url_hash")
+  domain      String
+  status      String    @default("pending")
+  statusCode  Int?      @map("status_code")
+  contentType String?   @map("content_type")
+  s3Key       String?   @map("s3_key")
+  depth       Int       @default(0)
+  discoveredAt DateTime @default(now()) @map("discovered_at") @db.Timestamptz
+  fetchedAt   DateTime? @map("fetched_at") @db.Timestamptz
+  parentUrlId BigInt?   @map("parent_url_id")
+  metadata    Json      @default("{}")
+  createdAt   DateTime  @default(now()) @map("created_at") @db.Timestamptz
+  updatedAt   DateTime  @updatedAt @map("updated_at") @db.Timestamptz
+
+  parent   CrawlUrl?  @relation("ParentChild", fields: [parentUrlId], references: [id])
+  children CrawlUrl[] @relation("ParentChild")
+
+  outLinks CrawlLink[] @relation("SourceLinks")
+  inLinks  CrawlLink[] @relation("TargetLinks")
+
+  @@index([domain])
+  @@index([status])
+  @@map("crawl_urls")
+}
+
+model CrawlLink {
+  sourceUrlId BigInt   @map("source_url_id")
+  targetUrlId BigInt   @map("target_url_id")
+  anchorText  String?  @map("anchor_text")
+  createdAt   DateTime @default(now()) @map("created_at") @db.Timestamptz
+
+  source CrawlUrl @relation("SourceLinks", fields: [sourceUrlId], references: [id])
+  target CrawlUrl @relation("TargetLinks", fields: [targetUrlId], references: [id])
+
+  @@id([sourceUrlId, targetUrlId])
+  @@map("crawl_links")
+}
+
+model CrawlSession {
+  id        BigInt    @id @default(autoincrement())
+  name      String
+  config    Json      @default("{}")
+  status    String    @default("active")
+  startedAt DateTime  @default(now()) @map("started_at") @db.Timestamptz
+  endedAt   DateTime? @map("ended_at") @db.Timestamptz
+
+  @@map("crawl_sessions")
+}

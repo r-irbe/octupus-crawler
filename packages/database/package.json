@@ -5,6 +5,8 @@
   "type": "module",
   "exports": {
     "./errors": "./src/errors.ts",
+    "./connection/pool": "./src/connection/pool.ts",
+    "./connection/s3-client": "./src/connection/s3-client.ts",
     "./repositories/crawl-url-repository": "./src/repositories/crawl-url-repository.ts",
     "./repositories/page-content-repository": "./src/repositories/page-content-repository.ts",
     "./repositories/crawl-session-repository": "./src/repositories/crawl-session-repository.ts",
@@ -17,17 +19,24 @@
     "typecheck": "tsc --noEmit",
     "lint": "eslint src/",
     "test": "vitest run",
+    "db:generate": "prisma generate",
+    "db:migrate:dev": "prisma migrate dev",
+    "db:migrate:deploy": "prisma migrate deploy",
     "clean": "rm -rf dist .turbo"
   },
   "dependencies": {
     "drizzle-orm": "^0.44.0",
     "@aws-sdk/client-s3": "^3.750.0",
+    "@prisma/client": "^6.9.0",
     "neverthrow": "^8.2.0",
+    "pg": "^8.16.0",
     "zod": "^3.25.0"
   },
   "devDependencies": {
     "@ipf/eslint-config": "workspace:*",
     "@types/node": "^22.0.0",
+    "@types/pg": "^8.15.0",
+    "prisma": "^6.9.0",
     "typescript": "^6.0.0",
     "vitest": "^4.0.0",
     "eslint": "^10.0.0"

@@ -10,6 +10,8 @@ resources:
   - crawler-configmap.yml
   - secrets.yml
   - dragonfly-statefulset.yml
+  - postgresql-statefulset.yml
+  - minio-statefulset.yml
 
 labels:
   - pairs:
