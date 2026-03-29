@@ -23,6 +23,7 @@
 | Infrastructure | [infrastructure/](infrastructure/) | REQ-INFRA-001 to 021 | §10 | [req](infrastructure/requirements.md) [des](infrastructure/design.md) [tasks](infrastructure/tasks.md) |
 | Testing & Quality | [testing-quality/](testing-quality/) | REQ-TEST-001 to 024 | §11 | [req](testing-quality/requirements.md) [des](testing-quality/design.md) [tasks](testing-quality/tasks.md) |
 | K8s E2E Testing | [k8s-e2e/](k8s-e2e/) | REQ-K8E-001 to 025 | ADR-005, ADR-007 §E2E | [req](k8s-e2e/requirements.md) [des](k8s-e2e/design.md) [tasks](k8s-e2e/tasks.md) |
+| Production Testing | [production-testing/](production-testing/) | REQ-PROD-001 to 027 | ADR-002, ADR-007, ADR-009 | [req](production-testing/requirements.md) [des](production-testing/design.md) [tasks](production-testing/tasks.md) |
 
 ## Agent Virtual Memory Specifications
 
