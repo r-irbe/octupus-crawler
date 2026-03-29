@@ -47,6 +47,7 @@ Chronological work session logs documenting what was done, decisions made, and o
 | [2025-07-21: K8s E2E Extended](2025-07-21-k8s-e2e-extended.md) | Extended E2E: 3 simulator routes, 5 unit tests, 8 E2E test files, 17 new requirements, RALPH fixes | Complete | 2025-07-21 |
 | [2026-03-29: Production Testing](2026-03-29-production-testing.md) | Production testing: chaos, load (k6), scaling (HPA), DDoS, 27 requirements, 4 E2E tests, 2 k6 scripts | Complete | 2026-03-29 |
 | [2026-03-29: Deferred Unblock Final-2](2026-03-29-deferred-unblock-final-2.md) | Deferred unblock: OpenAPI spec, K8s E2E CI, Spectral enforcement, stale provenance cleanup, 6 tasks | Complete | 2026-03-29 |
+| [2026-03-29: Test Coverage Hardening](2026-03-29-test-coverage-hardening.md) | Test coverage: 6 unit test files, E2E alerting validation, guard chain + pre-commit enhancements, 47 new tests | Complete | 2026-03-29 |
 
 ## Index
 

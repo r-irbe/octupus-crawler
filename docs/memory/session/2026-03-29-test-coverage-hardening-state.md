@@ -31,10 +31,10 @@
 
 | Field | Value |
 | --- | --- |
-| Current task # | 7 |
-| Last completed gate | G6 (commit 04e3ed5) |
+| Current task # | complete |
+| Last completed gate | G11 |
 | Guard function status | `pass` |
-| Commits on branch | 1 |
+| Commits on branch | 3 |
 | Tests passing | all 13 packages |
 | Blockers | none |
 
