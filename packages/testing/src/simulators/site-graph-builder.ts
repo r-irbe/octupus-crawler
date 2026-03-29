@@ -15,6 +15,7 @@ export type PageDefinition = {
   readonly path: string;
   readonly title: string;
   readonly links: ReadonlyArray<string>;
+  /** Raw HTML body content (trusted — not escaped). Only for test scenarios. */
   readonly body?: string;
 };
 

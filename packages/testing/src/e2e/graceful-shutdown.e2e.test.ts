@@ -4,7 +4,7 @@
 
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { setupE2E, type E2EContext } from './helpers/e2e-setup.js';
-import { kubectl, getPodName } from './helpers/k8s-helpers.js';
+import { kubectl, getPodName, waitForDeployment } from './helpers/k8s-helpers.js';
 
 let ctx: E2EContext;
 
@@ -27,7 +27,6 @@ describe('Graceful shutdown E2E', () => {
 
     // K8s will recreate the pod (Deployment). Wait for replacement.
     // The fact that deletion succeeds without force means SIGTERM was handled.
-    const { waitForDeployment } = await import('./helpers/k8s-helpers.js');
     await waitForDeployment('crawler-worker', 'ipf', 120);
 
     // Verify new pod is healthy

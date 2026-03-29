@@ -21,7 +21,7 @@
     "k8s:setup": "./scripts/setup-local.sh",
     "k8s:teardown": "./scripts/teardown-local.sh",
     "k8s:build": "./scripts/build-and-push.sh",
-    "k8s:e2e": "pnpm turbo test --filter=@ipf/testing -- --include 'src/e2e/**/*.e2e.test.ts'"
+    "k8s:e2e": "cd packages/testing && pnpm vitest run --config vitest.e2e.config.ts"
   },
   "dependencies": {
     "tsx": "^4.19.0"

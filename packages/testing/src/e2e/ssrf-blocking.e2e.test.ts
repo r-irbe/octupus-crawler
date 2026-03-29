@@ -18,21 +18,13 @@ afterAll(async () => {
 describe('SSRF blocking E2E', () => {
   // Validates REQ-K8E-019: SSRF-bait page links rejected
   it('simulator serves SSRF bait page with reserved IP links', async () => {
-    // The scenario simulator runs on port+1 (8081) of the simulator pod
-    // But for this test we check the built-in SSRF bait scenario
-    const res = await fetch(`http://127.0.0.1:${String(ctx.simulatorPort)}/ssrf-links`);
+    // SSRF bait scenario runs on the scenario port (8081)
+    const res = await fetch(`http://127.0.0.1:${String(ctx.simulatorScenarioPort)}/ssrf-links`);
+    expect(res.status).toBe(200);
 
-    // If the simulator doesn't have /ssrf-links on the site graph port,
-    // the test verifies the scenario routes are accessible
-    if (res.status === 200) {
-      const html = await res.text();
-      expect(html).toContain('169.254.169.254');
-      expect(html).toContain('127.0.0.1');
-    } else {
-      // The SSRF routes are on the scenario port (8081).
-      // This is expected and validates REQ-K8E-016 deployment modes.
-      expect(res.status).toBe(404);
-    }
+    const html = await res.text();
+    expect(html).toContain('169.254.169.254');
+    expect(html).toContain('127.0.0.1');
   });
 
   // Validates REQ-K8E-019: metrics show no fetches to reserved IPs

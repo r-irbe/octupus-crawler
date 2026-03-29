@@ -21,24 +21,24 @@
 
 | # | Task | Status | Commit | Notes |
 | --- | --- | --- | --- | --- |
-| 1 | Create k8s-e2e requirements.md | `pending` | — | EARS format |
-| 2 | Create k8s-e2e design.md | `pending` | — | Architecture + diagrams |
-| 3 | Create k8s-e2e tasks.md | `pending` | — | Task decomposition |
-| 4 | Create setup-local.sh | `pending` | — | k3d cluster automation |
-| 5 | Create web simulator | `pending` | — | Mock internet for E2E |
-| 6 | Create K8s E2E overlay | `pending` | — | Kustomize for E2E |
-| 7 | Create E2E test files | `pending` | — | *.e2e.test.ts |
-| 8 | Update specs index | `pending` | — | Add k8s-e2e entry |
+| 1 | Create k8s-e2e requirements.md | `done` | b58baf3 | 25 EARS requirements |
+| 2 | Create k8s-e2e design.md + design-simulator.md | `done` | b58baf3 | Split for 300-line limit |
+| 3 | Create k8s-e2e tasks.md | `done` | b58baf3 | 22 tasks, 7 phases |
+| 4 | Create setup/teardown/build scripts | `done` | b58baf3 | 3 shell scripts, chmod +x |
+| 5 | Create web simulator + unit tests | `done` | b58baf3 | 4 source + 1 test (13 tests) |
+| 6 | Create K8s E2E overlay + Dockerfile | `done` | b58baf3 | Kustomize + simulator container |
+| 7 | Create E2E test files + helpers | `done` | b58baf3 | 4 E2E tests + 2 helpers |
+| 8 | Update specs index + package.json | `done` | b58baf3 | vitest e2e exclusion added |
 
 ## Current State
 
 | Field | Value |
 | --- | --- |
-| Current task # | 1 |
-| Last completed gate | G4 (state tracker) |
-| Guard function status | `not-run` |
-| Commits on branch | 0 |
-| Tests passing | — |
+| Current task # | G8 (RALPH review) |
+| Last completed gate | G7 (state update) |
+| Guard function status | `PASS` (typecheck 13/13, lint 13/13, test 13/13) |
+| Commits on branch | 1 (b58baf3) |
+| Tests passing | 42/42 (@ipf/testing), all packages green |
 | Blockers | none |
 
 ## Decisions Log
@@ -52,7 +52,9 @@
 
 | # | Problem | Solution | Task # |
 | --- | --- | --- | --- |
-| — | — | — | — |
+| 1 | design.md exceeded 300 lines | Split into design.md + design-simulator.md | 2 |
+| 2 | E2E tests would run in default vitest | Added *.e2e.test.ts to vitest exclude | 8 |
+| 3 | PortForwardHandle not exported | Changed type to export type | 7 |
 
 ## Action Traceability
 

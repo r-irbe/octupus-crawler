@@ -23,6 +23,7 @@ export type E2EContext = {
   readonly crawlerMetricsPort: number;
   readonly crawlerHealthPort: number;
   readonly simulatorPort: number;
+  readonly simulatorScenarioPort: number;
   readonly redisPort: number;
   readonly cleanup: () => Promise<void>;
 };
@@ -56,6 +57,9 @@ export async function setupE2E(): Promise<E2EContext> {
   const simulator = await startPortForward('pod/web-simulator', 8080);
   forwards.push(simulator);
 
+  const simulatorScenarios = await startPortForward('pod/web-simulator', 8081);
+  forwards.push(simulatorScenarios);
+
   const redis = await startPortForward('statefulset/dragonfly', 6379);
   forwards.push(redis);
 
@@ -63,6 +67,7 @@ export async function setupE2E(): Promise<E2EContext> {
     crawlerMetricsPort: crawlerMetrics.localPort,
     crawlerHealthPort: crawlerHealth.localPort,
     simulatorPort: simulator.localPort,
+    simulatorScenarioPort: simulatorScenarios.localPort,
     redisPort: redis.localPort,
     cleanup: async (): Promise<void> => {
       // Stop port forwards
