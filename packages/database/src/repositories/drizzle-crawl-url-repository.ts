@@ -132,6 +132,8 @@ export function createDrizzleCrawlURLRepository(db: DrizzleDB): CrawlURLReposito
     result?: FetchResult,
   ): Promise<Result<void, DataError>> => {
     try {
+      // Record<string, unknown> is intentional — Drizzle's .set() types are incompatible
+      // with exactOptionalPropertyTypes: true (TS6). Typed partial would cause deep type errors.
       const updateData: Record<string, unknown> = {
         status,
         updatedAt: sql`now()`,

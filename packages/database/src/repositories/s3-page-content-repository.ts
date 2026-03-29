@@ -48,6 +48,10 @@ export function createS3PageContentRepository(
       const compressed = await compress(Buffer.from(content));
       const metaJson = JSON.stringify(metadata);
 
+      // NOTE: Content and metadata are uploaded in parallel. If one succeeds and the other
+      // fails, partial state may result (orphaned content or missing metadata). This is
+      // acceptable for S3's eventual consistency model — cleanup is handled by the caller
+      // or a reconciliation job.
       await Promise.all([
         client.send(
           new PutObjectCommand({
