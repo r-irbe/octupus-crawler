@@ -19,6 +19,9 @@
     "verify:all": "./scripts/verify-guard-chain.sh && ./scripts/verify-gate-compliance.sh && ./scripts/verify-spec-update.sh && ./scripts/verify-session-compliance.sh",
     "test:alerts": "promtool check rules infra/prometheus/alert-rules.yml && promtool test rules infra/prometheus/alert-rules-fetch.test.yml infra/prometheus/alert-rules-ops.test.yml"
   },
+  "dependencies": {
+    "tsx": "^4.19.0"
+  },
   "devDependencies": {
     "turbo": "^2.8.0",
     "typescript": "^6.0.0"

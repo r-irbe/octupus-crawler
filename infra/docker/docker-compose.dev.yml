@@ -42,11 +42,11 @@ services:
         condition: service_healthy
 
   # ── State Store (Dragonfly/Redis) ──────────────────
-  # REQ-INFRA-009: Persistence via appendonly + volume
+  # REQ-INFRA-009: Persistence via snapshot dump + volume
   # REQ-INFRA-010: Health check via redis-cli ping
   dragonfly:
     image: docker.dragonflydb.io/dragonflydb/dragonfly:v1.37.2
-    command: ["--appendonly", "yes"]
+    command: ["--dir", "/data", "--dbfilename", "dump", "--proactor_threads", "2", "--maxmemory", "512mb"]
     ports:
       - "6379:6379"
     volumes:
@@ -62,7 +62,7 @@ services:
   # REQ-INFRA-014: Load alert rules from config
   # REQ-INFRA-020: Data persistence via named volume
   prometheus:
-    image: prom/prometheus:v2.50
+    image: prom/prometheus:v2.50.0
     volumes:
       - ../monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - ../prometheus/alert-rules.yml:/etc/prometheus/alert-rules.yml:ro
@@ -77,7 +77,7 @@ services:
   # ── Grafana ────────────────────────────────────────
   # REQ-INFRA-013: Pre-configured dashboards
   grafana:
-    image: grafana/grafana:10
+    image: grafana/grafana:10.4.0
     volumes:
       - ../monitoring/dashboards:/var/lib/grafana/dashboards:ro
       - ../monitoring/provisioning:/etc/grafana/provisioning:ro

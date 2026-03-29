@@ -24,12 +24,16 @@
   "dependencies": {
     "neverthrow": "^8.2.0",
     "zod": "^4.0.0",
+    "tsx": "^4.19.0",
     "@ipf/core": "workspace:*",
-    "@ipf/config": "workspace:*"
+    "@ipf/config": "workspace:*",
+    "@ipf/observability": "workspace:*",
+    "@ipf/job-queue": "workspace:*",
+    "@ipf/url-frontier": "workspace:*",
+    "@ipf/crawl-pipeline": "workspace:*"
   },
   "devDependencies": {
     "@ipf/eslint-config": "workspace:*",
-    "@ipf/job-queue": "workspace:*",
     "@ipf/testing": "workspace:*",
     "@types/node": "^25.5.0",
     "bullmq": "^5.52.0",

@@ -46,4 +46,4 @@ USER node
 
 EXPOSE 8081 9090
 
-CMD ["node", "packages/application-lifecycle/dist/main.js"]
+CMD ["node", "--import", "tsx/esm", "packages/application-lifecycle/src/main.ts"]
