@@ -57,19 +57,18 @@ export type AppRouter = typeof appRouter;
 ## Domain Event Schema
 
 ```typescript
-type DomainEvent =
-  | { type: 'CrawlCompleted'; version: 1; payload: CrawlCompletedPayload }
-  | { type: 'CrawlFailed'; version: 1; payload: CrawlFailedPayload }
-  | { type: 'URLDiscovered'; version: 1; payload: URLDiscoveredPayload }
-  | { type: 'ContentStored'; version: 1; payload: ContentStoredPayload };
+// Zod schemas define the single source of truth — types derived via z.infer<>
+const DomainEventSchema = z.discriminatedUnion('type', [
+  z.object({ type: z.literal('CrawlCompleted'), version: z.literal(1), payload: CrawlCompletedPayloadSchema }),
+  z.object({ type: z.literal('CrawlFailed'), version: z.literal(1), payload: CrawlFailedPayloadSchema }),
+  z.object({ type: z.literal('URLDiscovered'), version: z.literal(1), payload: URLDiscoveredPayloadSchema }),
+  z.object({ type: z.literal('ContentStored'), version: z.literal(1), payload: ContentStoredPayloadSchema }),
+]);
 
-type CrawlCompletedPayload = {
-  jobId: string;
-  url: string;
-  statusCode: number;
-  contentLength: number;
-  fetchDurationMs: number;
-};
+type DomainEvent = z.infer<typeof DomainEventSchema>;
+
+// NOTE: Domain events live in packages/api-router/ temporarily.
+// Extract to packages/core/ when multiple packages need them.
 ```
 
 ## Event Publishing Pattern

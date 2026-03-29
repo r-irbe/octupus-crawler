@@ -7,9 +7,9 @@
 
 ## Phase 1: tRPC Setup
 
-- [ ] **T-COMM-001**: Create `packages/api-router/` with tRPC router, context, and middleware → REQ-COMM-001
-- [ ] **T-COMM-002**: Define Zod schemas for crawl.submit/status procedures → REQ-COMM-002
-- [ ] **T-COMM-003**: Implement `publicProcedure` and `protectedProcedure` with auth middleware → REQ-COMM-003
+- [x] **T-COMM-001**: Create `packages/api-router/` with tRPC router, context, and middleware → REQ-COMM-001
+- [x] **T-COMM-002**: Define Zod schemas for crawl.submit/status procedures → REQ-COMM-002
+- [x] **T-COMM-003**: Implement `publicProcedure` and `protectedProcedure` with auth middleware → REQ-COMM-003
 - [ ] **T-COMM-004**: Add OTel trace propagation middleware to tRPC client/server → REQ-COMM-004
 - [ ] **T-COMM-005**: Wire tRPC router into api-gateway Fastify adapter → REQ-COMM-001
 
@@ -22,12 +22,12 @@
 
 ## Phase 3: Domain Events
 
-- [ ] **T-COMM-010**: Define DomainEvent discriminated union with versioned schemas → REQ-COMM-010
+- [x] **T-COMM-010**: Define DomainEvent discriminated union with versioned schemas → REQ-COMM-010
 - [ ] **T-COMM-011**: Implement `RedisStreamPublisher` with XADD → REQ-COMM-009
 - [ ] **T-COMM-012**: Implement `RedisStreamConsumer` with consumer groups (XREADGROUP) → REQ-COMM-011
 - [ ] **T-COMM-013**: Add CrawlCompleted/CrawlFailed event publishing to worker pipeline → REQ-COMM-012
 - [ ] **T-COMM-014**: Add URLDiscovered event publishing to parse stage → REQ-COMM-013
-- [ ] **T-COMM-015**: Implement unknown event version handling (skip + warn) → REQ-COMM-014
+- [x] **T-COMM-015**: Implement unknown event version handling (skip + warn) → REQ-COMM-014
 
 ## Phase 4: Temporal Workflows (MEDIUM-TERM — per ADR-017 §5)
 
@@ -46,7 +46,7 @@
 
 ## Phase 6: Testing
 
-- [ ] **T-COMM-023**: Unit tests for tRPC router procedures and Zod validation → REQ-COMM-001
+- [x] **T-COMM-023**: Unit tests for tRPC router procedures and Zod validation → REQ-COMM-001
 - [ ] **T-COMM-024**: Integration test: Redis Streams publish/consume round-trip (Testcontainers) → REQ-COMM-009
 - [ ] **T-COMM-025**: Integration test: idempotency key returns cached response → REQ-COMM-021
 - [ ] **T-COMM-026**: Integration test: unknown event version is skipped → REQ-COMM-014
