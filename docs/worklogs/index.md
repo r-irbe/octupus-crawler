@@ -69,6 +69,7 @@ Chronological work session logs documenting what was done, decisions made, and o
 - [2026-03-27: Worker Management](2026-03-27-worker-management.md) — Implemented @ipf/worker-management: utilization tracker, job consumer adapter, stalled job config, counter consistency guard, worker metrics reporter, 43 unit tests
 - [2026-03-27: Completion Detection](2026-03-27-completion-detection.md) — Implemented @ipf/completion-detection: backoff controller, completion detector, control plane adapter, leader election, 38 unit tests, 7 RALPH findings fixed
 - [2026-03-29: Deferred Validation](2026-03-29-deferred-validation.md) — Completed final 4 deferred agentic-setup tasks (T-AGENT-048/049/050/109), 18 new validation tests, 126/126 = 100%
+- [2026-03-29: Critical Specs](2026-03-29-critical-specs.md) — Created data-layer (27 reqs, 36 tasks) and CI/CD pipeline (23 reqs, 26 tasks) specs from ADR gap analysis
 
 ---
 
