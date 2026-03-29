@@ -26,6 +26,8 @@
 | Production Testing | [production-testing/](production-testing/) | REQ-PROD-001 to 027 | ADR-002, ADR-007, ADR-009 | [req](production-testing/requirements.md) [des](production-testing/design.md) [tasks](production-testing/tasks.md) |
 | API Contracts | [api-contracts/](api-contracts/) | REQ-API-001 to 010 | ADR-011, ADR-017 | [req](api-contracts/requirements.md) [des](api-contracts/design.md) [tasks](api-contracts/tasks.md) |
 | Test Coverage Hardening | [test-coverage-hardening/](test-coverage-hardening/) | REQ-TCH-001 to 016 | ADR-007, ADR-018, ADR-020 | [req](test-coverage-hardening/requirements.md) [des](test-coverage-hardening/design.md) [tasks](test-coverage-hardening/tasks.md) |
+| Data Layer | [data-layer/](data-layer/) | REQ-DATA-001 to 027 | ADR-010, ADR-015 | [req](data-layer/requirements.md) [des](data-layer/design.md) [tasks](data-layer/tasks.md) |
+| CI/CD Pipeline | [ci-cd-pipeline/](ci-cd-pipeline/) | REQ-CICD-001 to 023 | ADR-012, ADR-001 | [req](ci-cd-pipeline/requirements.md) [des](ci-cd-pipeline/design.md) [tasks](ci-cd-pipeline/tasks.md) |
 
 ## Agent Virtual Memory Specifications
 
@@ -58,7 +60,9 @@
 | Agentic Setup (REQ-AGENT) | 106 |
 | API Contracts (REQ-API) | 10 |
 | Test Coverage Hardening (REQ-TCH) | 16 |
-| **Total** | **392** |
+| Data Layer (REQ-DATA) | 27 |
+| CI/CD Pipeline (REQ-CICD) | 23 |
+| **Total** | **442** |
 
 ## Implementation Order
 
