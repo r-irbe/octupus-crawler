@@ -7,6 +7,10 @@
     "./errors": "./src/errors.ts",
     "./repositories/crawl-url-repository": "./src/repositories/crawl-url-repository.ts",
     "./repositories/page-content-repository": "./src/repositories/page-content-repository.ts",
+    "./repositories/crawl-session-repository": "./src/repositories/crawl-session-repository.ts",
+    "./schema/crawl-urls": "./src/schema/crawl-urls.ts",
+    "./schema/crawl-links": "./src/schema/crawl-links.ts",
+    "./schema/crawl-sessions": "./src/schema/crawl-sessions.ts",
     "./types": "./src/types.ts"
   },
   "scripts": {
