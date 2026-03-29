@@ -66,7 +66,7 @@ describe('Slow response timeout E2E', () => {
       expect(res.status).toBe(200);
     } catch (err: unknown) {
       // AbortError is expected — proves the response was indeed slow
-      expect(err).toBeDefined();
+      expect((err as Error).name).toBe('AbortError');
     } finally {
       clearTimeout(timeoutId);
     }

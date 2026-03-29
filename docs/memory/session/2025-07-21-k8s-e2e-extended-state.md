@@ -20,22 +20,22 @@
 
 | # | Task | Status | Commit | Notes |
 | --- | --- | --- | --- | --- |
-| 1 | Update requirements.md (REQ-K8E-026–042) | `pending` | — | 17 new EARS requirements |
-| 2 | Update design-simulator.md | `pending` | — | New simulator routes |
-| 3 | Update tasks.md (T-K8E-023–035) | `pending` | — | 13 new tasks |
-| 4 | Add new simulator routes | `pending` | — | robots, rate-limit, mixed-content |
-| 5 | Add simulator unit tests | `pending` | — | Test new scenarios |
-| 6 | Create 8 new E2E test files | `pending` | — | Production behaviors |
+| 1 | Update requirements.md (REQ-K8E-026–042) | `done` | `3f0279c` | 17 new EARS requirements, split into 2 files |
+| 2 | Update design-simulator.md | `done` | `3f0279c` | 3 new scenario rows |
+| 3 | Update tasks.md (T-K8E-023–034) | `done` | `3f0279c` | 12 new tasks (Phases 8-9) |
+| 4 | Add new simulator routes | `done` | `3f0279c` | robotsTxtBlock, rateLimit, mixedLinks |
+| 5 | Add simulator unit tests | `done` | `3f0279c` | 5 new tests for new routes |
+| 6 | Create 8 new E2E test files | `done` | `3f0279c` | All 8 production behavior tests |
 
 ## Current State
 
 | Field | Value |
 | --- | --- |
-| Current task # | 1 |
-| Last completed gate | G4 (state tracker) |
-| Guard function status | `not-run` |
-| Commits on branch | 0 |
-| Tests passing | — |
+| Current task # | all done |
+| Last completed gate | G7 (state tracker update) |
+| Guard function status | `pass` (typecheck 13/13, lint 13/13, test 13/13) |
+| Commits on branch | 1 (`3f0279c`) |
+| Tests passing | 13/13 packages (46+ tests) |
 | Blockers | none |
 
 ## Decisions Log

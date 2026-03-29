@@ -132,10 +132,11 @@ export const rateLimitRoute: SimulatorRoute = {
   path: '/rate-limit',
   handler: (req: SimulatorRequest): SimulatorResponse => {
     const url = new URL(req.url, 'http://localhost');
-    const retryAfter = url.searchParams.get('retry') ?? '5';
+    const raw = parseInt(url.searchParams.get('retry') ?? '5', 10);
+    const retryAfter = Number.isFinite(raw) && raw > 0 ? Math.min(raw, 3600) : 5;
     return {
       status: 429,
-      headers: { 'Retry-After': retryAfter },
+      headers: { 'Retry-After': String(retryAfter) },
       body: '<html><body>Too Many Requests</body></html>',
     };
   },

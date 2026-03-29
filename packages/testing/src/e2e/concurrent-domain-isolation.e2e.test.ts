@@ -4,6 +4,7 @@
 
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { setupE2E, type E2EContext } from './helpers/e2e-setup.js';
+import { getMetricValue } from './helpers/metrics-helper.js';
 import { createClient } from 'redis';
 
 let ctx: E2EContext;
@@ -17,8 +18,8 @@ afterAll(async () => {
 });
 
 describe('Concurrent domain isolation E2E', () => {
-  // Validates REQ-K8E-030: circuit breaker state is observable via metrics
-  it('metrics endpoint exposes circuit breaker indicators', async () => {
+  // Validates REQ-K8E-030: metrics endpoint is reachable
+  it('crawler metrics endpoint is accessible', async () => {
     const res = await fetch(
       `http://127.0.0.1:${String(ctx.crawlerMetricsPort)}/metrics`,
     );
@@ -37,13 +38,17 @@ describe('Concurrent domain isolation E2E', () => {
   });
 
   // Validates REQ-K8E-030: simultaneous seeds to different domains are isolated
-  it('multiple seeds can be queued simultaneously', async () => {
+  it('multiple seeds can be queued and processed simultaneously', async () => {
+    // Snapshot before seeding
+    const pagesBefore = (await getMetricValue(ctx.crawlerMetricsPort, 'crawl_pages_total')) ?? 0;
+
     const redis = createClient({
       url: `redis://127.0.0.1:${String(ctx.redisPort)}`,
     });
-    await redis.connect();
 
     try {
+      await redis.connect();
+
       // Seed URLs from both main simulator and scenario port (simulating two domains)
       const seeds = [
         { url: 'http://web-simulator:8080/', depth: 0 },
@@ -58,13 +63,11 @@ describe('Concurrent domain isolation E2E', () => {
       }
 
       // Allow processing
-      await new Promise<void>((r) => { setTimeout(r, 10_000); });
+      await new Promise<void>((r) => { setTimeout(r, 15_000); });
 
-      // Verify both were processed (at minimum, metrics should reflect activity)
-      const metricsRes = await fetch(
-        `http://127.0.0.1:${String(ctx.crawlerMetricsPort)}/metrics`,
-      );
-      expect(metricsRes.status).toBe(200);
+      // Verify both were processed (metric should increase)
+      const pagesAfter = (await getMetricValue(ctx.crawlerMetricsPort, 'crawl_pages_total')) ?? 0;
+      expect(pagesAfter).toBeGreaterThan(pagesBefore);
     } finally {
       redis.destroy();
     }
@@ -72,12 +75,15 @@ describe('Concurrent domain isolation E2E', () => {
 
   // Validates REQ-K8E-030: one domain's failures don't block another
   it('error on one URL does not prevent other URL processing', async () => {
+    const pagesBefore = (await getMetricValue(ctx.crawlerMetricsPort, 'crawl_pages_total')) ?? 0;
+
     const redis = createClient({
       url: `redis://127.0.0.1:${String(ctx.redisPort)}`,
     });
-    await redis.connect();
 
     try {
+      await redis.connect();
+
       // Queue a failing URL and a succeeding URL
       await redis.zAdd('crawl-jobs:waiting', {
         score: 1,
@@ -96,10 +102,9 @@ describe('Concurrent domain isolation E2E', () => {
 
       await new Promise<void>((r) => { setTimeout(r, 15_000); });
 
-      const metricsRes = await fetch(
-        `http://127.0.0.1:${String(ctx.crawlerMetricsPort)}/metrics`,
-      );
-      expect(metricsRes.status).toBe(200);
+      // The successful URL should have been crawled despite the 500 error on the other
+      const pagesAfter = (await getMetricValue(ctx.crawlerMetricsPort, 'crawl_pages_total')) ?? 0;
+      expect(pagesAfter).toBeGreaterThan(pagesBefore);
     } finally {
       redis.destroy();
     }

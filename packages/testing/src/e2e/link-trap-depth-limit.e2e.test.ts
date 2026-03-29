@@ -4,6 +4,7 @@
 
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { setupE2E, type E2EContext } from './helpers/e2e-setup.js';
+import { getMetricValue } from './helpers/metrics-helper.js';
 import { createClient } from 'redis';
 
 let ctx: E2EContext;
@@ -43,9 +44,10 @@ describe('Link trap depth limit E2E', () => {
     const redis = createClient({
       url: `redis://127.0.0.1:${String(ctx.redisPort)}`,
     });
-    await redis.connect();
 
     try {
+      await redis.connect();
+
       // Seed the trap at depth 0
       const seedUrl = 'http://web-simulator:8081/trap?depth=0';
       await redis.zAdd('crawl-jobs:waiting', {
@@ -57,19 +59,10 @@ describe('Link trap depth limit E2E', () => {
       await new Promise<void>((r) => { setTimeout(r, 30_000); });
 
       // Verify via metrics that total pages crawled is bounded
-      const metricsRes = await fetch(
-        `http://127.0.0.1:${String(ctx.crawlerMetricsPort)}/metrics`,
-      );
-      const text = await metricsRes.text();
-
-      // The crawler should NOT have fetched more than max_depth pages
-      // Typical max_depth is 10-20; definitely not 100+
-      const match = /crawl_pages_total\s+(\d+)/m.exec(text);
-      if (match !== null) {
-        const totalPages = parseInt(match[1] ?? '0', 10);
-        // Depth limit should prevent infinite crawling
-        expect(totalPages).toBeLessThan(50);
-      }
+      const totalPages = (await getMetricValue(ctx.crawlerMetricsPort, 'crawl_pages_total')) ?? 0;
+      expect(totalPages).toBeGreaterThan(0);
+      // Depth limit should prevent infinite crawling (max_depth typically 10-20)
+      expect(totalPages).toBeLessThan(50);
     } finally {
       redis.destroy();
     }

@@ -4,6 +4,7 @@
 
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { setupE2E, type E2EContext } from './helpers/e2e-setup.js';
+import { getMetricValue, waitForMetric } from './helpers/metrics-helper.js';
 import { createClient } from 'redis';
 
 let ctx: E2EContext;
@@ -40,12 +41,16 @@ describe('Redirect chain E2E', () => {
 
   // Validates REQ-K8E-026: crawler resolves multi-hop chain and records final URL
   it('seeds a redirect URL and verifies crawl completes', async () => {
+    // Snapshot metrics before seeding
+    const pagesBefore = (await getMetricValue(ctx.crawlerMetricsPort, 'crawl_pages_total')) ?? 0;
+
     const redis = createClient({
       url: `redis://127.0.0.1:${String(ctx.redisPort)}`,
     });
-    await redis.connect();
 
     try {
+      await redis.connect();
+
       // Seed a redirect chain (5 hops — under the typical max of 10)
       const seedUrl = 'http://web-simulator:8081/redirect?hops=5';
       await redis.zAdd('crawl-jobs:waiting', {
@@ -53,21 +58,20 @@ describe('Redirect chain E2E', () => {
         value: JSON.stringify({ url: seedUrl, depth: 0 }),
       });
 
-      // Allow time for crawler to process
-      await new Promise<void>((r) => { setTimeout(r, 15_000); });
-
-      // Check metrics for successful crawl
-      const metricsRes = await fetch(
-        `http://127.0.0.1:${String(ctx.crawlerMetricsPort)}/metrics`,
+      // Wait for crawl to process at least 1 page (the final destination)
+      await waitForMetric(
+        ctx.crawlerMetricsPort,
+        'crawl_pages_total',
+        pagesBefore + 1,
+        30_000,
       );
-      expect(metricsRes.status).toBe(200);
     } finally {
       redis.destroy();
     }
   }, 60_000);
 
-  // Validates REQ-K8E-027: SSRF check applied at each redirect hop
-  it('simulator serves redirect chain for SSRF per-hop testing', async () => {
+  // Validates REQ-K8E-027: simulator serves each redirect hop individually
+  it('simulator serves redirect chain at each hop level', async () => {
     // Ensure each hop is reachable (the SSRF guard runs per-hop in production)
     for (let i = 3; i >= 0; i--) {
       const res = await fetch(

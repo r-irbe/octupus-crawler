@@ -62,8 +62,8 @@ describe('URL normalization dedup E2E', () => {
     expect(html1).toBe(html2);
   });
 
-  // Validates REQ-K8E-037: crawler only extracts valid HTTP(S) links
-  it('crawler metrics endpoint accessible for dedup verification', async () => {
+  // Validates REQ-K8E-037: crawler metrics endpoint is reachable
+  it('crawler metrics endpoint is accessible', async () => {
     const res = await fetch(
       `http://127.0.0.1:${String(ctx.crawlerMetricsPort)}/metrics`,
     );

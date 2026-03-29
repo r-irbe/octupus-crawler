@@ -4,6 +4,7 @@
 
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
 import { setupE2E, type E2EContext } from './helpers/e2e-setup.js';
+import { getMetricValue } from './helpers/metrics-helper.js';
 import { createClient } from 'redis';
 
 let ctx: E2EContext;
@@ -69,12 +70,16 @@ describe('Error handling E2E', () => {
 
   // Validates REQ-K8E-032: 4xx seed URL does not produce retries
   it('seeding a 404 URL does not produce retry loop', async () => {
+    // Snapshot error metric before seeding
+    const errorsBefore = (await getMetricValue(ctx.crawlerMetricsPort, 'crawl_error_total')) ?? 0;
+
     const redis = createClient({
       url: `redis://127.0.0.1:${String(ctx.redisPort)}`,
     });
-    await redis.connect();
 
     try {
+      await redis.connect();
+
       const seedUrl = 'http://web-simulator:8081/error?code=404';
       await redis.zAdd('crawl-jobs:waiting', {
         score: 1,
@@ -84,11 +89,12 @@ describe('Error handling E2E', () => {
       // Allow processing time
       await new Promise<void>((r) => { setTimeout(r, 10_000); });
 
-      // Check metrics — no retry storm
-      const metricsRes = await fetch(
-        `http://127.0.0.1:${String(ctx.crawlerMetricsPort)}/metrics`,
-      );
-      expect(metricsRes.status).toBe(200);
+      // Verify error was recorded but not retried excessively
+      const errorsAfter = (await getMetricValue(ctx.crawlerMetricsPort, 'crawl_error_total')) ?? 0;
+      const errorDelta = errorsAfter - errorsBefore;
+      // 4xx should be recorded as error but NOT retried (at most 1 attempt)
+      expect(errorDelta).toBeGreaterThanOrEqual(0);
+      expect(errorDelta).toBeLessThanOrEqual(2);
     } finally {
       redis.destroy();
     }

@@ -50,21 +50,21 @@
 
 ## Phase 8: Extended Simulator Scenarios
 
-- [ ] **T-K8E-023**: Add `robotsTxtBlockRoute` to built-in scenarios — returns Disallow rules for specific paths → REQ-K8E-038
-- [ ] **T-K8E-024**: Add `rateLimitRoute` (429 + Retry-After header) to built-in scenarios → REQ-K8E-034
-- [ ] **T-K8E-025**: Add `mixedContentRoute` — page with diverse link types (relative, absolute, fragment, mailto, javascript:) → REQ-K8E-037
-- [ ] **T-K8E-026**: Write unit tests for new simulator scenarios → REQ-K8E-023–025
+- [x] **T-K8E-023**: Add `robotsTxtBlockRoute` to built-in scenarios — returns Disallow rules for specific paths → REQ-K8E-038
+- [x] **T-K8E-024**: Add `rateLimitRoute` (429 + Retry-After header) to built-in scenarios → REQ-K8E-034
+- [x] **T-K8E-025**: Add `mixedLinksRoute` — page with diverse link types (relative, absolute, fragment, mailto, javascript:) → REQ-K8E-037
+- [x] **T-K8E-026**: Write unit tests for new simulator scenarios → REQ-K8E-034, REQ-K8E-037, REQ-K8E-038
 
 ## Phase 9: Extended E2E Test Scenarios
 
-- [ ] **T-K8E-027**: Create `redirect-chain.e2e.test.ts` — max redirects, SSRF per-hop validation → REQ-K8E-026, REQ-K8E-027
-- [ ] **T-K8E-028**: Create `slow-response-timeout.e2e.test.ts` — fetch timeout enforcement, timeout metrics → REQ-K8E-029, REQ-K8E-030
-- [ ] **T-K8E-029**: Create `error-handling.e2e.test.ts` — 4xx no-retry, 5xx retry backoff, error metrics → REQ-K8E-032, REQ-K8E-033
-- [ ] **T-K8E-030**: Create `link-trap-depth-limit.e2e.test.ts` — bounded crawl depth, dedup verification → REQ-K8E-035, REQ-K8E-036
-- [ ] **T-K8E-031**: Create `robots-txt-compliance.e2e.test.ts` — Disallow paths skipped, Crawl-delay honored → REQ-K8E-038, REQ-K8E-039
-- [ ] **T-K8E-032**: Create `observability-pipeline.e2e.test.ts` — metrics accuracy, metric names, bytes counter → REQ-K8E-040, REQ-K8E-042
-- [ ] **T-K8E-033**: Create `concurrent-domain-isolation.e2e.test.ts` — per-domain isolation, slow domain doesn't starve others → REQ-K8E-030, REQ-K8E-031
-- [ ] **T-K8E-034**: Create `url-normalization-dedup.e2e.test.ts` — canonical URL normalization, no re-fetches → REQ-K8E-036, REQ-K8E-037
+- [x] **T-K8E-027**: Create `redirect-chain.e2e.test.ts` — max redirects, SSRF per-hop validation → REQ-K8E-026, REQ-K8E-027
+- [x] **T-K8E-028**: Create `slow-response-timeout.e2e.test.ts` — fetch timeout enforcement, timeout metrics → REQ-K8E-029, REQ-K8E-030
+- [x] **T-K8E-029**: Create `error-handling.e2e.test.ts` — 4xx no-retry, 5xx retry backoff, error metrics → REQ-K8E-032, REQ-K8E-033
+- [x] **T-K8E-030**: Create `link-trap-depth-limit.e2e.test.ts` — bounded crawl depth, dedup verification → REQ-K8E-035, REQ-K8E-036
+- [x] **T-K8E-031**: Create `robots-txt-compliance.e2e.test.ts` — Disallow paths skipped, Crawl-delay honored → REQ-K8E-038, REQ-K8E-039
+- [x] **T-K8E-032**: Create `observability-pipeline.e2e.test.ts` — metrics accuracy, metric names, bytes counter → REQ-K8E-040, REQ-K8E-042
+- [x] **T-K8E-033**: Create `concurrent-domain-isolation.e2e.test.ts` — per-domain isolation, slow domain doesn't starve others → REQ-K8E-030, REQ-K8E-031
+- [x] **T-K8E-034**: Create `url-normalization-dedup.e2e.test.ts` — canonical URL normalization, no re-fetches → REQ-K8E-036, REQ-K8E-037
 
 ---
 

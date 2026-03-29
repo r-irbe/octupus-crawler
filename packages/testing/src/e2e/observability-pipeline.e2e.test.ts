@@ -25,7 +25,8 @@ async function fetchMetrics(
 
   for (const line of text.split('\n')) {
     if (line.startsWith('#') || line.trim() === '') continue;
-    const match = /^([a-zA-Z_:][a-zA-Z0-9_:]*)\s+([0-9.eE+-]+)$/m.exec(line);
+    // Match metrics with or without labels: name{labels} value
+    const match = /^([a-zA-Z_:][a-zA-Z0-9_:]*)(?:\{[^}]*\})?\s+([0-9.eE+-]+)/m.exec(line);
     if (match !== null) {
       const name = match[1];
       const value = parseFloat(match[2] ?? '0');
@@ -60,6 +61,20 @@ describe('Observability pipeline E2E', () => {
     // Standard Node.js process metrics
     expect(metrics.has('process_cpu_seconds_total')).toBe(true);
     expect(metrics.has('process_resident_memory_bytes')).toBe(true);
+  });
+
+  // Validates REQ-K8E-042: crawler-specific metric names exist
+  it('metrics include required crawler metric names', async () => {
+    const res = await fetch(
+      `http://127.0.0.1:${String(ctx.crawlerMetricsPort)}/metrics`,
+    );
+    const text = await res.text();
+
+    // REQ-K8E-042 required metrics (may be 0-valued before crawl activity)
+    expect(text).toMatch(/crawl_pages_total/);
+    expect(text).toMatch(/crawl_error_total/);
+    expect(text).toMatch(/crawl_duration_seconds/);
+    expect(text).toMatch(/crawl_bytes_total/);
   });
 
   // Validates REQ-K8E-040: metrics values are non-negative
