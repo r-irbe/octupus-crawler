@@ -31,7 +31,7 @@
 - [x] **T-TEST-013**: Write integration tests for frontier (enqueue, dequeue, dedup) with real Redis → REQ-TEST-005, REQ-TEST-008
 - [x] **T-TEST-014**: Write integration tests for worker job processing with real queue → REQ-TEST-008 — *covered by worker-bullmq.integration.test.ts + frontier-bullmq.integration.test.ts*
 - [x] **T-TEST-015**: Write integration tests for graceful shutdown with real connections → REQ-TEST-008
-- [ ] **T-TEST-016**: ~~Write integration tests for metrics endpoint scraping~~ → REQ-TEST-008 *(deferred: requires running service with Prometheus metrics endpoint)*
+- [x] **T-TEST-016**: Write integration tests for metrics endpoint scraping → REQ-TEST-008 — *implemented: packages/observability/src/metrics-scraping.integration.test.ts (4 tests: Prometheus format, /health, /readyz, 404)*
 
 ## Phase 5: CI Pipeline
 

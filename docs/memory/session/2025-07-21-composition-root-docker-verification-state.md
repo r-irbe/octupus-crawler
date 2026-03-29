@@ -21,26 +21,26 @@
 
 | # | Task | Status | Commit | Notes |
 | --- | --- | --- | --- | --- |
-| 1 | Create main.ts composition root | `pending` | — | Wires all packages |
-| 2 | Update package.json (deps + build) | `pending` | — | Add tsx, infra deps |
-| 3 | Update Dockerfile for tsx runtime | `pending` | — | Packages use .ts exports |
-| 4 | Docker build verification (T-INFRA-021) | `pending` | — | — |
-| 5 | Docker compose-up (T-INFRA-022) | `pending` | — | — |
-| 6 | Prometheus persistence (T-INFRA-025) | `pending` | — | — |
-| 7 | Metrics scraping test (T-TEST-016) | `pending` | — | — |
-| 8 | Mark T-AGENT-050/051 complete | `pending` | — | Already proven |
-| 9 | Assess T-AGENT-107 (Spectral) | `pending` | — | — |
+| 1 | Create main.ts composition root | `done` | 6275b22 | 195 lines, all packages wired |
+| 2 | Update package.json (deps + build) | `done` | 6275b22 | tsx root dep + workspace deps |
+| 3 | Update Dockerfile for tsx runtime | `done` | 6275b22 | CMD uses tsx/esm |
+| 4 | Docker build verification (T-INFRA-021) | `done` | 6275b22 | Image sha256:07c061f5 |
+| 5 | Docker compose-up (T-INFRA-022) | `done` | 6275b22 | 4 services, endpoints verified |
+| 6 | Prometheus persistence (T-INFRA-025) | `done` | 6275b22 | Data survives restart |
+| 7 | Metrics scraping test (T-TEST-016) | `done` | 6275b22 | 4 integration tests |
+| 8 | T-AGENT-051 workflow validated | `done` | 6275b22 | Full G1-G11 cycle proven |
+| 9 | Assess T-AGENT-107 (Spectral) | `deferred` | — | No API specs exist yet |
 
 ## Current State
 
 | Field | Value |
 | --- | --- |
-| Current task # | — |
-| Last completed gate | G4 (state tracker) |
-| Guard function status | `not-run` |
-| Commits on branch | 0 |
-| Tests passing | — |
-| Blockers | none — Docker v29.3.1 available |
+| Current task # | G10/G11 |
+| Last completed gate | G9 (worklog) |
+| Guard function status | `pass` (13/13 typecheck, lint, test) |
+| Commits on branch | 1 (6275b22) |
+| Tests passing | 77 (observability) + all others |
+| Blockers | none |
 
 ## Decisions Log
 

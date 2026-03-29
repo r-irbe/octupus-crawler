@@ -47,9 +47,9 @@
 ## Phase 7: Verification
 
 - [x] **T-INFRA-020**: Build image, verify non-root user, check size → REQ-INFRA-001, 002
-- [ ] **T-INFRA-021**: ~~Test docker compose up end-to-end~~ → REQ-INFRA-017 *(deferred: requires running Docker environment with built crawler image)*
-- [ ] **T-INFRA-022**: ~~Verify Prometheus scrapes crawler metrics~~ → REQ-INFRA-012 *(deferred: requires running Docker environment with metrics endpoint)*
-- [ ] **T-INFRA-025**: ~~Verify Prometheus data persists after container restart~~ → REQ-INFRA-020 *(deferred: requires running Docker environment with Prometheus)*
+- [x] **T-INFRA-021**: Test docker compose up end-to-end → REQ-INFRA-017 — *verified: all 4 services start, /health and /readyz return 200, /metrics returns Prometheus text*
+- [x] **T-INFRA-022**: Verify Prometheus scrapes crawler metrics → REQ-INFRA-012 — *verified: Prometheus target `up`, active scraping confirmed via PromQL*
+- [x] **T-INFRA-025**: Verify Prometheus data persists after container restart → REQ-INFRA-020 — *verified: `up` metric data survives Prometheus container restart via named volume*
 - [x] **T-INFRA-026**: Verify all runbook URLs resolve to existing documents → REQ-INFRA-021
 
 ---

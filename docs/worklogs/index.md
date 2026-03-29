@@ -28,6 +28,7 @@ Chronological work session logs documenting what was done, decisions made, and o
 | [2026-03-28: Infrastructure](2026-03-28-infrastructure.md) | Infrastructure: Dockerfile, compose, K8s manifests, monitoring, 9 runbooks, RALPH review | Complete | 2026-03-28 |
 | [2026-03-28: Testing Quality](2026-03-28-testing-quality.md) | Testing quality: coverage thresholds, JUnit reporters, CI pipeline, Testcontainer helpers, integration tests | Complete | 2026-03-28 |
 | [2026-03-28: Virtual Memory](2026-03-28-virtual-memory.md) | Virtual memory: context budget, chunking, distillation, eviction, paging, 8 modules, 69 tests | Complete | 2026-03-28 |
+| [2025-07-21: Composition Root & Docker](2025-07-21-composition-root-docker.md) | Composition root main.ts, Docker build/compose verification, metrics scraping test, 4 deferred tasks completed | Complete | 2025-07-21 |
 | [2026-03-28: Completion Detection](2026-03-28-completion-detection.md) | Completion detection: connection, seeding, error-handler, failover, 30 tests, RALPH S-001 fix | Complete | 2026-03-28 |
 | [2026-03-28: URL Frontier](2026-03-28-url-frontier.md) | URL frontier: T-DIST-016/019 satisfied by crawl-pipeline, T-DIST-013/014/015 deferred (Redis) | Complete | 2026-03-28 |
 | [2026-03-28: Application Lifecycle](2026-03-28-application-lifecycle.md) | Application lifecycle: observability phases, coordinator closer, fetcher holder, 15 tests | Complete | 2026-03-28 |

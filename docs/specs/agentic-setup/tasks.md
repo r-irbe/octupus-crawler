@@ -109,7 +109,7 @@
 - [ ] **T-AGENT-048**: ⏸️ DEFERRED — Verify all hooks execute correctly: commit blocked without guards, push to main blocked, type errors reported, file size warned → REQ-AGENT-008 to 013 — *requires live Claude Code session*
 - [ ] **T-AGENT-049**: ⏸️ DEFERRED — Verify TDD chat modes hand off correctly: red→green→refactor → REQ-AGENT-025 — *requires live Copilot agent session*
 - [ ] **T-AGENT-050**: ⏸️ DEFERRED — Verify CI workflow triggers on `work/*` branches and all jobs pass → REQ-AGENT-041 — *requires actual PR*
-- [ ] **T-AGENT-051**: ⏸️ DEFERRED — Run end-to-end test: implement a small feature using the full workflow (spec→plan→TDD→review→merge) to validate all mechanisms work together → REQ-AGENT-014, REQ-AGENT-020, REQ-AGENT-027 — *requires real feature*
+- [x] **T-AGENT-051**: Run end-to-end test: implement a small feature using the full workflow (spec→plan→TDD→review→merge) to validate all mechanisms work together → REQ-AGENT-014, REQ-AGENT-020, REQ-AGENT-027 — *validated: composition root feature implemented via full G1–G11 cycle with RALPH review*
 
 ## Phase 13: Context Collapse Prevention
 
