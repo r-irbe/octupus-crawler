@@ -45,6 +45,17 @@ export const ConfigSchema = z.object({
   ALLOW_PRIVATE_IPS: z.enum(['true', 'false']).default('false').transform((v) => v === 'true'),
   ALLOWED_DOMAINS: z.string().optional(),
 
+  // Resilience — REQ-RES-003, REQ-RES-005, REQ-RES-008, REQ-RES-012, REQ-RES-020
+  CB_THRESHOLD: z.coerce.number().int().min(1).max(100).default(5),
+  CB_HALF_OPEN_AFTER_MS: z.coerce.number().int().min(1000).max(300_000).default(30_000),
+  RETRY_MAX_ATTEMPTS: z.coerce.number().int().min(1).max(20).default(3),
+  RETRY_INITIAL_DELAY_MS: z.coerce.number().int().min(100).max(60_000).default(1_000),
+  RETRY_MAX_DELAY_MS: z.coerce.number().int().min(1000).max(300_000).default(30_000),
+  TIMEOUT_DB_MS: z.coerce.number().int().min(1000).max(120_000).default(10_000),
+  TIMEOUT_REDIS_MS: z.coerce.number().int().min(500).max(30_000).default(5_000),
+  BULKHEAD_MAX_CONCURRENT_PER_DOMAIN: z.coerce.number().int().min(1).max(50).default(2),
+  CB_MAX_DOMAINS: z.coerce.number().int().min(100).max(100_000).default(10_000),
+
   // Observability
   OTEL_EXPORTER_OTLP_ENDPOINT: z.url().default('http://otel-collector:4318'),
   OTEL_SERVICE_NAME: z.string().optional(),

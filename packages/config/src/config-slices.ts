@@ -31,3 +31,12 @@ export type WorkerConfig = Pick<Config,
 >;
 
 export type DomainFilterConfig = Pick<Config, 'ALLOWED_DOMAINS'>;
+
+// Resilience config slice — REQ-RES-003, REQ-RES-005, REQ-RES-008
+
+export type ResilienceConfigSlice = Pick<Config,
+  'CB_THRESHOLD' | 'CB_HALF_OPEN_AFTER_MS' | 'CB_MAX_DOMAINS' |
+  'RETRY_MAX_ATTEMPTS' | 'RETRY_INITIAL_DELAY_MS' | 'RETRY_MAX_DELAY_MS' |
+  'CRAWL_FETCH_TIMEOUT_MS' | 'TIMEOUT_DB_MS' | 'TIMEOUT_REDIS_MS' |
+  'BULKHEAD_MAX_CONCURRENT_PER_DOMAIN'
+>;
