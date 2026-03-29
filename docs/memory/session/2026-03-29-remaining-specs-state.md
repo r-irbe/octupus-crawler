@@ -18,20 +18,20 @@
 
 | # | Task | Status | Commit | Notes |
 | --- | --- | --- | --- | --- |
-| 1 | Service-communication requirements.md | `pending` | — | tRPC, TypeSpec, events, Temporal |
-| 2 | Service-communication design.md | `pending` | — | Router pattern, event schema |
-| 3 | Service-communication tasks.md | `pending` | — | Implementation tasks |
-| 4 | Resilience-patterns requirements.md | `pending` | — | 7-layer stack, circuit breaker |
-| 5 | Resilience-patterns design.md | `pending` | — | cockatiel composition |
-| 6 | Resilience-patterns tasks.md | `pending` | — | Implementation tasks |
-| 7 | Update specs/index.md | `pending` | — | Add entries + counts |
+| 1 | Service-communication requirements.md | `done` | d9791d1 | 22 EARS reqs (REQ-COMM-001-022) |
+| 2 | Service-communication design.md | `done` | d9791d1 | Architecture, tRPC, events, Temporal |
+| 3 | Service-communication tasks.md | `done` | d9791d1 | 27 tasks, 6 phases |
+| 4 | Resilience-patterns requirements.md | `done` | d9791d1 | 20 EARS reqs (REQ-RES-001-020) |
+| 5 | Resilience-patterns design.md | `done` | d9791d1 | cockatiel composition, 7-layer stack |
+| 6 | Resilience-patterns tasks.md | `done` | d9791d1 | 25 tasks, 6 phases |
+| 7 | Update specs/index.md | `done` | d9791d1 | 22 specs, 484 total reqs |
 
 ## Current State
 
 | Field | Value |
 | --- | --- |
-| Current task # | 1 |
-| Last completed gate | G4 (state tracker) |
-| Guard function status | `not-run` |
-| Commits on branch | 0 |
+| Current task # | 7 (all done) |
+| Last completed gate | G7 (state update) |
+| Guard function status | `passed` (typecheck 13/13, lint 13/13, test 13/13) |
+| Commits on branch | 1 (d9791d1) |
 | Blockers | none |

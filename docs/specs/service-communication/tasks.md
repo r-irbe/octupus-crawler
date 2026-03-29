@@ -29,7 +29,9 @@
 - [ ] **T-COMM-014**: Add URLDiscovered event publishing to parse stage → REQ-COMM-013
 - [ ] **T-COMM-015**: Implement unknown event version handling (skip + warn) → REQ-COMM-014
 
-## Phase 4: Temporal Workflows
+## Phase 4: Temporal Workflows (MEDIUM-TERM — per ADR-017 §5)
+
+> These tasks are deferred until the system requires durable multi-step workflows beyond BullMQ's capabilities.
 
 - [ ] **T-COMM-016**: Add Temporal TypeScript SDK dependency → REQ-COMM-015
 - [ ] **T-COMM-017**: Define crawl workflow (fetch → parse → store → index) → REQ-COMM-015

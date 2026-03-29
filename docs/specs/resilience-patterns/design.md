@@ -74,8 +74,10 @@ function getDomainBreaker(domain: string): CircuitBreakerPolicy {
 
 ## Policy Composition Pattern
 
+> **Note**: The cockatiel `wrap()` below composes the 3 core layers (timeout → retry → circuit breaker). The full fetch pipeline additionally applies rate limiting (pre-call) and bulkhead (concurrency). See T-RES-016 for the complete 7-layer composition.
+
 ```typescript
-// REQ-RES-018: timeout → retry → circuit breaker
+// REQ-RES-018: timeout → retry → circuit breaker (core 3 of 7 layers)
 import { wrap, TimeoutPolicy, RetryPolicy, ExponentialBackoff } from 'cockatiel';
 
 function createFetchPolicy(domain: string): Policy {
@@ -165,6 +167,13 @@ sequenceDiagram
 | Redis operation | Timeout → Circuit breaker (no retry — fast fail) |
 | BullMQ job processing | Retry (BullMQ built-in) → DLQ on exhaustion |
 | Health probe response | Direct — no resilience wrapping |
+
+---
+
+## Cross-References
+
+- **Graceful Shutdown**: The shutdown protocol (markNotReady → close worker → flush telemetry → close connections → markDead) is specified in [application-lifecycle](../application-lifecycle/requirements.md). Circuit breakers and in-flight request draining must coordinate with the shutdown sequence (ADR-009 §4.4).
+- **Health Probes**: `/healthz` and `/readyz` endpoints are specified in [application-lifecycle](../application-lifecycle/design.md). Resilience layer exposes readiness state changes on circuit open.
 
 ---
 
