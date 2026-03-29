@@ -157,6 +157,8 @@ patches:
 
 ## 5. E2E Test Flow
 
+**Execution constraint**: E2E tests MUST run serially (single fork) since they share one k3d cluster. Configured via `vitest.e2e.config.ts` with `pool: 'forks'` + `singleFork: true`. The scenario simulator runs on port 8081 alongside the site graph on port 8080.
+
 ```mermaid
 sequenceDiagram
     participant V as Vitest E2E
