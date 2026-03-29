@@ -18,9 +18,9 @@
 - [ ] **T-DATA-006**: Define Prisma models: CrawlUrl, CrawlLink, CrawlSession → REQ-DATA-002, REQ-DATA-004, REQ-DATA-005
 - [ ] **T-DATA-007**: Run `prisma generate` to produce typed client in `src/generated/` → REQ-DATA-010
 - [ ] **T-DATA-008**: Create initial Prisma migration → REQ-DATA-011
-- [ ] **T-DATA-009**: Define Drizzle schema in `src/schema/crawl-urls.ts` with indexes → REQ-DATA-003, REQ-DATA-007
-- [ ] **T-DATA-010**: Define Drizzle schema in `src/schema/crawl-links.ts` → REQ-DATA-004
-- [ ] **T-DATA-011**: Define Drizzle schema in `src/schema/crawl-sessions.ts` → REQ-DATA-005
+- [x] **T-DATA-009**: Define Drizzle schema in `src/schema/crawl-urls.ts` with indexes — REQ-DATA-003, REQ-DATA-007
+- [x] **T-DATA-010**: Define Drizzle schema in `src/schema/crawl-links.ts` — REQ-DATA-004
+- [x] **T-DATA-011**: Define Drizzle schema in `src/schema/crawl-sessions.ts` — REQ-DATA-005
 
 ## Phase 3: Connection Management
 
@@ -37,7 +37,7 @@
 - [ ] **T-DATA-019**: Implement `saveBatch` using multi-row INSERT for > 10K rows/sec → REQ-DATA-025
 - [x] **T-DATA-020**: Create `PageContentRepository` interface (port) → REQ-DATA-014
 - [ ] **T-DATA-021**: Implement `S3PageContentRepository` — store (Zstandard compress), retrieve, delete → REQ-DATA-006, REQ-DATA-014
-- [ ] **T-DATA-022**: Create `CrawlSessionRepository` interface and Prisma implementation → REQ-DATA-005
+- [x] **T-DATA-022**: Create `CrawlSessionRepository` interface and Prisma implementation — REQ-DATA-005
 - [ ] **T-DATA-023**: Implement domain event publishing on status update (CrawlCompleted/CrawlFailed to Redis Streams) → REQ-DATA-027
 
 ## Phase 5: Configuration
@@ -71,9 +71,9 @@ T-DATA-001 → T-DATA-006 → T-DATA-007 → T-DATA-009 → T-DATA-012 → T-DAT
 | Metric | Count |
 | --- | --- |
 | Total tasks | 36 |
-| Completed | 0 |
-| Remaining | 36 |
-| Completion rate | 0% |
+| Completed | 13 |
+| Remaining | 23 |
+| Completion rate | 36% |
 
 ---
 
