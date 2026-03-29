@@ -51,6 +51,7 @@ Chronological work session logs documenting what was done, decisions made, and o
 | [2026-03-29: Critical Specs](2026-03-29-critical-specs.md) | Critical specs: data-layer (27 REQs, 36 tasks), CI/CD pipeline (23 REQs, 26 tasks) | Complete | 2026-03-29 |
 | [2026-03-29: Remaining Specs](2026-03-29-remaining-specs.md) | Remaining specs: service-communication (22 REQs, 27 tasks), resilience-patterns (20 REQs, 25 tasks) | Complete | 2026-03-29 |
 | [2026-03-29: Resilience Patterns](2026-03-29-resilience-patterns.md) | Resilience patterns: cockatiel CB, retry, timeout, policy composer, 40 tests (31 unit + 9 property) | Complete | 2026-03-29 |
+| [2026-03-29: Resilience Phases 3-6](2026-03-29-resilience-phase3-6.md) | Resilience phases 3-6: token bucket, bulkhead, fallback, degraded metrics, fetch policy stack, 42 tests | Complete | 2026-03-29 |
 
 ## Index
 
