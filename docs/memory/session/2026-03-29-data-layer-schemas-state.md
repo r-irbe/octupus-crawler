@@ -19,23 +19,25 @@
 
 | # | Task | Status | Commit | Notes |
 | --- | --- | --- | --- | --- |
-| 1 | T-DATA-009: Drizzle schema `src/schema/crawl-urls.ts` | `pending` | — | pgTable with indexes |
-| 2 | T-DATA-010: Drizzle schema `src/schema/crawl-links.ts` | `pending` | — | Composite PK, FK relations |
-| 3 | T-DATA-011: Drizzle schema `src/schema/crawl-sessions.ts` | `pending` | — | Session tracking table |
-| 4 | T-DATA-022 (interface): CrawlSessionRepository port | `pending` | — | Interface only, impl deferred |
-| 5 | Unit tests for schemas + repository | `pending` | — | — |
+| 1 | T-DATA-009: Drizzle schema `src/schema/crawl-urls.ts` | `done` | 46d7658 | pgTable with 3 indexes, new array API |
+| 2 | T-DATA-010: Drizzle schema `src/schema/crawl-links.ts` | `done` | 46d7658 | Composite PK, FK refs to crawl_urls |
+| 3 | T-DATA-011: Drizzle schema `src/schema/crawl-sessions.ts` | `done` | 46d7658 | Session tracking table |
+| 4 | T-DATA-022 (interface): CrawlSessionRepository port | `done` | 46d7658 | Interface only, Prisma impl deferred |
+| 5 | Unit tests for schemas + repository | `done` | 46d7658 | 19 tests, 39 total in pkg |
 
 ## Current State
 
 | Field | Value |
 | --- | --- |
-| Current task # | — |
-| Last completed gate | G4 |
-| Guard function status | `not-run` |
-| Commits on branch | 0 |
-| Tests passing | — |
+| Current task # | all done |
+| Last completed gate | G7 |
+| Guard function status | `pass` |
+| Commits on branch | 1 (46d7658) |
+| Tests passing | 39/39 in database, 16/16 packages |
 | Blockers | none |
 
 ## Decisions Log
 
-_None yet._
+- Used new drizzle-orm v0.44 array API for extraConfig (not deprecated object API)
+- CrawlSessionRepository.end() method added beyond spec — provides semantic clarity for session termination
+- Used `withTimezone: true` on all timestamps for consistency

@@ -1,8 +1,7 @@
 // Drizzle schema definition for crawl_links table
 // Implements: T-DATA-010 (REQ-DATA-004)
 
-import { bigint, pgTable, text, timestamp } from 'drizzle-orm/pg-core';
-import { primaryKey } from 'drizzle-orm/pg-core';
+import { bigint, pgTable, primaryKey, text, timestamp } from 'drizzle-orm/pg-core';
 import { crawlUrls } from './crawl-urls.js';
 
 export const crawlLinks = pgTable('crawl_links', {

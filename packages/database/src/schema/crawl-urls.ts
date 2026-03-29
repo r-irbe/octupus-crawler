@@ -1,5 +1,6 @@
 // Drizzle schema definition for crawl_urls table
-// Implements: T-DATA-009 (REQ-DATA-002, REQ-DATA-003, REQ-DATA-007)
+// Implements: T-DATA-009 (REQ-DATA-002, REQ-DATA-003)
+// NOTE: REQ-DATA-007 (BRIN index on fetched_at) deferred to Prisma migration — requires raw SQL
 
 import { bigint, index, integer, jsonb, pgTable, text, timestamp, uniqueIndex } from 'drizzle-orm/pg-core';
 
