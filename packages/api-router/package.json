@@ -1,0 +1,31 @@
+{
+  "name": "@ipf/api-router",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./router": "./src/router.ts",
+    "./trpc": "./src/trpc.ts",
+    "./schemas": "./src/schemas.ts",
+    "./domain-events": "./src/domain-events.ts",
+    "./event-handler": "./src/event-handler.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src/",
+    "test": "vitest run",
+    "clean": "rm -rf dist .turbo"
+  },
+  "dependencies": {
+    "@trpc/server": "^11.0.0",
+    "neverthrow": "^8.1.1",
+    "zod": "^3.25.0"
+  },
+  "devDependencies": {
+    "@ipf/eslint-config": "workspace:*",
+    "@types/node": "^22.0.0",
+    "typescript": "^6.0.0",
+    "vitest": "^4.0.0",
+    "eslint": "^10.0.0"
+  }
+}
