@@ -1,0 +1,31 @@
+{
+  "name": "@ipf/database",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./errors": "./src/errors.ts",
+    "./repositories/crawl-url-repository": "./src/repositories/crawl-url-repository.ts",
+    "./repositories/page-content-repository": "./src/repositories/page-content-repository.ts",
+    "./types": "./src/types.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src/",
+    "test": "vitest run",
+    "clean": "rm -rf dist .turbo"
+  },
+  "dependencies": {
+    "drizzle-orm": "^0.44.0",
+    "@aws-sdk/client-s3": "^3.750.0",
+    "neverthrow": "^8.2.0",
+    "zod": "^3.25.0"
+  },
+  "devDependencies": {
+    "@ipf/eslint-config": "workspace:*",
+    "@types/node": "^22.0.0",
+    "typescript": "^6.0.0",
+    "vitest": "^4.0.0",
+    "eslint": "^10.0.0"
+  }
+}
