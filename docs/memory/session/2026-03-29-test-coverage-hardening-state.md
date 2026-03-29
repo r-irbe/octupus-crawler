@@ -19,23 +19,23 @@
 
 | # | Task | Status | Commit | Notes |
 | --- | --- | --- | --- | --- |
-| 1 | Spec-writer: test-coverage-hardening | `pending` | — | requirements + design + tasks |
-| 2 | Enhance verify-pre-commit-gates.sh | `pending` | — | File size, naming convention, eslint-disable checks |
-| 3 | Enhance guard chain (integration+property) | `pending` | — | Add test:integration + test:property to verify-guard-chain.sh |
-| 4 | Write missing unit tests (7 files) | `pending` | — | queue-error, normalized-url, exit-codes, queue-backend, page-table, selective-loader, state-tracker |
-| 5 | Enhance E2E tests (alerting validation) | `pending` | — | Alert rules fire on real metrics in K8s |
-| 6 | G5 guard functions | `pending` | — | typecheck + lint + test |
+| 1 | Spec-writer: test-coverage-hardening | `done` | 04e3ed5 | 16 reqs, 14 tasks |
+| 2 | Enhance verify-pre-commit-gates.sh | `done` | 04e3ed5 | File size, naming, eslint-disable checks |
+| 3 | Enhance guard chain (integration+property) | `done` | 04e3ed5 | Added test:integration + test:property |
+| 4 | Write missing unit tests (6 files) | `done` | 04e3ed5 | queue-error, normalized-url, exit-codes, page-table, selective-loader, state-tracker |
+| 5 | Enhance E2E tests (alerting validation) | `done` | 04e3ed5 | alerting-rules.e2e.test.ts — syntax, metric coverage, threshold checks |
+| 6 | G5 guard functions | `done` | — | typecheck + lint + test all pass (13/13) |
 | 7 | G8 RALPH review | `pending` | — | Full 3-round PR review council |
 
 ## Current State
 
 | Field | Value |
 | --- | --- |
-| Current task # | 1 |
-| Last completed gate | G4 (state tracker) |
-| Guard function status | `not-run` |
-| Commits on branch | 0 |
-| Tests passing | — |
+| Current task # | 7 |
+| Last completed gate | G6 (commit 04e3ed5) |
+| Guard function status | `pass` |
+| Commits on branch | 1 |
+| Tests passing | all 13 packages |
 | Blockers | none |
 
 ## Decisions Log

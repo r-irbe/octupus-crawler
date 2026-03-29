@@ -4,11 +4,11 @@
 // Requires: k3d cluster running with crawler + simulator deployed
 
 import { describe, it, expect, beforeAll, afterAll } from 'vitest';
-import { execSync } from 'node:child_process';
+import { execFileSync } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { setupE2E, type E2EContext } from './helpers/e2e-setup.js';
-import { parseMetrics, fetchMetricsText } from './helpers/metrics-helper.js';
+import { parseMetrics, fetchMetricsText, extractAlertMetricNames } from './helpers/metrics-helper.js';
 
 const ALERT_RULES_PATH = resolve('infra/prometheus/alert-rules.yml');
 
@@ -24,40 +24,11 @@ afterAll(async () => {
 
 // --- Helpers ---
 
-/** Extract metric names referenced in alert rule expressions */
-function extractAlertMetricNames(rulesYaml: string): string[] {
-  // Match metric names in PromQL expressions (word chars with underscores/colons)
-  const metricNames = new Set<string>();
-  const knownFunctions = new Set([
-    'sum', 'rate', 'avg', 'increase', 'deriv', 'histogram_quantile',
-    'on', 'and', 'or', 'unless', 'by', 'without', 'count', 'min', 'max',
-    'group_left', 'group_right', 'offset', 'bool',
-  ]);
-
-  const fullContent = rulesYaml;
-  // Find all metric-like identifiers in expr blocks
-  const exprRegex = /expr:\s*[|>-]?\n((?:\s+.+\n)*)/g;
-  let match = exprRegex.exec(fullContent);
-  while (match !== null) {
-    const expr = match[1] ?? '';
-    // Extract identifiers: sequences of word chars that could be metric names
-    const identifiers = expr.match(/\b([a-z_][a-z0-9_]*)\b/gi) ?? [];
-    for (const id of identifiers) {
-      if (!knownFunctions.has(id.toLowerCase()) && !/^\d/.test(id) && id !== 'status' && id !== 'error' && id !== 'success' && id !== 'job' && id !== 'instance' && id !== 'crawler') {
-        metricNames.add(id);
-      }
-    }
-    match = exprRegex.exec(fullContent);
-  }
-
-  return [...metricNames];
-}
-
 describe('Alert rules syntax validation', () => {
   // Validates REQ-TCH-013: alert rules YAML is valid
   it('alert-rules.yml passes promtool check', () => {
     try {
-      execSync(`promtool check rules ${ALERT_RULES_PATH}`, {
+      execFileSync('promtool', ['check', 'rules', ALERT_RULES_PATH], {
         encoding: 'utf-8',
         stdio: 'pipe',
       });

@@ -66,3 +66,37 @@ export async function waitForMetric(
     `Metric ${metricName} did not reach ${String(expectedValue)} within ${String(timeoutMs)}ms (final: ${String(finalValue ?? 'absent')})`,
   );
 }
+
+const KNOWN_PROMQL_FUNCTIONS = new Set([
+  'sum', 'rate', 'avg', 'increase', 'deriv', 'histogram_quantile',
+  'on', 'and', 'or', 'unless', 'by', 'without', 'count', 'min', 'max',
+  'group_left', 'group_right', 'offset', 'bool',
+]);
+
+const LABEL_VALUE_NAMES = new Set([
+  'status', 'error', 'success', 'job', 'instance', 'crawler',
+]);
+
+/** Extract metric names referenced in Prometheus alert rule expressions */
+export function extractAlertMetricNames(rulesYaml: string): string[] {
+  const metricNames = new Set<string>();
+
+  const exprRegex = /expr:\s*[|>-]?\n((?:\s+.+\n)*)/g;
+  let match = exprRegex.exec(rulesYaml);
+  while (match !== null) {
+    const expr = match[1] ?? '';
+    const identifiers = expr.match(/\b([a-z_][a-z0-9_]*)\b/gi) ?? [];
+    for (const id of identifiers) {
+      if (
+        !KNOWN_PROMQL_FUNCTIONS.has(id.toLowerCase()) &&
+        !LABEL_VALUE_NAMES.has(id) &&
+        !/^\d/.test(id)
+      ) {
+        metricNames.add(id);
+      }
+    }
+    match = exprRegex.exec(rulesYaml);
+  }
+
+  return [...metricNames];
+}
