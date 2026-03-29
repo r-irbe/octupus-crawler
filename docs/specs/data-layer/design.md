@@ -250,4 +250,4 @@ All data layer tests use Testcontainers — never mock PostgreSQL or S3:
 
 ---
 
-> **Provenance**: Created 2026-03-29 per ADR-020. Source: ADR-010, ADR-015. Updated 2026-03-29: added Dependencies section per RALPH AR-1 finding. Updated 2026-03-29: Drizzle schemas use v0.44 array API for indexes; REQ-DATA-007 BRIN index deferred to Prisma migration (requires raw SQL); CrawlSessionRepository port includes `end()` method for semantic session termination.
+> **Provenance**: Created 2026-03-29 per ADR-020. Source: ADR-010, ADR-015. Updated 2026-03-29: added Dependencies section per RALPH AR-1 finding. Updated 2026-03-29: Drizzle schemas use v0.44 array API for indexes; REQ-DATA-007 BRIN index deferred to Prisma migration (requires raw SQL); CrawlSessionRepository port includes `end()` method for semantic session termination. Updated 2026-03-29: PostgreSQL + MinIO added to docker-compose and K8s base; Prisma schema created with all 3 models; connection pool uses pg.Pool with Symbol.asyncDispose; S3 client factory supports local/cloud parity via forcePathStyle config.

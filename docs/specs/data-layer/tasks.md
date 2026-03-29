@@ -8,14 +8,14 @@
 ## Phase 1: Package Scaffolding
 
 - [x] **T-DATA-001**: Create `packages/database/` with package.json, tsconfig.json → REQ-DATA-001
-- [ ] **T-DATA-002**: Add Prisma as devDependency, create `prisma/schema.prisma` with datasource + generator → REQ-DATA-008
+- [x] **T-DATA-002**: Add Prisma as devDependency, create `prisma/schema.prisma` with datasource + generator → REQ-DATA-008
 - [x] **T-DATA-003**: Add Drizzle ORM + drizzle-orm/pg-core as dependency → REQ-DATA-009
 - [x] **T-DATA-004**: Add `@aws-sdk/client-s3` for S3/MinIO client → REQ-DATA-001
 - [x] **T-DATA-005**: Create `src/errors.ts` with DataError discriminated union (`_tag` field) → REQ-DATA-016
 
 ## Phase 2: Schema Definition
 
-- [ ] **T-DATA-006**: Define Prisma models: CrawlUrl, CrawlLink, CrawlSession → REQ-DATA-002, REQ-DATA-004, REQ-DATA-005
+- [x] **T-DATA-006**: Define Prisma models: CrawlUrl, CrawlLink, CrawlSession → REQ-DATA-002, REQ-DATA-004, REQ-DATA-005
 - [ ] **T-DATA-007**: Run `prisma generate` to produce typed client in `src/generated/` → REQ-DATA-010
 - [ ] **T-DATA-008**: Create initial Prisma migration → REQ-DATA-011
 - [x] **T-DATA-009**: Define Drizzle schema in `src/schema/crawl-urls.ts` with indexes — REQ-DATA-003, REQ-DATA-007
@@ -24,9 +24,9 @@
 
 ## Phase 3: Connection Management
 
-- [ ] **T-DATA-012**: Create `src/connection/pool.ts` — PostgreSQL connection pool with configurable min/max/timeouts → REQ-DATA-015, REQ-DATA-017
-- [ ] **T-DATA-013**: Implement `Symbol.dispose` on pool for `using` keyword cleanup → REQ-DATA-018
-- [ ] **T-DATA-014**: Create `src/connection/s3-client.ts` — S3/MinIO client factory with endpoint configuration → REQ-DATA-022
+- [x] **T-DATA-012**: Create `src/connection/pool.ts` — PostgreSQL connection pool with configurable min/max/timeouts → REQ-DATA-015, REQ-DATA-017
+- [x] **T-DATA-013**: Implement `Symbol.dispose` on pool for `using` keyword cleanup → REQ-DATA-018
+- [x] **T-DATA-014**: Create `src/connection/s3-client.ts` — S3/MinIO client factory with endpoint configuration → REQ-DATA-022
 - [ ] **T-DATA-015**: Create `src/connection/circuit-breaker.ts` — cockatiel circuit breaker for DB calls → REQ-DATA-020
 - [ ] **T-DATA-016**: Implement graceful shutdown: drain queries, close pools on SIGTERM → REQ-DATA-019
 
@@ -71,9 +71,9 @@ T-DATA-001 → T-DATA-006 → T-DATA-007 → T-DATA-009 → T-DATA-012 → T-DAT
 | Metric | Count |
 | --- | --- |
 | Total tasks | 36 |
-| Completed | 13 |
-| Remaining | 23 |
-| Completion rate | 36% |
+| Completed | 18 |
+| Remaining | 18 |
+| Completion rate | 50% |
 
 ---
 

@@ -55,6 +55,7 @@ Chronological work session logs documenting what was done, decisions made, and o
 | [2026-03-29: Service Communication](2026-03-29-service-communication.md) | Service communication Phase 1: tRPC router, domain events, event handler, 31 tests, RALPH fixes | Complete | 2026-03-29 |
 | [2026-03-29: Data Layer](2026-03-29-data-layer.md) | Data layer Phase 1: error types, repository interfaces, entity types, 20 tests, RALPH fixes | Complete | 2026-03-29 |
 | [2026-03-29: Data Layer Schemas](2026-03-29-data-layer-schemas.md) | Data layer Phase 2: Drizzle schemas (crawl_urls, crawl_links, crawl_sessions), CrawlSessionRepository port, 19 tests | Complete | 2026-03-29 |
+| [2026-03-29: Data Layer Infra](2026-03-29-data-layer-infra.md) | Data layer infra: PostgreSQL + MinIO to docker-compose + K8s, Prisma schema, connection pool, S3 client, 13 tests | Complete | 2026-03-29 |
 
 ## Index
 
