@@ -248,6 +248,13 @@ All data layer tests use Testcontainers — never mock PostgreSQL or S3:
 - **Redis cache layer**: ADR-010 references Redis for read caching in repository implementations. Redis client setup (`packages/redis/`) is out-of-scope for this spec — to be covered by a dedicated redis/caching spec. Repository implementations may accept a cache parameter but this spec covers PostgreSQL + S3 only.
 - **Backup/restore**: WAL-G backup strategy deferred to infrastructure spec.
 
+## Implementation Notes
+
+- **Drizzle + exactOptionalPropertyTypes**: Drizzle ORM's internal types are incompatible with TypeScript 6's `exactOptionalPropertyTypes: true`. The `updateStatus` method uses `Record<string, unknown>` for the update object as a workaround. IDE may show phantom type errors that `tsc` resolves correctly (dual pnpm resolution paths).
+- **S3 partial failure**: `store()` uploads content and metadata in parallel. If one fails, partial state may occur (orphaned file). This is acceptable for S3's eventual consistency model — cleanup via reconciliation.
+- **saveBatch dedup**: Uses `ON CONFLICT DO NOTHING` on `urlHash` to skip duplicates at insert time. Returns actual inserted count (excludes skipped duplicates).
+- **Zstandard compression**: Uses Node.js built-in `node:zlib` `zstdCompress`/`zstdDecompress` (Node 25+). No external library needed.
+
 ---
 
-> **Provenance**: Created 2026-03-29 per ADR-020. Source: ADR-010, ADR-015. Updated 2026-03-29: added Dependencies section per RALPH AR-1 finding. Updated 2026-03-29: Drizzle schemas use v0.44 array API for indexes; REQ-DATA-007 BRIN index deferred to Prisma migration (requires raw SQL); CrawlSessionRepository port includes `end()` method for semantic session termination. Updated 2026-03-29: PostgreSQL + MinIO added to docker-compose and K8s base; Prisma schema created with all 3 models; connection pool uses pg.Pool with Symbol.asyncDispose; S3 client factory supports local/cloud parity via forcePathStyle config.
+> **Provenance**: Created 2026-03-29 per ADR-020. Source: ADR-010, ADR-015. Updated 2026-03-29: added Dependencies section per RALPH AR-1 finding. Updated 2026-03-29: Drizzle schemas use v0.44 array API for indexes; REQ-DATA-007 BRIN index deferred to Prisma migration (requires raw SQL); CrawlSessionRepository port includes `end()` method for semantic session termination. Updated 2026-03-29: PostgreSQL + MinIO added to docker-compose and K8s base; Prisma schema created with all 3 models; connection pool uses pg.Pool with Symbol.asyncDispose; S3 client factory supports local/cloud parity via forcePathStyle config. Updated 2026-03-29: DrizzleCrawlURLRepository + S3PageContentRepository implemented; RALPH F-001/F-004 findings documented.

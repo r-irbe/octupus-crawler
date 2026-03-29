@@ -33,10 +33,10 @@
 ## Phase 4: Repository Implementations
 
 - [x] **T-DATA-017**: Create `CrawlURLRepository` interface in domain layer (port) → REQ-DATA-012, REQ-DATA-013
-- [ ] **T-DATA-018**: Implement `DrizzleCrawlURLRepository` — findById, findByHash, save, updateStatus → REQ-DATA-013, REQ-DATA-016
-- [ ] **T-DATA-019**: Implement `saveBatch` using multi-row INSERT for > 10K rows/sec → REQ-DATA-025
+- [x] **T-DATA-018**: Implement `DrizzleCrawlURLRepository` — findById, findByHash, save, updateStatus → REQ-DATA-013, REQ-DATA-016
+- [x] **T-DATA-019**: Implement `saveBatch` using multi-row INSERT for > 10K rows/sec → REQ-DATA-025
 - [x] **T-DATA-020**: Create `PageContentRepository` interface (port) → REQ-DATA-014
-- [ ] **T-DATA-021**: Implement `S3PageContentRepository` — store (Zstandard compress), retrieve, delete → REQ-DATA-006, REQ-DATA-014
+- [x] **T-DATA-021**: Implement `S3PageContentRepository` — store (Zstandard compress), retrieve, delete → REQ-DATA-006, REQ-DATA-014
 - [x] **T-DATA-022**: Create `CrawlSessionRepository` interface and Prisma implementation — REQ-DATA-005
 - [ ] **T-DATA-023**: Implement domain event publishing on status update (CrawlCompleted/CrawlFailed to Redis Streams) → REQ-DATA-027
 
@@ -71,9 +71,9 @@ T-DATA-001 → T-DATA-006 → T-DATA-007 → T-DATA-009 → T-DATA-012 → T-DAT
 | Metric | Count |
 | --- | --- |
 | Total tasks | 36 |
-| Completed | 18 |
-| Remaining | 18 |
-| Completion rate | 50% |
+| Completed | 21 |
+| Remaining | 15 |
+| Completion rate | 58% |
 
 ---
 
