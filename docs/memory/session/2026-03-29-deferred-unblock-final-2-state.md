@@ -27,16 +27,16 @@
 | 5 | T-K8E-021: 5-min completion verify | `done` | f4e3844 | Vitest 180s + CI 10min already configured |
 | 6 | T-AGENT-107: API contracts spec | `done` | f4e3844 | openapi.yaml + .spectral.yml + spec docs |
 | 7 | Stale provenance cleanup (4 specs) | `done` | f4e3844 | completion-detection, url-frontier, app-lifecycle, worker-mgmt |
-| 8 | G8 RALPH review council | `in-progress` | — | Full 3-round review loop |
+| 8 | G8 RALPH review council | `done` | 5ef1c76 | APPROVED 6/6 unanimous (delta re-review) |
 
 ## Current State
 
 | Field | Value |
 | --- | --- |
-| Current task # | 8 (G8 RALPH) |
-| Last completed gate | G7 (state update) |
+| Current task # | complete |
+| Last completed gate | G11 (spec update) |
 | Guard function status | `passed` |
-| Commits on branch | 1 (f4e3844) |
+| Commits on branch | 2 (f4e3844, 5ef1c76) |
 | Tests passing | 13/13 |
 | Blockers | none |
 
