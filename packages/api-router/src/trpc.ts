@@ -2,6 +2,7 @@
 // Implements: T-COMM-001 (REQ-COMM-001), T-COMM-003 (REQ-COMM-003)
 
 import { initTRPC, TRPCError } from '@trpc/server';
+import type { CrawlStatus } from './schemas.js';
 
 // --- Context ---
 
@@ -15,7 +16,7 @@ export type CrawlService = {
   }) => Promise<{ jobId: string; urlCount: number }>;
   readonly getStatus: (jobId: string) => Promise<{
     jobId: string;
-    status: string;
+    status: CrawlStatus;
     urlsTotal: number;
     urlsCrawled: number;
     urlsFailed: number;

@@ -1,5 +1,7 @@
 // Domain event types — versioned discriminated union
 // Implements: T-COMM-010 (REQ-COMM-010)
+// NOTE: Domain events live here temporarily. When multiple packages need them,
+// extract to packages/core/ (Tier 3 change — requires multi-package plan).
 
 import { z } from 'zod';
 
@@ -43,17 +45,9 @@ export const ContentStoredPayloadSchema = z.object({
 
 export type ContentStoredPayload = z.infer<typeof ContentStoredPayloadSchema>;
 
-// --- Domain Event Union ---
+// --- Domain Event Union (derived from Zod schema — single source of truth) ---
 
-export type DomainEvent =
-  | { readonly type: 'CrawlCompleted'; readonly version: 1; readonly payload: CrawlCompletedPayload }
-  | { readonly type: 'CrawlFailed'; readonly version: 1; readonly payload: CrawlFailedPayload }
-  | { readonly type: 'URLDiscovered'; readonly version: 1; readonly payload: URLDiscoveredPayload }
-  | { readonly type: 'ContentStored'; readonly version: 1; readonly payload: ContentStoredPayload };
-
-export type DomainEventType = DomainEvent['type'];
-
-// --- Zod Schema for DomainEvent (for runtime validation) ---
+// --- Zod Schema for DomainEvent (runtime validation) ---
 
 export const DomainEventSchema = z.discriminatedUnion('type', [
   z.object({
@@ -77,6 +71,11 @@ export const DomainEventSchema = z.discriminatedUnion('type', [
     payload: ContentStoredPayloadSchema,
   }),
 ]);
+
+/** Derived from DomainEventSchema — always in sync. */
+export type DomainEvent = z.infer<typeof DomainEventSchema>;
+
+export type DomainEventType = DomainEvent['type'];
 
 // --- Event Envelope (with metadata for transport) ---
 

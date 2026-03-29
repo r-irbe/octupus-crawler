@@ -4,6 +4,7 @@
 import { describe, it, expect } from 'vitest';
 import { appRouter } from './router.js';
 import { createContext, type CrawlService } from './trpc.js';
+import type { CrawlStatus } from './schemas.js';
 
 function createMockService(overrides?: Partial<CrawlService>): CrawlService {
   return {
@@ -15,7 +16,7 @@ function createMockService(overrides?: Partial<CrawlService>): CrawlService {
     getStatus: overrides?.getStatus ?? (() =>
       Promise.resolve({
         jobId: 'job-123',
-        status: 'running',
+        status: 'running' as CrawlStatus,
         urlsTotal: 10,
         urlsCrawled: 5,
         urlsFailed: 0,
