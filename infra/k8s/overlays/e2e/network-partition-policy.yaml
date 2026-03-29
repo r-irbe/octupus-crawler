@@ -1,0 +1,26 @@
+# NetworkPolicy — blocks worker→Redis egress for chaos testing.
+# Apply to simulate network partition between workers and Dragonfly.
+# @see REQ-PROD-006, T-PROD-009, design.md §3.3
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: partition-worker-redis
+  namespace: ipf
+spec:
+  podSelector:
+    matchLabels:
+      app: crawler-worker
+  policyTypes:
+    - Egress
+  egress:
+    # Allow egress to web-simulator only (blocks Redis by omission)
+    - to:
+        - podSelector:
+            matchLabels:
+              app: web-simulator
+    # Allow DNS resolution
+    - ports:
+        - port: 53
+          protocol: UDP
+        - port: 53
+          protocol: TCP

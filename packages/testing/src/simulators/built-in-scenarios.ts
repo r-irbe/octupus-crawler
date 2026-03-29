@@ -167,6 +167,90 @@ export const mixedLinksRoute: SimulatorRoute = {
   }),
 };
 
+/**
+ * Burst links: /burst-links?count=N — page with N links to unique URLs.
+ * Used for link-bomb simulation and rate-limit stress testing.
+ * @see REQ-PROD-020, REQ-PROD-024
+ */
+export const burstLinksRoute: SimulatorRoute = {
+  path: '/burst-links',
+  handler: (req: SimulatorRequest): SimulatorResponse => {
+    const url = new URL(req.url, 'http://localhost');
+    const raw = parseInt(url.searchParams.get('count') ?? '10', 10);
+    const count = Number.isFinite(raw) && raw > 0 ? Math.min(raw, 10_000) : 10;
+
+    const links: string[] = [];
+    for (let i = 0; i < count; i++) {
+      links.push(`<a href="/page-${String(i)}">Link ${String(i)}</a>`);
+    }
+
+    return {
+      status: 200,
+      body: [
+        '<html><body>',
+        `<h1>Burst Links (${String(count)})</h1>`,
+        ...links,
+        '</body></html>',
+      ].join('\n'),
+    };
+  },
+};
+
+/**
+ * Connection hold: /connection-hold?ms=N — holds connection open for N ms.
+ * Simulates slow-loris style resource exhaustion.
+ * @see REQ-PROD-007
+ */
+export const connectionHoldRoute: SimulatorRoute = {
+  path: '/connection-hold',
+  handler: (req: SimulatorRequest): SimulatorResponse => {
+    const url = new URL(req.url, 'http://localhost');
+    const ms = parseInt(url.searchParams.get('ms') ?? '5000', 10);
+    const delay = Number.isFinite(ms) && ms > 0 ? Math.min(ms, 60_000) : 5000;
+    return {
+      status: 200,
+      body: '<html><body>Connection held</body></html>',
+      delay,
+    };
+  },
+};
+
+/**
+ * Dynamic 429: /dynamic-429?after=N — returns 200 for first N requests, then 429.
+ * Stateful route: tracks request count per test run.
+ * @see REQ-PROD-022
+ */
+const dynamic429State = { requestCount: 0 };
+
+/** Reset dynamic-429 state for testing. */
+export function resetDynamic429State(): void {
+  dynamic429State.requestCount = 0;
+}
+
+export const dynamic429Route: SimulatorRoute = {
+  path: '/dynamic-429',
+  handler: (req: SimulatorRequest): SimulatorResponse => {
+    const url = new URL(req.url, 'http://localhost');
+    const raw = parseInt(url.searchParams.get('after') ?? '5', 10);
+    const after = Number.isFinite(raw) && raw > 0 ? raw : 5;
+
+    dynamic429State.requestCount++;
+
+    if (dynamic429State.requestCount > after) {
+      return {
+        status: 429,
+        headers: { 'Retry-After': '10' },
+        body: '<html><body>Too Many Requests</body></html>',
+      };
+    }
+
+    return {
+      status: 200,
+      body: `<html><body>OK (request ${String(dynamic429State.requestCount)})</body></html>`,
+    };
+  },
+};
+
 /** Collect all built-in scenario routes */
 export function getBuiltInScenarioRoutes(): ReadonlyArray<SimulatorRoute> {
   return [
@@ -178,5 +262,8 @@ export function getBuiltInScenarioRoutes(): ReadonlyArray<SimulatorRoute> {
     robotsTxtBlockRoute,
     rateLimitRoute,
     mixedLinksRoute,
+    burstLinksRoute,
+    connectionHoldRoute,
+    dynamic429Route,
   ];
 }

@@ -1,0 +1,35 @@
+# HPA — autoscale crawler-worker based on queue depth.
+# Used in scaling E2E tests to verify HPA behavior.
+# @see REQ-PROD-015, T-PROD-017, design.md §5.1
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: crawler-worker
+  namespace: ipf
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: crawler-worker
+  minReplicas: 1
+  maxReplicas: 10
+  metrics:
+    - type: External
+      external:
+        metric:
+          name: redis_queue_depth
+          selector:
+            matchLabels:
+              queue: crawl-jobs
+        target:
+          type: AverageValue
+          averageValue: "100"
+  behavior:
+    scaleDown:
+      stabilizationWindowSeconds: 300
+    scaleUp:
+      stabilizationWindowSeconds: 0
+      policies:
+        - type: Pods
+          value: 2
+          periodSeconds: 60
