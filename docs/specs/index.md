@@ -22,6 +22,7 @@
 | Alerting | [alerting/](alerting/) | REQ-ALERT-001 to 017 | §9 | [req](alerting/requirements.md) [des](alerting/design.md) [tasks](alerting/tasks.md) |
 | Infrastructure | [infrastructure/](infrastructure/) | REQ-INFRA-001 to 021 | §10 | [req](infrastructure/requirements.md) [des](infrastructure/design.md) [tasks](infrastructure/tasks.md) |
 | Testing & Quality | [testing-quality/](testing-quality/) | REQ-TEST-001 to 024 | §11 | [req](testing-quality/requirements.md) [des](testing-quality/design.md) [tasks](testing-quality/tasks.md) |
+| K8s E2E Testing | [k8s-e2e/](k8s-e2e/) | REQ-K8E-001 to 025 | ADR-005, ADR-007 §E2E | [req](k8s-e2e/requirements.md) [des](k8s-e2e/design.md) [tasks](k8s-e2e/tasks.md) |
 
 ## Agent Virtual Memory Specifications
 
@@ -49,6 +50,7 @@
 | Alerting (REQ-ALERT) | 17 |
 | Infrastructure (REQ-INFRA) | 21 |
 | Testing (REQ-TEST) | 24 |
+| K8s E2E (REQ-K8E) | 25 |
 | Virtual Memory (REQ-VMEM) | 21 |
 | Agentic Setup (REQ-AGENT) | 106 |
 | **Total** | **366** |

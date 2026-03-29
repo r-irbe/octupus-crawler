@@ -17,7 +17,11 @@
     "verify:specs": "./scripts/verify-spec-update.sh",
     "verify:session": "./scripts/verify-session-compliance.sh",
     "verify:all": "./scripts/verify-guard-chain.sh && ./scripts/verify-gate-compliance.sh && ./scripts/verify-spec-update.sh && ./scripts/verify-session-compliance.sh",
-    "test:alerts": "promtool check rules infra/prometheus/alert-rules.yml && promtool test rules infra/prometheus/alert-rules-fetch.test.yml infra/prometheus/alert-rules-ops.test.yml"
+    "test:alerts": "promtool check rules infra/prometheus/alert-rules.yml && promtool test rules infra/prometheus/alert-rules-fetch.test.yml infra/prometheus/alert-rules-ops.test.yml",
+    "k8s:setup": "./scripts/setup-local.sh",
+    "k8s:teardown": "./scripts/teardown-local.sh",
+    "k8s:build": "./scripts/build-and-push.sh",
+    "k8s:e2e": "pnpm turbo test --filter=@ipf/testing -- --include 'src/e2e/**/*.e2e.test.ts'"
   },
   "dependencies": {
     "tsx": "^4.19.0"

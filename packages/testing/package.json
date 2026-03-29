@@ -8,7 +8,10 @@
     "./generators/ssrf-payload": "./src/generators/ssrf-payload.generator.ts",
     "./generators/dns-rebinding": "./src/generators/dns-rebinding.generator.ts",
     "./containers/redis": "./src/containers/redis-container.ts",
-    "./property-test-template": "./src/property-test-template.ts"
+    "./property-test-template": "./src/property-test-template.ts",
+    "./simulators/web-simulator": "./src/simulators/web-simulator.ts",
+    "./simulators/site-graph-builder": "./src/simulators/site-graph-builder.ts",
+    "./simulators/built-in-scenarios": "./src/simulators/built-in-scenarios.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
