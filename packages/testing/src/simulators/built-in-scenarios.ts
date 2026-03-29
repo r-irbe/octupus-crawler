@@ -101,6 +101,71 @@ export const ssrfBaitRoute: SimulatorRoute = {
   }),
 };
 
+/**
+ * Robots.txt block route: /robots-block — serves Disallow rules.
+ * Tests crawler compliance with robots.txt directives.
+ * @see REQ-K8E-038
+ */
+export const robotsTxtBlockRoute: SimulatorRoute = {
+  path: '/robots-block',
+  handler: (): SimulatorResponse => ({
+    status: 200,
+    headers: { 'Content-Type': 'text/plain' },
+    body: [
+      'User-agent: *',
+      'Disallow: /admin',
+      'Disallow: /private',
+      'Crawl-delay: 1',
+      '',
+      'User-agent: ipf-crawler',
+      'Disallow: /secret',
+      'Allow: /admin/public',
+    ].join('\n'),
+  }),
+};
+
+/**
+ * Rate limit route: /rate-limit — returns 429 with Retry-After header.
+ * @see REQ-K8E-034
+ */
+export const rateLimitRoute: SimulatorRoute = {
+  path: '/rate-limit',
+  handler: (req: SimulatorRequest): SimulatorResponse => {
+    const url = new URL(req.url, 'http://localhost');
+    const retryAfter = url.searchParams.get('retry') ?? '5';
+    return {
+      status: 429,
+      headers: { 'Retry-After': retryAfter },
+      body: '<html><body>Too Many Requests</body></html>',
+    };
+  },
+};
+
+/**
+ * Mixed links page: /mixed-links — contains diverse link types for normalization testing.
+ * @see REQ-K8E-037
+ */
+export const mixedLinksRoute: SimulatorRoute = {
+  path: '/mixed-links',
+  handler: (): SimulatorResponse => ({
+    status: 200,
+    body: [
+      '<html><body>',
+      '<h1>Mixed Links Page</h1>',
+      '<a href="/page-a">Relative link</a>',
+      '<a href="/page-a#section">Fragment link</a>',
+      '<a href="/page-a?utm_source=test">Query param link</a>',
+      '<a href="/Page-A">Case variant link</a>',
+      '<a href="mailto:test@example.com">Mailto link</a>',
+      '<a href="javascript:void(0)">JavaScript link</a>',
+      '<a href="tel:+1234567890">Tel link</a>',
+      '<a href="">Empty href</a>',
+      '<a href="/page-b">Valid link B</a>',
+      '</body></html>',
+    ].join('\n'),
+  }),
+};
+
 /** Collect all built-in scenario routes */
 export function getBuiltInScenarioRoutes(): ReadonlyArray<SimulatorRoute> {
   return [
@@ -109,5 +174,8 @@ export function getBuiltInScenarioRoutes(): ReadonlyArray<SimulatorRoute> {
     redirectChainRoute,
     linkTrapRoute,
     ssrfBaitRoute,
+    robotsTxtBlockRoute,
+    rateLimitRoute,
+    mixedLinksRoute,
   ];
 }

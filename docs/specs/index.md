@@ -50,7 +50,7 @@
 | Alerting (REQ-ALERT) | 17 |
 | Infrastructure (REQ-INFRA) | 21 |
 | Testing (REQ-TEST) | 24 |
-| K8s E2E (REQ-K8E) | 25 |
+| K8s E2E (REQ-K8E) | 42 |
 | Virtual Memory (REQ-VMEM) | 21 |
 | Agentic Setup (REQ-AGENT) | 106 |
 | **Total** | **366** |

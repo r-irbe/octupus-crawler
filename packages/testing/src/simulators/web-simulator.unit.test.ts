@@ -10,6 +10,9 @@ import {
   redirectChainRoute,
   linkTrapRoute,
   ssrfBaitRoute,
+  robotsTxtBlockRoute,
+  rateLimitRoute,
+  mixedLinksRoute,
 } from './built-in-scenarios.js';
 
 let simulator: WebSimulatorInstance | undefined;
@@ -192,5 +195,54 @@ describe('built-in scenarios', () => {
     expect(html).toContain('169.254.169.254');
     expect(html).toContain('127.0.0.1');
     expect(html).toContain('10.0.0.1');
+  });
+
+  // Validates REQ-K8E-038: robots.txt block route
+  it('robots-block route serves correct Disallow directives', async () => {
+    simulator = await createWebSimulator({ port: 0 }, [robotsTxtBlockRoute]);
+
+    const res = await fetch(`${simulator.url}/robots-block`);
+    expect(res.status).toBe(200);
+    expect(res.headers.get('content-type')).toBe('text/plain');
+    const text = await res.text();
+    expect(text).toContain('Disallow: /admin');
+    expect(text).toContain('Disallow: /private');
+    expect(text).toContain('Crawl-delay: 1');
+    expect(text).toContain('User-agent: ipf-crawler');
+    expect(text).toContain('Allow: /admin/public');
+  });
+
+  // Validates REQ-K8E-034: rate limit route
+  it('rate-limit route returns 429 with Retry-After header', async () => {
+    simulator = await createWebSimulator({ port: 0 }, [rateLimitRoute]);
+
+    const res = await fetch(`${simulator.url}/rate-limit`);
+    expect(res.status).toBe(429);
+    expect(res.headers.get('retry-after')).toBe('5');
+  });
+
+  // Validates REQ-K8E-034: rate limit with custom retry value
+  it('rate-limit route accepts custom retry parameter', async () => {
+    simulator = await createWebSimulator({ port: 0 }, [rateLimitRoute]);
+
+    const res = await fetch(`${simulator.url}/rate-limit?retry=10`);
+    expect(res.status).toBe(429);
+    expect(res.headers.get('retry-after')).toBe('10');
+  });
+
+  // Validates REQ-K8E-037: mixed links page
+  it('mixed-links page contains diverse link types', async () => {
+    simulator = await createWebSimulator({ port: 0 }, [mixedLinksRoute]);
+
+    const res = await fetch(`${simulator.url}/mixed-links`);
+    expect(res.status).toBe(200);
+    const html = await res.text();
+    expect(html).toContain('href="/page-a"');
+    expect(html).toContain('href="/page-a#section"');
+    expect(html).toContain('href="/page-a?utm_source=test"');
+    expect(html).toContain('href="/Page-A"');
+    expect(html).toContain('href="mailto:test@example.com"');
+    expect(html).toContain('href="javascript:void(0)"');
+    expect(html).toContain('href="/page-b"');
   });
 });

@@ -101,6 +101,9 @@ function createSiteGraphSimulator(
 | Link trap | `/trap?depth=N` | Page links to depth N+1 | REQ-K8E-013 |
 | robots.txt | `/robots.txt` | Configurable disallow rules | REQ-K8E-014 |
 | SSRF bait | `/ssrf-links` | Links to reserved IPs | REQ-K8E-019 |
+| Robots.txt block | `/robots-block.txt` | Disallow specific paths | REQ-K8E-038 |
+| Rate limit | `/rate-limit` | 429 + Retry-After header | REQ-K8E-034 |
+| Mixed links | `/mixed-links` | Relative, absolute, fragment, mailto | REQ-K8E-037 |
 
 ## 4. Deployment Modes
 

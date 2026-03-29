@@ -190,47 +190,17 @@ And scripts/teardown-local.sh cleans up after tests
 
 ---
 
-## Traceability Matrix
-
-| Requirement | Source | Priority | Test Type |
-| --- | --- | --- | --- |
-| REQ-K8E-001 | ADR-005 | MUST | Script verification |
-| REQ-K8E-002 | ADR-005 §Cluster Config | MUST | Script verification |
-| REQ-K8E-003 | ADR-005 | SHOULD | Script verification |
-| REQ-K8E-004 | ADR-005 | MUST | Script verification |
-| REQ-K8E-005 | ADR-004, ADR-005 | MUST | E2E |
-| REQ-K8E-006 | ADR-005 §Validation | MUST | E2E |
-| REQ-K8E-007 | ADR-005 §Local Registry | MUST | E2E |
-| REQ-K8E-008 | ADR-012 | SHOULD | E2E |
-| REQ-K8E-009 | ADR-005, ADR-004 | MUST | E2E |
-| REQ-K8E-010 | REQUIREMENTS-AGNOSTIC §11.1 REQ-TEST-003 | MUST | Unit + E2E |
-| REQ-K8E-011 | REQUIREMENTS-AGNOSTIC §11.1 REQ-TEST-005 | MUST | Unit |
-| REQ-K8E-012 | REQUIREMENTS-AGNOSTIC §11.1 REQ-TEST-003 | MUST | Unit |
-| REQ-K8E-013 | REQUIREMENTS-AGNOSTIC §11.1 REQ-TEST-005 | MUST | Unit |
-| REQ-K8E-014 | GAP-TEST-004 | SHOULD | Unit |
-| REQ-K8E-015 | ADR-007 | MUST | Unit |
-| REQ-K8E-016 | ADR-007 §E2E | MUST | E2E |
-| REQ-K8E-017 | ADR-007 §E2E / REQUIREMENTS-AGNOSTIC §11.1 | MUST | E2E |
-| REQ-K8E-018 | GAP-TEST-006, ADR-009 | MUST | E2E |
-| REQ-K8E-019 | GAP-TEST-003 | MUST | E2E |
-| REQ-K8E-020 | REQ-INFRA-005, 006 | MUST | E2E |
-| REQ-K8E-021 | ADR-007 §E2E | MUST | E2E |
-| REQ-K8E-022 | GAP-TEST-005, REQ-DIST-003 | SHOULD | E2E |
-| REQ-K8E-023 | ADR-007 §Pyramid | MUST | E2E |
-| REQ-K8E-024 | ADR-012, ADR-005 §CI | SHOULD | CI |
-| REQ-K8E-025 | ADR-005 §Validation | SHOULD | CI |
+> Extended requirements (REQ-K8E-026–042): see [requirements-extended.md](requirements-extended.md)
 
 ## Requirement Count
 
 | Domain | Count |
 | --- | --- |
-| Cluster Automation (REQ-K8E-001–006) | 6 |
-| Image Build (REQ-K8E-007–009) | 3 |
-| Web Simulator (REQ-K8E-010–016) | 7 |
-| E2E Scenarios (REQ-K8E-017–023) | 7 |
-| CI Integration (REQ-K8E-024–025) | 2 |
-| **Total** | **25** |
+| Sections 1–5 (001–025) | 25 |
+| Extended Sections 6–11 (026–042) | 17 |
+| **Total** | **42** |
 
 ---
 
-> **Provenance**: Created 2025-07-21 per ADR-020 spec-driven development. Addresses gaps: ADR-005 setup-local.sh missing, ADR-007 E2E tier empty, REQUIREMENTS-AGNOSTIC §11 GAP-TEST-003/004/005/006.
+> **Provenance**: Created 2025-07-21. Extended 2025-07-21. Split for 300-line limit.
+
