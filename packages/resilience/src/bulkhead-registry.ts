@@ -18,6 +18,8 @@ export type BulkheadRegistry = {
  * Creates a per-domain bulkhead registry.
  * REQ-RES-012: Prevents one dependency from consuming all resources.
  * REQ-RES-013: Default 2 concurrent per domain.
+ * Note: No LRU eviction — entry count grows with unique domains.
+ * Phase 5 integration should add shared maxDomains eviction.
  */
 export function createBulkheadRegistry(
   config: Partial<ResilienceConfig> = {},

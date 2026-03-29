@@ -36,6 +36,8 @@ export type LogSink = {
  * Creates degraded mode metrics/logging handlers.
  * REQ-RES-015: Emit DegradedMode metric and structured log on degraded mode.
  * REQ-RES-004: Emit metrics on circuit breaker transitions.
+ * Warning: `domain` label has high cardinality (10K+). The consuming
+ * Prometheus adapter should aggregate or allowlist to prevent cardinality explosion.
  */
 export function createDegradedModeMetrics(
   metricsSink?: MetricsSink,

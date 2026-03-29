@@ -33,6 +33,8 @@ export type TokenBucketLimiter = {
  * Creates a per-domain token bucket rate limiter.
  * REQ-RES-010: Configurable burst (maxTokens) and refill rate.
  * Tokens refill continuously based on elapsed time.
+ * Note: No LRU eviction — bucket count grows with unique domains.
+ * Phase 5 integration should add shared maxDomains eviction.
  */
 export function createTokenBucketLimiter(
   config: Partial<TokenBucketConfig> = {},

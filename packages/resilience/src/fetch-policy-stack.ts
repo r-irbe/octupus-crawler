@@ -38,7 +38,7 @@ export type FetchPolicyStack = {
   readonly bulkheads: BulkheadRegistry;
   /** Access token bucket limiter. */
   readonly rateLimiter: TokenBucketLimiter;
-  /** Access fallback handler. */
+  /** Access fallback handler. Uses `unknown` for domain-agnostic caching — callers must ensure type consistency per domain. */
   readonly fallback: FallbackHandler<unknown>;
   /** Cleanup all resources. */
   readonly dispose: () => void;
