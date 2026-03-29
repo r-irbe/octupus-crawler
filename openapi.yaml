@@ -172,36 +172,50 @@ components:
         name:
           type: string
           minLength: 1
+          maxLength: 256
           description: Human-readable crawl session name
+          example: "daily-news-crawl"
         seedUrls:
           type: array
           items:
             type: string
             format: uri
           minItems: 1
-          description: Initial URLs to crawl
+          maxItems: 1000
+          description: |
+            Initial URLs to crawl. All URLs are validated server-side
+            against RFC 6890 reserved IP ranges via @ipf/ssrf-guard
+            before any fetch is attempted.
+          example: ["https://example.com", "https://example.org/sitemap.xml"]
         maxDepth:
           type: integer
           minimum: 0
           maximum: 10
           default: 3
           description: Maximum link-follow depth
+          example: 3
         maxPages:
           type: integer
           minimum: 1
           default: 10000
           description: Maximum pages to crawl
+          example: 5000
 
     CrawlSession:
       type: object
       required:
         - id
+        - name
         - status
         - createdAt
       properties:
         id:
           type: string
           format: uuid
+          example: "550e8400-e29b-41d4-a716-446655440000"
+        name:
+          type: string
+          example: "daily-news-crawl"
         status:
           type: string
           enum:
@@ -209,15 +223,19 @@ components:
             - completed
             - failed
             - paused
+          example: "active"
         createdAt:
           type: string
           format: date-time
+          example: "2026-03-29T12:00:00Z"
         pagesProcessed:
           type: integer
           minimum: 0
+          example: 42
         pagesTotal:
           type: integer
           minimum: 0
+          example: 5000
 
     CrawlList:
       type: object
@@ -245,12 +263,16 @@ components:
         url:
           type: string
           format: uri
-          description: URL to add to the frontier
+          description: |
+            URL to add to the frontier. Validated server-side against
+            RFC 6890 reserved IP ranges via @ipf/ssrf-guard.
+          example: "https://example.com/page"
         depth:
           type: integer
           minimum: 0
           default: 0
           description: Current depth of the URL
+          example: 0
 
     SeedResponse:
       type: object
@@ -259,8 +281,10 @@ components:
       properties:
         accepted:
           type: boolean
+          example: true
         message:
           type: string
+          example: "URL queued for processing"
 
     HealthStatus:
       type: object
@@ -273,10 +297,14 @@ components:
             - healthy
             - degraded
             - unhealthy
+          example: "healthy"
         checks:
           type: object
           additionalProperties:
             type: string
+          example:
+            redis: "connected"
+            postgres: "connected"
 
     ErrorResponse:
       type: object
@@ -287,10 +315,14 @@ components:
       properties:
         statusCode:
           type: integer
+          example: 400
         error:
           type: string
+          example: "Bad Request"
         message:
           type: string
+          example: "seedUrls must contain at least 1 valid URI"
         correlationId:
           type: string
           format: uuid
+          example: "f47ac10b-58cc-4372-a567-0e02b2c3d479"

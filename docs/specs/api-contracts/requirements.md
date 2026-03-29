@@ -8,7 +8,7 @@
 ## 1. Contract Definition
 
 **REQ-API-001** (Ubiquitous)
-The system shall provide an OpenAPI 3.1 specification file at `docs/specs/api-contracts/openapi.yaml` that describes all public-facing HTTP endpoints.
+The system shall provide an OpenAPI 3.1 specification file at `openapi.yaml` (repository root) that describes all public-facing HTTP endpoints.
 
 **REQ-API-002** (Ubiquitous)
 Each endpoint in the OpenAPI spec shall include request body schema, response schema for all status codes, and example values.

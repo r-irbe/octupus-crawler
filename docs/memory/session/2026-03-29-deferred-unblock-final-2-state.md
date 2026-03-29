@@ -20,24 +20,24 @@
 
 | # | Task | Status | Commit | Notes |
 | --- | --- | --- | --- | --- |
-| 1 | T-PROD-016: k6 pnpm script | `done` | — | Added k6:load + k6:backpressure scripts |
-| 2 | T-K8E-012: Kustomize build verify | `done` | — | scripts/verify-kustomize-e2e.sh |
-| 3 | T-K8E-019: multi-replica-dedup E2E | `done` | — | packages/testing/src/e2e/multi-replica-dedup.e2e.test.ts |
-| 4 | T-K8E-020: E2E CI job | `done` | — | Extracted to .github/workflows/k8s-e2e.yml |
-| 5 | T-K8E-021: 5-min completion verify | `done` | — | Vitest 180s + CI 10min already configured |
-| 6 | T-AGENT-107: API contracts spec | `done` | — | openapi.yaml + .spectral.yml + spec docs |
-| 7 | Stale provenance cleanup (4 specs) | `done` | — | completion-detection, url-frontier, app-lifecycle, worker-mgmt |
-| 8 | G8 RALPH review council | `pending` | — | Full 3-round review loop |
+| 1 | T-PROD-016: k6 pnpm script | `done` | f4e3844 | Added k6:load + k6:backpressure scripts |
+| 2 | T-K8E-012: Kustomize build verify | `done` | f4e3844 | scripts/verify-kustomize-e2e.sh |
+| 3 | T-K8E-019: multi-replica-dedup E2E | `done` | f4e3844 | packages/testing/src/e2e/multi-replica-dedup.e2e.test.ts |
+| 4 | T-K8E-020: E2E CI job | `done` | f4e3844 | Extracted to .github/workflows/k8s-e2e.yml |
+| 5 | T-K8E-021: 5-min completion verify | `done` | f4e3844 | Vitest 180s + CI 10min already configured |
+| 6 | T-AGENT-107: API contracts spec | `done` | f4e3844 | openapi.yaml + .spectral.yml + spec docs |
+| 7 | Stale provenance cleanup (4 specs) | `done` | f4e3844 | completion-detection, url-frontier, app-lifecycle, worker-mgmt |
+| 8 | G8 RALPH review council | `in-progress` | — | Full 3-round review loop |
 
 ## Current State
 
 | Field | Value |
 | --- | --- |
 | Current task # | 8 (G8 RALPH) |
-| Last completed gate | G4 (state tracker) |
-| Guard function status | `running` |
-| Commits on branch | 0 |
-| Tests passing | — |
+| Last completed gate | G7 (state update) |
+| Guard function status | `passed` |
+| Commits on branch | 1 (f4e3844) |
+| Tests passing | 13/13 |
 | Blockers | none |
 
 ## Decisions Log

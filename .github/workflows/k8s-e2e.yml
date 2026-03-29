@@ -28,7 +28,7 @@ jobs:
 
       - name: Install k3d
         run: |
-          curl -s https://raw.githubusercontent.com/k3d-io/k3d/main/install.sh | bash
+          curl -s https://raw.githubusercontent.com/k3d-io/k3d/v5.8.3/install.sh | bash
           k3d version
 
       - name: Setup local cluster

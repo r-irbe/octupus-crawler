@@ -50,18 +50,26 @@ describe('Multi-replica dedup E2E', () => {
         depth: 0,
       }));
 
-      // Wait for processing
-      await new Promise<void>((r) => { setTimeout(r, 15_000); });
+      // Poll until processing completes (pages increase) or timeout
+      const POLL_INTERVAL_MS = 1_000;
+      const POLL_TIMEOUT_MS = 30_000;
+      let pagesAfter = pagesBefore;
+      const deadline = Date.now() + POLL_TIMEOUT_MS;
 
-      // Verify: pages total should increase by exactly the seeded page count
-      // (not doubled, even though 2 replicas exist)
-      const afterText = await fetchMetricsText(ctx.crawlerMetricsPort);
-      const afterMetrics = parseMetrics(afterText);
-      const pagesAfter = afterMetrics.get('crawl_pages_total') ?? 0;
+      while (Date.now() < deadline) {
+        await new Promise<void>((r) => { setTimeout(r, POLL_INTERVAL_MS); });
+        const pollText = await fetchMetricsText(ctx.crawlerMetricsPort);
+        const pollMetrics = parseMetrics(pollText);
+        pagesAfter = pollMetrics.get('crawl_pages_total') ?? 0;
+        if (pagesAfter > pagesBefore) break;
+      }
 
-      // With dedup, the increment should be small (seed + discovered links)
+      // With dedup, the increment should be exactly the seeded page (+ discovered links)
       // Not doubled: each URL processed exactly once across both replicas
-      expect(pagesAfter).toBeGreaterThanOrEqual(pagesBefore);
+      // burst-links?count=1 returns 1 page with 1 link → max 2 pages processed
+      const increment = pagesAfter - pagesBefore;
+      expect(increment).toBeGreaterThanOrEqual(1);
+      expect(increment).toBeLessThanOrEqual(2);
     } finally {
       redis.destroy();
     }

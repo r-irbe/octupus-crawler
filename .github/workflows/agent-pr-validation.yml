@@ -181,13 +181,19 @@ jobs:
 
       - name: Check Spectral API contract lint
         run: |
+          SPECTRAL_FAILED=0
           # If OpenAPI/TypeSpec specs exist, validate with Spectral
           for spec in $(find . -name "openapi.yaml" -o -name "openapi.json" -not -path "*/node_modules/*" 2>/dev/null); do
             echo "Spectral lint: $spec"
-            npx @stoplight/spectral-cli lint "$spec" --fail-severity warn || {
-              echo "::warning::Spectral lint issues in $spec"
+            npx @stoplight/spectral-cli lint "$spec" --fail-severity error || {
+              echo "::error::Spectral lint errors in $spec"
+              SPECTRAL_FAILED=1
             }
           done
+          if [ "$SPECTRAL_FAILED" -eq 1 ]; then
+            echo "Spectral lint failed — fix error-severity findings"
+            exit 1
+          fi
 
       - name: Check BullMQ idempotency patterns
         run: |

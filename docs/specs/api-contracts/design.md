@@ -78,12 +78,12 @@ The `architecture-conformance` job in `agent-pr-validation.yml` already runs Spe
 ## 4. File Layout
 
 ```text
+openapi.yaml                   — The OpenAPI 3.1 spec file (repo root — CI find scans all depths)
+.spectral.yml                  — Spectral linting config (repo root)
 docs/specs/api-contracts/
-  requirements.md            — This spec (10 reqs)
-  design.md                  — This document
-  tasks.md                   — Implementation tasks
-  openapi.yaml               — The OpenAPI 3.1 spec file
-.spectral.yml                — Spectral linting config
+  requirements.md              — This spec (10 reqs)
+  design.md                    — This document
+  tasks.md                     — Implementation tasks
 ```
 
 ---
