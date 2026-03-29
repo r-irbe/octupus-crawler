@@ -1,5 +1,6 @@
 // PageContentRepository — Domain port for S3 page content storage
 // Implements: T-DATA-020 (REQ-DATA-014)
+// NOTE: Port lives here temporarily. Consider extracting to packages/core/src/ports/.
 
 import type { Result } from 'neverthrow';
 import type { DataError } from '../errors.js';

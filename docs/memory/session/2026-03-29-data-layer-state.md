@@ -18,14 +18,15 @@
 
 | # | Task | Status | Commit | Notes |
 | --- | --- | --- | --- | --- |
-| 1 | T-DATA-001: Package scaffolding | `pending` | | package.json, tsconfig, vitest, eslint |
-| 2 | T-DATA-003: Drizzle ORM dependency | `pending` | | drizzle-orm + pg-core |
-| 3 | T-DATA-004: AWS S3 SDK dependency | `pending` | | @aws-sdk/client-s3 |
-| 4 | T-DATA-005: DataError discriminated union | `pending` | | src/errors.ts |
-| 5 | T-DATA-017: CrawlURLRepository interface | `pending` | | domain port |
-| 6 | T-DATA-024: Zod config schema reference | `pending` | | verify existing config |
-| 7 | T-DATA-025: Local/cloud S3 config support | `pending` | | verify existing config |
-| 8 | T-DATA-026: Unit tests | `pending` | | errors + contracts |
+| 1 | T-DATA-001: Package scaffolding | `done` | 17a7ecf | package.json, tsconfig, vitest, eslint |
+| 2 | T-DATA-003: Drizzle ORM dependency | `done` | 17a7ecf | drizzle-orm ^0.44.0 |
+| 3 | T-DATA-004: AWS S3 SDK dependency | `done` | 17a7ecf | @aws-sdk/client-s3 ^3.750.0 |
+| 4 | T-DATA-005: DataError discriminated union | `done` | 17a7ecf | 7 variants + constructors |
+| 5 | T-DATA-017: CrawlURLRepository interface | `done` | 17a7ecf | domain port |
+| 6 | T-DATA-020: PageContentRepository interface | `done` | 17a7ecf | domain port (bonus) |
+| 7 | T-DATA-024: Zod config schema reference | `done` | 17a7ecf | already in @ipf/config |
+| 8 | T-DATA-025: Local/cloud S3 config support | `done` | 17a7ecf | already in @ipf/config |
+| 9 | T-DATA-026: Unit tests | `done` | 17a7ecf | 20 tests, 2 files |
 
 ## Deferred
 
@@ -35,8 +36,15 @@ T-DATA-002 (Prisma), T-DATA-006-011 (schema definitions), T-DATA-012-016 (connec
 
 | Field | Value |
 | --- | --- |
-| Current task # | 0 |
-| Last completed gate | G4 (state tracker) |
-| Guard function status | `not-run` |
-| Commits on branch | 0 |
+| Current task # | 9 (all done) |
+| Last completed gate | G7 (state update) |
+| Guard function status | `pass` (16/16 packages) |
+| Commits on branch | 1 (17a7ecf) |
 | Blockers | none |
+
+## Decisions
+
+- Used `Uint8Array` instead of `Buffer` for PageContentRepository to avoid Node type dependency (Buffer extends Uint8Array)
+- T-DATA-020 (PageContentRepository interface) added as bonus — same self-contained port pattern
+- T-DATA-024/025 already satisfied by existing `@ipf/config` ConfigSchema
+- TS 6 `Uint8Array` variance issue with ESLint — phantom error in IDE, tsc + eslint CLI both pass

@@ -1,5 +1,7 @@
 // DataError — Discriminated union for data layer failures
 // Implements: T-DATA-005 (REQ-DATA-016)
+// NOTE: Uses _tag discriminant per AGENTS.md convention. packages/core/ uses 'kind' (legacy).
+// New packages should use _tag.
 
 import { z } from 'zod';
 

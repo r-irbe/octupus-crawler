@@ -2,6 +2,8 @@
 // Implements: T-DATA-017 (REQ-DATA-013), supporting types for repository interfaces
 
 // --- Crawl URL entity (database row representation) ---
+// NOTE: Uses bigint for IDs matching PostgreSQL BIGINT. BigInt is NOT JSON-serializable —
+// convert to string at API boundaries. This is an internal domain entity.
 
 export type CrawlURLStatus = 'pending' | 'fetched' | 'failed' | 'skipped';
 

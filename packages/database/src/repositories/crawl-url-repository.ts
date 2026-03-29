@@ -1,5 +1,7 @@
 // CrawlURLRepository — Domain port for crawl URL data access
 // Implements: T-DATA-017 (REQ-DATA-012, REQ-DATA-013)
+// NOTE: Port lives here temporarily. When implementations are added,
+// consider extracting to packages/core/src/ports/ per ADR-015 hexagonal architecture.
 
 import type { Result } from 'neverthrow';
 import type { DataError } from '../errors.js';
