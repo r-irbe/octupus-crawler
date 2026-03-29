@@ -60,7 +60,7 @@ while [[ "$ATTEMPT" -lt "$MAX_ATTEMPTS" && "$PASSED" == "false" ]]; do
 
   # --- Test ---
   if [[ -z "$GATE_FAILED" ]]; then
-    echo "▸ test..."
+    echo "▸ test (unit)..."
     if pnpm turbo test --force 2>&1 | tee /tmp/ipf-test.log | tail -5; then
       TEST_FAILED=$(grep -c "Failed" /tmp/ipf-test.log || true)
       TEST_COUNT=$(grep -oE "[0-9]+ passed" /tmp/ipf-test.log | awk '{s+=$1} END {print s+0}')
@@ -73,6 +73,46 @@ while [[ "$ATTEMPT" -lt "$MAX_ATTEMPTS" && "$PASSED" == "false" ]]; do
     else
       echo "  ✗ test FAILED (exit code)"
       GATE_FAILED="test"
+    fi
+    echo ""
+  fi
+
+  # --- Integration Test ---
+  if [[ -z "$GATE_FAILED" ]]; then
+    echo "▸ test:integration..."
+    if pnpm turbo test:integration --force 2>&1 | tee /tmp/ipf-integration.log | tail -5; then
+      INT_FAILED=$(grep -c "Failed" /tmp/ipf-integration.log || true)
+      INT_COUNT=$(grep -oE "[0-9]+ passed" /tmp/ipf-integration.log | awk '{s+=$1} END {print s+0}')
+      if [[ "$INT_FAILED" -gt 0 ]]; then
+        echo "  ✗ integration FAILED"
+        # REQ-TCH-005: report container info
+        grep -A5 "container\|Container\|TESTCONTAINER" /tmp/ipf-integration.log 2>/dev/null || true
+        GATE_FAILED="test:integration"
+      else
+        echo "  ✓ integration passed ($INT_COUNT tests total)"
+      fi
+    else
+      echo "  ✗ integration FAILED (exit code)"
+      GATE_FAILED="test:integration"
+    fi
+    echo ""
+  fi
+
+  # --- Property Test ---
+  if [[ -z "$GATE_FAILED" ]]; then
+    echo "▸ test:property..."
+    if pnpm turbo test:property --force 2>&1 | tee /tmp/ipf-property.log | tail -5; then
+      PROP_FAILED=$(grep -c "Failed" /tmp/ipf-property.log || true)
+      PROP_COUNT=$(grep -oE "[0-9]+ passed" /tmp/ipf-property.log | awk '{s+=$1} END {print s+0}')
+      if [[ "$PROP_FAILED" -gt 0 ]]; then
+        echo "  ✗ property FAILED"
+        GATE_FAILED="test:property"
+      else
+        echo "  ✓ property passed ($PROP_COUNT tests total)"
+      fi
+    else
+      echo "  ✗ property FAILED (exit code)"
+      GATE_FAILED="test:property"
     fi
     echo ""
   fi
@@ -95,7 +135,7 @@ if [[ "$PASSED" == "true" ]]; then
   echo "║   G5 RESULT: ✓ ALL GATES PASSED         ║"
   echo "╚══════════════════════════════════════════╝"
   echo ""
-  echo "Typecheck: PASS | Lint: PASS | Test: PASS"
+  echo "Typecheck: PASS | Lint: PASS | Test: PASS | Integration: PASS | Property: PASS"
   echo "Attempts used: $ATTEMPT/$MAX_ATTEMPTS"
   exit 0
 else
@@ -106,6 +146,6 @@ else
   echo "Failed gate: $GATE_FAILED"
   echo "Action: STOP, report to user, do NOT commit."
   echo ""
-  echo "Logs: /tmp/ipf-typecheck.log, /tmp/ipf-lint.log, /tmp/ipf-test.log"
+  echo "Logs: /tmp/ipf-typecheck.log, /tmp/ipf-lint.log, /tmp/ipf-test.log, /tmp/ipf-integration.log, /tmp/ipf-property.log"
   exit 1
 fi
