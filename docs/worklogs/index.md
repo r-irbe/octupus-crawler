@@ -44,6 +44,7 @@ Chronological work session logs documenting what was done, decisions made, and o
 | [2026-03-28: Job Queue Infrastructure](2026-03-28-job-queue-infrastructure.md) | BullMQ adapter package: QueueBackend, JobConsumer, QueueAdapter, 23 tests | Complete | 2026-03-28 |
 | [2026-03-28: BullMQ Integration Tests](2026-03-28-bullmq-integration-tests.md) | BullMQ integration tests: 4 packages, 11 tests, circular dep fix, stalled detection | Complete | 2026-03-28 |
 | [2026-03-28: Deferred Unblock Final](2026-03-28-deferred-unblock-final.md) | 8 deferred tasks unblocked: consumer phase, readiness check, integration tests, CI baseline | Complete | 2026-03-28 |
+| [2025-07-21: K8s E2E Extended](2025-07-21-k8s-e2e-extended.md) | Extended E2E: 3 simulator routes, 5 unit tests, 8 E2E test files, 17 new requirements, RALPH fixes | Complete | 2025-07-21 |
 
 ## Index
 
