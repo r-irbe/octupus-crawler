@@ -48,6 +48,8 @@ Chronological work session logs documenting what was done, decisions made, and o
 | [2026-03-29: Production Testing](2026-03-29-production-testing.md) | Production testing: chaos, load (k6), scaling (HPA), DDoS, 27 requirements, 4 E2E tests, 2 k6 scripts | Complete | 2026-03-29 |
 | [2026-03-29: Deferred Unblock Final-2](2026-03-29-deferred-unblock-final-2.md) | Deferred unblock: OpenAPI spec, K8s E2E CI, Spectral enforcement, stale provenance cleanup, 6 tasks | Complete | 2026-03-29 |
 | [2026-03-29: Test Coverage Hardening](2026-03-29-test-coverage-hardening.md) | Test coverage: 6 unit test files, E2E alerting validation, guard chain + pre-commit enhancements, 47 new tests | Complete | 2026-03-29 |
+| [2026-03-29: Critical Specs](2026-03-29-critical-specs.md) | Critical specs: data-layer (27 REQs, 36 tasks), CI/CD pipeline (23 REQs, 26 tasks) | Complete | 2026-03-29 |
+| [2026-03-29: Remaining Specs](2026-03-29-remaining-specs.md) | Remaining specs: service-communication (22 REQs, 27 tasks), resilience-patterns (20 REQs, 25 tasks) | Complete | 2026-03-29 |
 
 ## Index
 

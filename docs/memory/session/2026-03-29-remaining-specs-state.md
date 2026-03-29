@@ -31,7 +31,7 @@
 | Field | Value |
 | --- | --- |
 | Current task # | 7 (all done) |
-| Last completed gate | G7 (state update) |
+| Last completed gate | G11 (spec update) |
 | Guard function status | `passed` (typecheck 13/13, lint 13/13, test 13/13) |
-| Commits on branch | 1 (d9791d1) |
+| Commits on branch | 3 (d9791d1, 0b7f0c7, worklog) |
 | Blockers | none |
