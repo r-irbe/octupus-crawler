@@ -13,6 +13,8 @@
     "./repositories/s3-page-content-repository": "./src/repositories/s3-page-content-repository.ts",
     "./repositories/crawl-session-repository": "./src/repositories/crawl-session-repository.ts",
     "./connection/drizzle": "./src/connection/drizzle.ts",
+    "./connection/circuit-breaker": "./src/connection/circuit-breaker.ts",
+    "./connection/shutdown": "./src/connection/shutdown.ts",
     "./schema/crawl-urls": "./src/schema/crawl-urls.ts",
     "./schema/crawl-links": "./src/schema/crawl-links.ts",
     "./schema/crawl-sessions": "./src/schema/crawl-sessions.ts",
@@ -28,6 +30,7 @@
     "clean": "rm -rf dist .turbo"
   },
   "dependencies": {
+    "cockatiel": "^3.2.1",
     "drizzle-orm": "^0.44.0",
     "@aws-sdk/client-s3": "^3.750.0",
     "@prisma/client": "^6.9.0",
