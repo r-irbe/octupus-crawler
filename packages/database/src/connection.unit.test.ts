@@ -2,8 +2,8 @@
 // Validates: T-DATA-012 (REQ-DATA-015), T-DATA-013 (REQ-DATA-018), T-DATA-014 (REQ-DATA-022)
 
 import { describe, expect, it } from 'vitest';
-import { PoolConfigSchema } from './connection/pool.js';
-import { S3ConfigSchema } from './connection/s3-client.js';
+import { createPool, PoolConfigSchema } from './connection/pool.js';
+import { createS3Client, S3ConfigSchema } from './connection/s3-client.js';
 
 describe('PoolConfigSchema', () => {
   // Validates REQ-DATA-015: configurable connection pooling
@@ -126,5 +126,44 @@ describe('S3ConfigSchema', () => {
       bucket: 'test',
     });
     expect(result.success).toBe(false);
+  });
+});
+
+describe('createPool', () => {
+  // Validates REQ-DATA-018: Symbol.dispose support
+  it('returns a DatabasePool with all expected methods', () => {
+    const pool = createPool({
+      connectionString: 'postgresql://localhost:5432/test',
+      min: 1,
+      max: 2,
+      idleTimeoutMillis: 1000,
+      connectionTimeoutMillis: 1000,
+      statementTimeout: 1000,
+    });
+    expect(typeof pool.connect).toBe('function');
+    expect(typeof pool.query).toBe('function');
+    expect(typeof pool.totalCount).toBe('function');
+    expect(typeof pool.idleCount).toBe('function');
+    expect(typeof pool.waitingCount).toBe('function');
+    expect(typeof pool.end).toBe('function');
+    expect(typeof pool[Symbol.asyncDispose]).toBe('function');
+    // Clean up — end the pool (no actual DB needed for structural test)
+    void pool.end();
+  });
+});
+
+describe('createS3Client', () => {
+  // Validates REQ-DATA-022: S3 client creation
+  it('returns an S3Client instance', () => {
+    const client = createS3Client({
+      endpoint: 'http://localhost:9000',
+      region: 'us-east-1',
+      bucket: 'test',
+      accessKeyId: 'key',
+      secretAccessKey: 'secret',
+      forcePathStyle: true,
+    });
+    expect(client).toBeDefined();
+    client.destroy();
   });
 });
