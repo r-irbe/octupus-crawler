@@ -55,6 +55,8 @@ export const ConfigSchema = z.object({
   TIMEOUT_REDIS_MS: z.coerce.number().int().min(500).max(30_000).default(5_000),
   BULKHEAD_MAX_CONCURRENT_PER_DOMAIN: z.coerce.number().int().min(1).max(50).default(2),
   CB_MAX_DOMAINS: z.coerce.number().int().min(100).max(100_000).default(10_000),
+  TOKEN_BUCKET_MAX_TOKENS: z.coerce.number().int().min(1).max(1000).default(2),
+  TOKEN_BUCKET_REFILL_RATE: z.coerce.number().min(0.01).max(1000).default(1),
 
   // Observability
   OTEL_EXPORTER_OTLP_ENDPOINT: z.url().default('http://otel-collector:4318'),

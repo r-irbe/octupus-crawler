@@ -8,7 +8,12 @@
     "./retry-policy": "./src/retry-policy.ts",
     "./timeout-policy": "./src/timeout-policy.ts",
     "./policy-composer": "./src/policy-composer.ts",
-    "./resilience-types": "./src/resilience-types.ts"
+    "./resilience-types": "./src/resilience-types.ts",
+    "./token-bucket": "./src/token-bucket.ts",
+    "./bulkhead-registry": "./src/bulkhead-registry.ts",
+    "./fallback-handler": "./src/fallback-handler.ts",
+    "./degraded-mode-metrics": "./src/degraded-mode-metrics.ts",
+    "./fetch-policy-stack": "./src/fetch-policy-stack.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
