@@ -7,11 +7,11 @@
 
 ## Phase 1: Package Scaffolding
 
-- [ ] **T-DATA-001**: Create `packages/database/` with package.json, tsconfig.json → REQ-DATA-001
+- [x] **T-DATA-001**: Create `packages/database/` with package.json, tsconfig.json → REQ-DATA-001
 - [ ] **T-DATA-002**: Add Prisma as devDependency, create `prisma/schema.prisma` with datasource + generator → REQ-DATA-008
-- [ ] **T-DATA-003**: Add Drizzle ORM + drizzle-orm/pg-core as dependency → REQ-DATA-009
-- [ ] **T-DATA-004**: Add `@aws-sdk/client-s3` for S3/MinIO client → REQ-DATA-001
-- [ ] **T-DATA-005**: Create `src/errors.ts` with DataError discriminated union (`_tag` field) → REQ-DATA-016
+- [x] **T-DATA-003**: Add Drizzle ORM + drizzle-orm/pg-core as dependency → REQ-DATA-009
+- [x] **T-DATA-004**: Add `@aws-sdk/client-s3` for S3/MinIO client → REQ-DATA-001
+- [x] **T-DATA-005**: Create `src/errors.ts` with DataError discriminated union (`_tag` field) → REQ-DATA-016
 
 ## Phase 2: Schema Definition
 
@@ -32,22 +32,22 @@
 
 ## Phase 4: Repository Implementations
 
-- [ ] **T-DATA-017**: Create `CrawlURLRepository` interface in domain layer (port) → REQ-DATA-012, REQ-DATA-013
+- [x] **T-DATA-017**: Create `CrawlURLRepository` interface in domain layer (port) → REQ-DATA-012, REQ-DATA-013
 - [ ] **T-DATA-018**: Implement `DrizzleCrawlURLRepository` — findById, findByHash, save, updateStatus → REQ-DATA-013, REQ-DATA-016
 - [ ] **T-DATA-019**: Implement `saveBatch` using multi-row INSERT for > 10K rows/sec → REQ-DATA-025
-- [ ] **T-DATA-020**: Create `PageContentRepository` interface (port) → REQ-DATA-014
+- [x] **T-DATA-020**: Create `PageContentRepository` interface (port) → REQ-DATA-014
 - [ ] **T-DATA-021**: Implement `S3PageContentRepository` — store (Zstandard compress), retrieve, delete → REQ-DATA-006, REQ-DATA-014
 - [ ] **T-DATA-022**: Create `CrawlSessionRepository` interface and Prisma implementation → REQ-DATA-005
 - [ ] **T-DATA-023**: Implement domain event publishing on status update (CrawlCompleted/CrawlFailed to Redis Streams) → REQ-DATA-027
 
 ## Phase 5: Configuration
 
-- [ ] **T-DATA-024**: Add Zod config schema for DATABASE_URL, S3_ENDPOINT, S3_BUCKET, pool sizes → REQ-DATA-021
-- [ ] **T-DATA-025**: Support local (MinIO endpoint) and cloud (S3 endpoint) via config only → REQ-DATA-021, REQ-DATA-022
+- [x] **T-DATA-024**: Add Zod config schema for DATABASE_URL, S3_ENDPOINT, S3_BUCKET, pool sizes → REQ-DATA-021
+- [x] **T-DATA-025**: Support local (MinIO endpoint) and cloud (S3 endpoint) via config only → REQ-DATA-021, REQ-DATA-022
 
 ## Phase 6: Testing
 
-- [ ] **T-DATA-026**: Unit tests for DataError types and repository interface contracts → REQ-DATA-016
+- [x] **T-DATA-026**: Unit tests for DataError types and repository interface contracts → REQ-DATA-016
 - [ ] **T-DATA-027**: Integration test: CrawlURLRepository CRUD with Testcontainers PostgreSQL → REQ-DATA-023
 - [ ] **T-DATA-028**: Integration test: batch insert throughput > 10K rows/sec → REQ-DATA-025
 - [ ] **T-DATA-029**: Integration test: URL dedup via hash constraint (insert duplicate returns DuplicateKey) → REQ-DATA-024

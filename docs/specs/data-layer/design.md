@@ -110,15 +110,22 @@ interface CrawlSessionRepository {
 ## Error Types
 
 ```typescript
+// Uses _tag discriminant per AGENTS.md convention (packages/core/ uses 'kind' — legacy)
+// Each variant includes a human-readable 'message' field for logging
 type DataError =
-  | { _tag: 'ConnectionFailed'; cause: unknown }
-  | { _tag: 'QueryFailed'; query: string; cause: unknown }
-  | { _tag: 'NotFound'; entity: string; id: string }
-  | { _tag: 'DuplicateKey'; constraint: string }
-  | { _tag: 'CircuitOpen'; service: string }
-  | { _tag: 'Timeout'; operation: string; ms: number }
-  | { _tag: 'S3Error'; operation: string; cause: unknown };
+  | { _tag: 'ConnectionFailed'; cause: unknown; message: string }
+  | { _tag: 'QueryFailed'; query: string; cause: unknown; message: string }
+  | { _tag: 'NotFound'; entity: string; id: string; message: string }
+  | { _tag: 'DuplicateKey'; constraint: string; message: string }
+  | { _tag: 'CircuitOpen'; service: string; message: string }
+  | { _tag: 'Timeout'; operation: string; ms: number; message: string }
+  | { _tag: 'S3Error'; operation: string; cause: unknown; message: string };
 ```
+
+> **Implementation notes**:
+> - Repository interfaces (ports) temporarily live in `packages/database/` — extract to `packages/core/src/ports/` when implementations are added
+> - `PageContentRepository` uses `Uint8Array` (not `Buffer`) for portability — `Buffer extends Uint8Array`
+> - Entity IDs use `bigint` matching PostgreSQL BIGINT — convert to string at API boundaries (not JSON-serializable)
 
 ## Schema Design
 
