@@ -346,9 +346,6 @@ importers:
       cockatiel:
         specifier: ^3.2.1
         version: 3.2.1
-      neverthrow:
-        specifier: ^8.1.1
-        version: 8.2.0
     devDependencies:
       '@fast-check/vitest':
         specifier: ^0.1.3

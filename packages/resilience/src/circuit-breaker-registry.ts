@@ -40,6 +40,8 @@ export function createCircuitBreakerRegistry(
   const entries = new Map<string, RegistryEntry>();
   const disposables: Array<{ dispose: () => void }> = [];
 
+  // O(n) eviction is acceptable at 10K entries (~sub-ms scan).
+  // Replace with linked-list LRU if profiling shows hotspot.
   function evictLRU(): void {
     let oldest: string | undefined;
     let oldestTime = Infinity;
@@ -89,7 +91,7 @@ export function createCircuitBreakerRegistry(
     getState(domain: string): CircuitState | undefined {
       const entry = entries.get(domain);
       if (!entry) return undefined;
-      // cockatiel circuitBreaker policy has a .state property
+      // cockatiel's IPolicy doesn't expose .state; concrete CircuitBreakerPolicy does
       return (entry.policy as unknown as { state: CircuitState }).state;
     },
 

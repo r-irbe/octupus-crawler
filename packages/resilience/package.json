@@ -18,8 +18,7 @@
     "clean": "rm -rf dist .turbo"
   },
   "dependencies": {
-    "cockatiel": "^3.2.1",
-    "neverthrow": "^8.1.1"
+    "cockatiel": "^3.2.1"
   },
   "devDependencies": {
     "@fast-check/vitest": "^0.1.3",
