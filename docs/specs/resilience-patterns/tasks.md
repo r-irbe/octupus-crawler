@@ -5,23 +5,23 @@
 
 ---
 
-## Completion: 0/25 (0%)
+## Completion: 10/25 (40%)
 
 ---
 
 ## Phase 1: Core Resilience Primitives
 
-- [ ] **T-RES-001**: Create `packages/resilience/` package with cockatiel dependency — REQ-RES-001
-- [ ] **T-RES-002**: Implement per-domain circuit breaker factory (`getDomainBreaker`) with LRU eviction — REQ-RES-002, REQ-RES-019, REQ-RES-020
-- [ ] **T-RES-003**: Implement circuit breaker state transition OTel metrics and structured logging — REQ-RES-004
-- [ ] **T-RES-004**: Configure ConsecutiveBreaker(5) threshold and halfOpenAfter(30s) defaults in Zod config — REQ-RES-003
+- [x] **T-RES-001**: Create `packages/resilience/` package with cockatiel dependency — REQ-RES-001
+- [x] **T-RES-002**: Implement per-domain circuit breaker factory (`getDomainBreaker`) with LRU eviction — REQ-RES-002, REQ-RES-019, REQ-RES-020
+- [x] **T-RES-003**: Implement circuit breaker state transition OTel metrics and structured logging — REQ-RES-004
+- [x] **T-RES-004**: Configure ConsecutiveBreaker(5) threshold and halfOpenAfter(30s) defaults in Zod config — REQ-RES-003
 
 ## Phase 2: Retry & Timeout Policies
 
-- [ ] **T-RES-005**: Implement retry policy with exponential backoff + jitter (initial 1s, max 30s, 3 attempts) — REQ-RES-005
-- [ ] **T-RES-006**: Add idempotency guard preventing retry of non-idempotent operations — REQ-RES-006
-- [ ] **T-RES-007**: Implement cooperative timeout policy with configurable defaults (30s/10s/5s) — REQ-RES-008, REQ-RES-009
-- [ ] **T-RES-008**: Compose timeout → retry → circuit breaker via `wrap()` — REQ-RES-007, REQ-RES-018
+- [x] **T-RES-005**: Implement retry policy with exponential backoff + jitter (initial 1s, max 30s, 3 attempts) — REQ-RES-005
+- [x] **T-RES-006**: Add idempotency guard preventing retry of non-idempotent operations — REQ-RES-006
+- [x] **T-RES-007**: Implement cooperative timeout policy with configurable defaults (30s/10s/5s) — REQ-RES-008, REQ-RES-009
+- [x] **T-RES-008**: Compose timeout → retry → circuit breaker via `wrap()` — REQ-RES-007, REQ-RES-018
 
 ## Phase 3: Rate Limiting & Bulkhead
 
@@ -46,9 +46,9 @@
 
 ## Phase 6: Testing
 
-- [ ] **T-RES-021**: Property tests for circuit breaker state transitions (closed → open → half-open → closed) — REQ-RES-003
+- [x] **T-RES-021**: Property tests for circuit breaker state transitions (closed → open → half-open → closed) — REQ-RES-003
 - [ ] **T-RES-022**: Property tests for token bucket invariants (capacity, refill rate, burst) — REQ-RES-010
-- [ ] **T-RES-023**: Property tests for retry backoff bounds (jitter within range, max delay cap) — REQ-RES-005
+- [x] **T-RES-023**: Property tests for retry backoff bounds (jitter within range, max delay cap) — REQ-RES-005
 - [ ] **T-RES-024**: Integration test with Testcontainers Redis for sliding window rate limiter — REQ-RES-011
 - [ ] **T-RES-025**: Integration test for BullMQ DLQ flow (exhaust retries → verify DLQ entry) — REQ-RES-016
 
