@@ -20,27 +20,27 @@
 
 | # | Task | Status | Commit | Notes |
 | --- | --- | --- | --- | --- |
-| 1 | Draft requirements.md (EARS) | `pending` | — | ~25 requirements across 4 categories |
-| 2 | Draft design.md | `pending` | — | Architecture, k6 scripts, chaos manifests |
-| 3 | Draft tasks.md | `pending` | — | Phased implementation plan |
-| 4 | Update specs index | `pending` | — | Add production-testing entry |
-| 5 | Implement simulator extensions | `pending` | — | Backpressure, burst, connection flood |
-| 6 | Implement chaos E2E tests | `pending` | — | Pod kill, Redis failure, network partition |
-| 7 | Implement load test scripts (k6) | `pending` | — | Throughput, backpressure, SLO assertions |
-| 8 | Implement scaling E2E tests | `pending` | — | HPA verification, replica autoscaling |
-| 9 | Implement DDoS/rate limit tests | `pending` | — | Burst traffic, per-domain isolation |
-| 10 | Unit tests for new simulator routes | `pending` | — | — |
+| 1 | Draft requirements.md (EARS) | `done` | be5b133 | 27 requirements across 6 categories |
+| 2 | Draft design.md | `done` | be5b133 | Architecture, k6 scripts, chaos manifests |
+| 3 | Draft tasks.md | `done` | be5b133 | 26-task phased plan |
+| 4 | Update specs index | `done` | be5b133 | Added production-testing entry |
+| 5 | Implement simulator extensions | `done` | db3133e | 3 new routes: burst, hold, dynamic-429 |
+| 6 | Implement chaos E2E tests | `done` | db3133e | Pod kill, Redis failure, network partition |
+| 7 | Implement load test scripts (k6) | `done` | db3133e | Throughput + backpressure as .k6.js |
+| 8 | Implement scaling E2E tests | `done` | db3133e | HPA scale-up/down, graceful shutdown |
+| 9 | Implement DDoS/rate limit tests | `done` | db3133e | Burst traffic, domain isolation, 429 |
+| 10 | Unit tests for new simulator routes | `done` | db3133e | 10 new tests, all pass |
 
 ## Current State
 
 | Field | Value |
 | --- | --- |
-| Current task # | 1 |
-| Last completed gate | G4 (state tracker) |
-| Guard function status | `not-run` |
-| Commits on branch | 0 |
-| Tests passing | — |
-| Blockers | none |
+| Current task # | complete |
+| Last completed gate | G7 (state update) |
+| Guard function status | `pass` (typecheck + lint + test all green) |
+| Commits on branch | 2 (be5b133 specs, db3133e implementation) |
+| Tests passing | 56 in @ipf/testing (10 new), all 13 packages green |
+| Blockers | T-PROD-016 deferred (k6 not installed) |
 
 ## Decisions Log
 

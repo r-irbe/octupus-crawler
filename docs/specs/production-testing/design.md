@@ -132,8 +132,8 @@ New helpers added to `packages/testing/src/e2e/helpers/`:
 
 ```text
 packages/testing/src/load/
-  throughput.k6.ts        — Sustained load throughput test
-  backpressure.k6.ts      — Burst load, queue depth monitoring
+  throughput.k6.js        — Sustained load throughput test
+  backpressure.k6.js      — Burst load, queue depth monitoring
   k6-helpers.ts           — Redis seeding, metrics scraping
   slo-thresholds.ts       — Shared SLO threshold definitions
 ```
@@ -141,7 +141,7 @@ packages/testing/src/load/
 ### 4.2 k6 Throughput Script Pattern
 
 ```typescript
-// throughput.k6.ts (conceptual — k6 uses its own runtime)
+// throughput.k6.js (k6 runtime — not Node.js)
 import http from 'k6/http';
 import { check } from 'k6';
 
@@ -260,8 +260,8 @@ packages/testing/src/
     helpers/
       chaos-helpers.ts                  — kubectl wrappers for chaos ops
   load/
-    throughput.k6.ts                    — Sustained load test
-    backpressure.k6.ts                  — Burst/backpressure test
+    throughput.k6.js                    — Sustained load test
+    backpressure.k6.js                  — Burst/backpressure test
     k6-helpers.ts                       — Redis seeding, metrics helpers
     slo-thresholds.ts                   — Shared SLO constants
   simulators/
