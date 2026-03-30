@@ -11,7 +11,7 @@
 - [x] **T-COMM-002**: Define Zod schemas for crawl.submit/status procedures → REQ-COMM-002
 - [x] **T-COMM-003**: Implement `publicProcedure` and `protectedProcedure` with auth middleware → REQ-COMM-003
 - [x] **T-COMM-004**: Add OTel trace propagation middleware to tRPC client/server → REQ-COMM-004
-- [ ] **T-COMM-005**: Wire tRPC router into api-gateway Fastify adapter → REQ-COMM-001
+- [x] **T-COMM-005**: Wire tRPC router into api-gateway Fastify adapter → REQ-COMM-001
 
 ## Phase 2: TypeSpec / OpenAPI
 
@@ -61,9 +61,9 @@ T-COMM-001 → T-COMM-002 → T-COMM-010 → T-COMM-011 → T-COMM-012 → T-COM
 | Metric | Count |
 | --- | --- |
 | Total tasks | 27 |
-| Completed | 16 |
-| Remaining | 11 |
-| Completion rate | 59% |
+| Completed | 17 |
+| Remaining | 10 |
+| Completion rate | 63% |
 
 ---
 

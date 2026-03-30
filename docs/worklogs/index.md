@@ -69,6 +69,7 @@ Chronological work session logs documenting what was done, decisions made, and o
 | [2026-03-30: Event Publishing + Resilience + CI](2026-03-30-event-publishing-resilience-ci.md) | Resilient fetcher, event publishing decorators, version skip test, architecture conformance CI | Complete | 2026-03-30 |
 | [2026-03-30: OTel + Changesets + CI Unification](2026-03-30-otel-changesets-ci-unify.md) | OTel tRPC middleware, Changesets, ADR compliance scan, unified CI pipeline | Complete | 2026-03-30 |
 | [2026-03-30: TypeSpec API Contracts](2026-03-30-typespec-api-contracts.md) | TypeSpec compiler + CrawlerAPI definition, Spectral lint, API versioning middleware, CI split | Complete | 2026-03-30 |
+| [2026-03-30: API Gateway tRPC](2026-03-30-api-gateway-trpc.md) | API gateway: Fastify v5 + tRPC adapter, health check, graceful shutdown, 7 tests | Complete | 2026-03-30 |
 
 ## Index
 

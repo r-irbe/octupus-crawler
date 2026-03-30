@@ -8,11 +8,11 @@
 
 | Task | Status | Commit |
 | ---- | ------ | ------ |
-| T-COMM-005: Wire tRPC router into api-gateway Fastify adapter | done | f33c685 |
+| T-COMM-005: Wire tRPC router into api-gateway Fastify adapter | done | 0d9063b |
 
 ## Current State
 
-G1-G7 complete. Committed. Pending G8 RALPH, G9 worklog, G10-G11 report + spec + merge.
+G1-G8 complete. RALPH review: 3 sustained findings (F-001 SIGTERM, F-002 type cast, F-003 NOT_FOUND test) — all fixed and amended. G9-G11 + merge pending.
 
 ## Decisions
 
