@@ -40,7 +40,7 @@ Scenario: Invalid input rejected
 ## 2. Public API Contracts (TypeSpec/OpenAPI)
 
 **REQ-COMM-005** (Ubiquitous)
-Public-facing APIs shall be defined contract-first using TypeSpec, compiled to OpenAPI 3.1 specs.
+Public-facing APIs shall be defined contract-first using TypeSpec, compiled to OpenAPI 3.0+ specs (3.1 when `@typespec/openapi3` emitter supports it).
 
 **REQ-COMM-006** (Ubiquitous)
 Generated OpenAPI specs shall be linted with Spectral on every CI run. Errors shall block merge.

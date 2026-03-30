@@ -15,10 +15,10 @@
 
 ## Phase 2: TypeSpec / OpenAPI
 
-- [ ] **T-COMM-006**: Install TypeSpec compiler and create `specs/` directory → REQ-COMM-005
-- [ ] **T-COMM-007**: Define CrawlerAPI service in TypeSpec with models and operations → REQ-COMM-005
-- [ ] **T-COMM-008**: Add tsp compile step to CI for OpenAPI generation → REQ-COMM-008
-- [ ] **T-COMM-009**: Configure API versioning middleware (`/api/v1/`) with deprecation telemetry → REQ-COMM-007
+- [x] **T-COMM-006**: Install TypeSpec compiler and create `specs/` directory → REQ-COMM-005
+- [x] **T-COMM-007**: Define CrawlerAPI service in TypeSpec with models and operations → REQ-COMM-005
+- [x] **T-COMM-008**: Add tsp compile step to CI for OpenAPI generation → REQ-COMM-008
+- [x] **T-COMM-009**: Configure API versioning middleware (`/api/v1/`) with deprecation telemetry → REQ-COMM-007
 
 ## Phase 3: Domain Events
 
@@ -61,9 +61,9 @@ T-COMM-001 → T-COMM-002 → T-COMM-010 → T-COMM-011 → T-COMM-012 → T-COM
 | Metric | Count |
 | --- | --- |
 | Total tasks | 27 |
-| Completed | 12 |
-| Remaining | 15 |
-| Completion rate | 44% |
+| Completed | 16 |
+| Remaining | 11 |
+| Completion rate | 59% |
 
 ---
 
