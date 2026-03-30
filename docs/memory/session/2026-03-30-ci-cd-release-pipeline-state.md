@@ -18,21 +18,21 @@
 
 | # | Task | Status | Commit | Notes |
 | --- | --- | --- | --- | --- |
-| 1 | T-CICD-012: Create release.yml | `in-progress` | — | — |
-| 2 | T-CICD-013: Docker BuildKit + buildx | `in-progress` | — | — |
-| 3 | T-CICD-014: build-push-action + SHA tags | `in-progress` | — | — |
-| 4 | T-CICD-015: Trivy image scan before publish | `in-progress` | — | — |
-| 5 | T-CICD-016: Build matrix for 3 services | `in-progress` | — | — |
+| 1 | T-CICD-012: Create release.yml | `done` | `a0a7ef9` | push-to-main trigger |
+| 2 | T-CICD-013: Docker BuildKit + buildx | `done` | `a0a7ef9` | QEMU for arm64 |
+| 3 | T-CICD-014: build-push-action + SHA tags | `done` | `a0a7ef9` | metadata-action for tags |
+| 4 | T-CICD-015: Trivy image scan before publish | `done` | `a0a7ef9` | OCI tar export, scan, then push |
+| 5 | T-CICD-016: Build matrix for 3 services | `done` | `a0a7ef9` | fail-fast: false |
 
 ## Current State
 
 | Field | Value |
 | --- | --- |
-| Current task # | 1-5 (single file) |
-| Last completed gate | G4 |
-| Guard function status | `not-run` |
-| Commits on branch | 0 |
-| Tests passing | 1080 (baseline) |
+| Current task # | done |
+| Last completed gate | G7 |
+| Guard function status | `pass` |
+| Commits on branch | 1 (`a0a7ef9`) |
+| Tests passing | 1080 (unchanged) |
 | Blockers | none |
 
 ## Decisions Log

@@ -24,11 +24,11 @@
 
 ## Phase 3: Container Builds
 
-- [ ] **T-CICD-012**: Create `.github/workflows/release.yml` with push-to-main trigger → REQ-CICD-014
-- [ ] **T-CICD-013**: Add Docker BuildKit + buildx setup for multi-arch builds → REQ-CICD-015, REQ-CICD-017
-- [ ] **T-CICD-014**: Add build-push-action with ghcr.io registry and SHA tagging → REQ-CICD-016
-- [ ] **T-CICD-015**: Add Trivy image scan before publish (blocking) → REQ-CICD-013
-- [ ] **T-CICD-016**: Build matrix for api-gateway, worker-service, scheduler-service → REQ-CICD-014
+- [x] **T-CICD-012**: Create `.github/workflows/release.yml` with push-to-main trigger → REQ-CICD-014
+- [x] **T-CICD-013**: Add Docker BuildKit + buildx setup for multi-arch builds → REQ-CICD-015, REQ-CICD-017
+- [x] **T-CICD-014**: Add build-push-action with ghcr.io registry and SHA tagging → REQ-CICD-016
+- [x] **T-CICD-015**: Add Trivy image scan before publish (blocking) → REQ-CICD-013
+- [x] **T-CICD-016**: Build matrix for api-gateway, worker-service, scheduler-service → REQ-CICD-014
 
 ## Phase 4: Release & Versioning
 
@@ -58,9 +58,9 @@ T-CICD-001 → T-CICD-003 → T-CICD-007 → T-CICD-008 → T-CICD-012 → T-CIC
 | Metric | Count |
 | --- | --- |
 | Total tasks | 26 |
-| Completed | 10 |
-| Remaining | 16 |
-| Completion rate | 38% |
+| Completed | 15 |
+| Remaining | 11 |
+| Completion rate | 58% |
 
 ---
 
