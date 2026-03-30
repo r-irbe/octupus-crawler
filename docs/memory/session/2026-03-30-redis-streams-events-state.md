@@ -20,20 +20,23 @@
 
 | # | Task | Status | Commit | Notes |
 | --- | --- | --- | --- | --- |
-| 1 | T-COMM-011: RedisStreamPublisher with XADD | `pending` | — | REQ-COMM-009 |
-| 2 | T-COMM-012: RedisStreamConsumer with XREADGROUP | `pending` | — | REQ-COMM-011 |
+| 1 | T-COMM-011: RedisStreamPublisher with XADD | `done` | c287f48 | REQ-COMM-009 |
+| 2 | T-COMM-012: RedisStreamConsumer with XREADGROUP | `done` | c287f48 | REQ-COMM-011 |
 
 ## Current State
 
 | Field | Value |
 | --- | --- |
-| Current task # | — |
-| Last completed gate | G4 |
-| Guard function status | `not-run` |
-| Commits on branch | 0 |
-| Tests passing | — |
+| Current task # | — (all done) |
+| Last completed gate | G7 |
+| Guard function status | `pass` |
+| Commits on branch | 1 (c287f48) |
+| Tests passing | 1080/1080 |
 | Blockers | none |
 
 ## Decisions Log
 
-_None yet._
+1. **New @ipf/redis package** — Created standalone package for Redis Streams infrastructure. ioredis for client, neverthrow for Results, zod for config validation.
+2. **Port pattern** — `EventPublisher` and `EventConsumer` are plain object types (ports), not classes. `createRedisStreamPublisher()` and `createRedisStreamConsumer()` are factory functions (adapters).
+3. **XAUTOCLAIM via redis.call()** — ioredis doesn't have typed XAUTOCLAIM method; used `redis.call()` with manual type assertion.
+4. **T-COMM-013/014 deferred** — Wiring events into pipeline/worker requires cross-package changes (Tier 2). Infrastructure (publisher/consumer) landed first.
