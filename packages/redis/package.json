@@ -1,0 +1,30 @@
+{
+  "name": "@ipf/redis",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./connection": "./src/connection.ts",
+    "./stream-publisher": "./src/stream-publisher.ts",
+    "./stream-consumer": "./src/stream-consumer.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src/",
+    "test": "vitest run",
+    "clean": "rm -rf dist .turbo"
+  },
+  "dependencies": {
+    "ioredis": "^5.6.0",
+    "neverthrow": "^8.2.0",
+    "zod": "^3.25.0"
+  },
+  "devDependencies": {
+    "@ipf/eslint-config": "workspace:*",
+    "@ipf/testing": "workspace:*",
+    "@types/node": "^22.0.0",
+    "typescript": "^6.0.0",
+    "vitest": "^4.0.0",
+    "eslint": "^10.0.0"
+  }
+}
