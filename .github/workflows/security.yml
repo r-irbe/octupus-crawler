@@ -1,0 +1,76 @@
+# Security Scanning — dependency audit, Trivy, gitleaks, Spectral
+# Implements: REQ-CICD-010 (pnpm audit), REQ-CICD-011 (Trivy fs),
+#             REQ-CICD-012 (gitleaks), REQ-CICD-021 (Spectral)
+# Design: docs/specs/ci-cd-pipeline/design.md §Security Gate Configuration
+# ADR: docs/adr/ADR-012-ci-cd-pipeline.md
+
+name: Security
+
+on:
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: security-${{ github.head_ref }}
+  cancel-in-progress: true
+
+permissions: {}
+
+jobs:
+  # T-CICD-008: pnpm audit (REQ-CICD-010)
+  dependency-audit:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Audit dependencies
+        run: pnpm audit --audit-level=high
+
+  # T-CICD-009: Trivy filesystem scan (REQ-CICD-011)
+  trivy-fs:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      security-events: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Trivy filesystem scan
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: fs
+          severity: HIGH,CRITICAL
+          exit-code: "1"
+          format: table
+
+  # T-CICD-010: gitleaks secret detection (REQ-CICD-012)
+  gitleaks:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Detect secrets
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITLEAKS_LICENSE: ${{ secrets.GITLEAKS_LICENSE }}
+
+  # T-CICD-011: Spectral OpenAPI lint (REQ-CICD-021)
+  spectral-lint:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - name: Spectral lint OpenAPI specs
+        uses: stoplightio/spectral-action@latest
+        with:
+          file_glob: "openapi.yaml"
