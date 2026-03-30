@@ -10,6 +10,7 @@
     "./crawl-types": "./src/crawl-types.ts",
     "./validate-stage": "./src/validate-stage.ts",
     "./discover-stage": "./src/discover-stage.ts",
+    "./discover-stage-events": "./src/discover-stage-events.ts",
     "./enqueue-stage": "./src/enqueue-stage.ts",
     "./crawl-pipeline": "./src/crawl-pipeline.ts"
   },

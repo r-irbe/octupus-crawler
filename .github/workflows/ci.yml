@@ -112,3 +112,12 @@ jobs:
         run: pnpm install --frozen-lockfile
       - name: Test ${{ matrix.package }}
         run: pnpm turbo test --filter=@ipf/${{ matrix.package }}
+
+  # T-CICD-021: Architecture conformance checks (REQ-CICD-022)
+  # Barrel imports, file size limits, dependency direction
+  architecture-conformance:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Architecture conformance
+        run: bash scripts/check-architecture-conformance.sh

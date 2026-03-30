@@ -9,6 +9,7 @@
     "./connection/s3-client": "./src/connection/s3-client.ts",
     "./repositories/crawl-url-repository": "./src/repositories/crawl-url-repository.ts",
     "./repositories/drizzle-crawl-url-repository": "./src/repositories/drizzle-crawl-url-repository.ts",
+    "./repositories/event-publishing-crawl-url-repository": "./src/repositories/event-publishing-crawl-url-repository.ts",
     "./repositories/page-content-repository": "./src/repositories/page-content-repository.ts",
     "./repositories/s3-page-content-repository": "./src/repositories/s3-page-content-repository.ts",
     "./repositories/crawl-session-repository": "./src/repositories/crawl-session-repository.ts",

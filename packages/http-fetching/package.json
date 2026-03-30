@@ -6,6 +6,7 @@
   "exports": {
     "./fetch-types": "./src/fetch-types.ts",
     "./http-fetcher": "./src/http-fetcher.ts",
+    "./resilient-fetcher": "./src/resilient-fetcher.ts",
     "./politeness-controller": "./src/politeness-controller.ts",
     "./error-classifier": "./src/error-classifier.ts",
     "./stream-processor": "./src/stream-processor.ts",
