@@ -8,11 +8,11 @@
 
 | Task | Status | Commit |
 | ---- | ------ | ------ |
-| T-CICD-019: Add Kustomize image tag update step in release workflow | done | aeda060 |
+| T-CICD-019: Add Kustomize image tag update step in release workflow | done | 8a60643 |
 
 ## Current State
 
-G1-G7 complete. Pending G8 RALPH, G9-G11 + merge.
+G1-G8 complete. RALPH: 8 sustained findings (2 Critical + 4 Major + 2 Minor) all resolved. G9-G11 + merge pending.
 
 ## Decisions
 

@@ -34,7 +34,7 @@
 
 - [x] **T-CICD-017**: Configure Changesets with `@changesets/cli` → REQ-CICD-018
 - [x] **T-CICD-018**: Add Changesets GitHub Action for "Version Packages" PR automation → REQ-CICD-019
-- [ ] **T-CICD-019**: Add Kustomize image tag update step in release workflow → REQ-CICD-020
+- [x] **T-CICD-019**: Add Kustomize image tag update step in release workflow → REQ-CICD-020
 - [ ] **T-CICD-020**: Verify ArgoCD auto-sync within 1 min of tag update → REQ-CICD-020
 
 ## Phase 5: Architecture Conformance
@@ -58,9 +58,9 @@ T-CICD-001 → T-CICD-003 → T-CICD-007 → T-CICD-008 → T-CICD-012 → T-CIC
 | Metric | Count |
 | --- | --- |
 | Total tasks | 26 |
-| Completed | 20 |
-| Remaining | 6 |
-| Completion rate | 77% |
+| Completed | 21 |
+| Remaining | 5 |
+| Completion rate | 81% |
 
 ---
 
