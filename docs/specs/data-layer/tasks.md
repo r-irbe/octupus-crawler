@@ -16,8 +16,8 @@
 ## Phase 2: Schema Definition
 
 - [x] **T-DATA-006**: Define Prisma models: CrawlUrl, CrawlLink, CrawlSession → REQ-DATA-002, REQ-DATA-004, REQ-DATA-005
-- [ ] **T-DATA-007**: Run `prisma generate` to produce typed client in `src/generated/` → REQ-DATA-010
-- [ ] **T-DATA-008**: Create initial Prisma migration → REQ-DATA-011
+- [x] **T-DATA-007**: Run `prisma generate` to produce typed client in `src/generated/` → REQ-DATA-010
+- [x] **T-DATA-008**: Create initial Prisma migration → REQ-DATA-011
 - [x] **T-DATA-009**: Define Drizzle schema in `src/schema/crawl-urls.ts` with indexes — REQ-DATA-003, REQ-DATA-007
 - [x] **T-DATA-010**: Define Drizzle schema in `src/schema/crawl-links.ts` — REQ-DATA-004
 - [x] **T-DATA-011**: Define Drizzle schema in `src/schema/crawl-sessions.ts` — REQ-DATA-005
@@ -71,9 +71,9 @@ T-DATA-001 → T-DATA-006 → T-DATA-007 → T-DATA-009 → T-DATA-012 → T-DAT
 | Metric | Count |
 | --- | --- |
 | Total tasks | 36 |
-| Completed | 21 |
-| Remaining | 15 |
-| Completion rate | 58% |
+| Completed | 32 |
+| Remaining | 4 |
+| Completion rate | 89% |
 
 ---
 

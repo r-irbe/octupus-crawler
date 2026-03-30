@@ -19,20 +19,23 @@
 
 | # | Task | Status | Commit | Notes |
 | --- | --- | --- | --- | --- |
-| 1 | T-DATA-007: Run `prisma generate` to produce typed client in `src/generated/` | `pending` | — | REQ-DATA-010 |
-| 2 | T-DATA-008: Create initial Prisma migration | `pending` | — | REQ-DATA-011 |
+| 1 | T-DATA-007: Run `prisma generate` to produce typed client in `src/generated/` | `done` | e574d7d | REQ-DATA-010 |
+| 2 | T-DATA-008: Create initial Prisma migration | `done` | e574d7d | REQ-DATA-011 |
 
 ## Current State
 
 | Field | Value |
 | --- | --- |
-| Current task # | — |
-| Last completed gate | G4 |
-| Guard function status | `not-run` |
-| Commits on branch | 0 |
-| Tests passing | — |
+| Current task # | — (all done) |
+| Last completed gate | G7 |
+| Guard function status | `pass` |
+| Commits on branch | 1 (e574d7d) |
+| Tests passing | 1049/1049 |
 | Blockers | none |
 
 ## Decisions Log
 
-_None yet._
+1. **Generated files not committed** — `src/generated/` is 22MB, added to `.gitignore`. Regenerated via `pnpm build` (prisma generate). Turbo caches output.
+2. **Build script = prisma generate** — Database package `build` script runs `prisma generate` so Turbo dependency chain ensures types exist before typecheck/lint/test.
+3. **Migration created via `prisma migrate diff`** — No live DB needed. SQL verified against schema. Migration directory `20260330000000_initial` follows Prisma convention.
+4. **Re-export module** — `prisma-client.ts` re-exports PrismaClient + types from generated code, so consumers import from `@ipf/database/prisma`.
