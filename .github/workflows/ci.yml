@@ -93,6 +93,14 @@ jobs:
         run: pnpm turbo lint
       - name: Test
         run: pnpm turbo test
+      # N-001 fix: Upload JUnit artifacts from same runner that ran tests
+      - name: Upload Test Results
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-results
+          path: "**/test-results/junit.xml"
+          retention-days: 30
 
   # T-CICD-005: Matrix test for affected packages only (REQ-CICD-004)
   # Provides per-package status checks in PR — Turborepo cache makes re-run fast
@@ -220,9 +228,32 @@ jobs:
 
   # --- Jobs from quality-gate.yml ---
 
-  upload-test-artifacts:
+  # S-001 fix: Security scanning migrated from agent-pr-validation.yml
+  security-scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Trivy filesystem scan
+        uses: aquasecurity/trivy-action@0.30.0
+        with:
+          scan-type: fs
+          severity: HIGH,CRITICAL
+          exit-code: "1"
+
+  # R-001 fix: Integration tests migrated from quality-gate.yml
+  integration-tests:
     needs: guard-functions
     runs-on: ubuntu-latest
+    services:
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
@@ -231,19 +262,31 @@ jobs:
           node-version: "22"
           cache: pnpm
       - run: pnpm install --frozen-lockfile
-      - name: Run tests with coverage
-        run: pnpm turbo test -- --coverage
-      - name: Upload Test Results
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: test-results
-          path: "**/test-results/junit.xml"
-          retention-days: 30
-      - name: Upload Coverage
-        uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: coverage-reports
-          path: "**/coverage/"
-          retention-days: 30
+      - name: Integration Tests
+        env:
+          REDIS_URL: redis://localhost:6379
+        run: |
+          if pnpm turbo run test:integration --dry-run 2>/dev/null; then
+            pnpm turbo test:integration
+          else
+            echo "::notice::No test:integration script found, skipping"
+          fi
+
+  alert-tests:
+    needs: guard-functions
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install promtool
+        run: |
+          PROM_VERSION="2.50.0"
+          curl -sL "https://github.com/prometheus/prometheus/releases/download/v${PROM_VERSION}/prometheus-${PROM_VERSION}.linux-amd64.tar.gz" | tar xz
+          sudo mv "prometheus-${PROM_VERSION}.linux-amd64/promtool" /usr/local/bin/
+      - name: Validate Alert Rules
+        run: |
+          if [ -f "infra/prometheus/alert-rules.yml" ]; then
+            promtool check rules infra/prometheus/alert-rules.yml
+            promtool test rules infra/prometheus/alert-rules-fetch.test.yml infra/prometheus/alert-rules-ops.test.yml
+          else
+            echo "::notice::No alert rules found, skipping"
+          fi

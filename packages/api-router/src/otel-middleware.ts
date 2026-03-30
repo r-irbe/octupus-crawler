@@ -10,6 +10,11 @@ const TRACER_NAME = 'ipf-api-router';
 // --- Server-side middleware function ---
 
 /**
+ * Middleware result from tRPC next() — we preserve the full shape.
+ */
+type MiddlewareResult = { readonly ok: boolean; readonly [key: string]: unknown };
+
+/**
  * OTel middleware function for tRPC.
  * Can be used with any tRPC instance: `t.procedure.use(otelMiddlewareFn)`
  *
@@ -19,8 +24,8 @@ export function otelMiddlewareFn(opts: {
   readonly path: string;
   readonly type: string;
   readonly ctx: Record<string, unknown>;
-  readonly next: () => Promise<{ ok: boolean }>;
-}): Promise<{ ok: boolean }> {
+  readonly next: () => Promise<MiddlewareResult>;
+}): Promise<MiddlewareResult> {
   const tracer = trace.getTracer(TRACER_NAME);
   const parentContext = extractParentContext(opts.ctx);
 
@@ -77,9 +82,9 @@ export function injectTraceHeaders(): Record<string, string> {
 function extractParentContext(
   ctx: Record<string, unknown>,
 ): ReturnType<typeof propagation.extract> {
-  const meta = ctx['meta'] as Record<string, string> | undefined;
-  if (meta !== undefined) {
-    return propagation.extract(context.active(), meta);
+  const meta: unknown = ctx['meta'];
+  if (typeof meta === 'object' && meta !== null) {
+    return propagation.extract(context.active(), meta as Record<string, string>);
   }
   return context.active();
 }

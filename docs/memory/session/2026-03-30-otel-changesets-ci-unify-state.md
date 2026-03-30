@@ -6,14 +6,14 @@
 ## Tasks
 | Task | Status | Commit |
 |------|--------|--------|
-| T-COMM-004: OTel tRPC middleware | not-started | |
-| T-CICD-017: Configure Changesets | not-started | |
-| T-CICD-018: Changesets GitHub Action | not-started | |
-| T-CICD-022: ADR compliance scan | not-started | |
-| T-CICD-023: Integrate CI workflows | not-started | |
+| T-COMM-004: OTel tRPC middleware | done | 5def77d |
+| T-CICD-017: Configure Changesets | done | 5def77d |
+| T-CICD-018: Changesets GitHub Action | done | 5def77d |
+| T-CICD-022: ADR compliance scan | done | 5def77d |
+| T-CICD-023: Integrate CI workflows | done | 5def77d |
 
 ## Current State
-G1-G4 complete. Starting implementation.
+G1-G7 complete. Proceeding to G8 RALPH review.
 
 ## Decisions
 - OTel tRPC middleware uses W3C traceparent header propagation

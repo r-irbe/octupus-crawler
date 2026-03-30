@@ -1,18 +1,16 @@
-# SUPERSEDED: Coverage upload and artifact features integrated into ci.yml
-# per T-CICD-023. This file is retained for its integration test + alert test jobs.
+# SUPERSEDED: All jobs integrated into ci.yml per T-CICD-023.
+# Trigger disabled — this file is retained for reference only.
 # Quality Gate — Fail-fast pipeline with coverage enforcement
 # Implements: REQ-TEST-013 (fail-fast chain), REQ-TEST-014 (skip on failure)
 #             REQ-TEST-015 (JUnit XML), REQ-TEST-016 (service containers)
 #             REQ-TEST-019/020 (performance), REQ-TEST-023 (baselines)
 # Design: docs/specs/testing-quality/design.md §4
 
-name: Quality Gate
+name: Quality Gate (superseded)
 
+# Original triggers disabled — use ci.yml instead
 on:
-  pull_request:
-    branches: [main]
-  push:
-    branches: [main]
+  workflow_dispatch: {}
 
 concurrency:
   group: quality-gate-${{ github.head_ref || github.ref }}

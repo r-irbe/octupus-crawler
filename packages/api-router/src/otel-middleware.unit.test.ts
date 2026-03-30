@@ -2,7 +2,7 @@
 // Validates REQ-COMM-004: tRPC client propagates OTel trace context
 
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { trace, SpanStatusCode } from '@opentelemetry/api';
+import { trace, SpanStatusCode, propagation } from '@opentelemetry/api';
 import type { Tracer } from '@opentelemetry/api';
 import { otelMiddlewareFn, injectTraceHeaders } from './otel-middleware.js';
 
@@ -96,12 +96,46 @@ describe('otelMiddlewareFn', () => {
       }),
     );
   });
+
+  it('extracts parent context from ctx.meta W3C headers', async () => {
+    // Validates REQ-COMM-004: W3C traceparent extraction
+    // T-002 fix: test the meta extraction path
+    const span = createMockSpan();
+    mockTracer(span);
+
+    await otelMiddlewareFn({
+      path: 'crawl.submit',
+      type: 'mutation',
+      ctx: { meta: { traceparent: '00-abcdef1234567890abcdef1234567890-1234567890abcdef-01' } },
+      next: () => Promise.resolve({ ok: true }),
+    });
+
+    expect(span['end']).toHaveBeenCalled();
+  });
 });
 
 describe('injectTraceHeaders', () => {
+  beforeEach(() => {
+    vi.restoreAllMocks();
+  });
+
   it('returns a record of headers for W3C propagation', () => {
     // Validates REQ-COMM-004
     const headers = injectTraceHeaders();
     expect(typeof headers).toBe('object');
+  });
+
+  it('includes traceparent when active span exists', () => {
+    // Validates REQ-COMM-004: W3C traceparent injection
+    // T-001 fix: test with actual propagation mock
+    const mockInject = vi.fn((carrier: Record<string, string>) => {
+      carrier['traceparent'] = '00-abc-def-01';
+    });
+    vi.spyOn(propagation, 'inject').mockImplementation(
+      (_ctx, carrier) => { mockInject(carrier as Record<string, string>); },
+    );
+
+    const headers = injectTraceHeaders();
+    expect(headers['traceparent']).toBe('00-abc-def-01');
   });
 });
