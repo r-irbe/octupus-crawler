@@ -41,14 +41,14 @@
 
 ## Phase 5: Idempotency & Pub/Sub
 
-- [ ] **T-COMM-021**: Implement idempotency key middleware with Redis caching → REQ-COMM-021, REQ-COMM-022
-- [ ] **T-COMM-022**: Implement Redis Pub/Sub wrapper for ephemeral notifications → REQ-COMM-019
+- [x] **T-COMM-021**: Implement idempotency key middleware with Redis caching → REQ-COMM-021, REQ-COMM-022
+- [x] **T-COMM-022**: Implement Redis Pub/Sub wrapper for ephemeral notifications → REQ-COMM-019
 
 ## Phase 6: Testing
 
 - [x] **T-COMM-023**: Unit tests for tRPC router procedures and Zod validation → REQ-COMM-001
-- [ ] **T-COMM-024**: Integration test: Redis Streams publish/consume round-trip (Testcontainers) → REQ-COMM-009
-- [ ] **T-COMM-025**: Integration test: idempotency key returns cached response → REQ-COMM-021
+- [x] **T-COMM-024**: Integration test: Redis Streams publish/consume round-trip (Testcontainers) → REQ-COMM-009
+- [x] **T-COMM-025**: Integration test: idempotency key returns cached response → REQ-COMM-021
 - [ ] **T-COMM-026**: Integration test: unknown event version is skipped → REQ-COMM-014
 - [ ] **T-COMM-027**: Integration test: Temporal workflow survives worker restart → REQ-COMM-015
 
