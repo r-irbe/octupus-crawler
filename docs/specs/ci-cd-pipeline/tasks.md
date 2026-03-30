@@ -16,11 +16,11 @@
 
 ## Phase 2: Security Scanning
 
-- [ ] **T-CICD-007**: Create `.github/workflows/security.yml` or add security jobs to ci.yml → REQ-CICD-010
-- [ ] **T-CICD-008**: Add `pnpm audit --audit-level=high` step (blocking) → REQ-CICD-010
-- [ ] **T-CICD-009**: Add Trivy filesystem scan (CRITICAL, HIGH, exit-code 1) → REQ-CICD-011
-- [ ] **T-CICD-010**: Add gitleaks-action for secret detection → REQ-CICD-012
-- [ ] **T-CICD-011**: Add Spectral lint step for OpenAPI specs → REQ-CICD-021
+- [x] **T-CICD-007**: Create `.github/workflows/security.yml` or add security jobs to ci.yml → REQ-CICD-010
+- [x] **T-CICD-008**: Add `pnpm audit --audit-level=high` step (blocking) → REQ-CICD-010
+- [x] **T-CICD-009**: Add Trivy filesystem scan (CRITICAL, HIGH, exit-code 1) → REQ-CICD-011
+- [x] **T-CICD-010**: Add gitleaks-action for secret detection → REQ-CICD-012
+- [x] **T-CICD-011**: Add Spectral lint step for OpenAPI specs → REQ-CICD-021
 
 ## Phase 3: Container Builds
 
@@ -58,9 +58,9 @@ T-CICD-001 → T-CICD-003 → T-CICD-007 → T-CICD-008 → T-CICD-012 → T-CIC
 | Metric | Count |
 | --- | --- |
 | Total tasks | 26 |
-| Completed | 5 |
-| Remaining | 21 |
-| Completion rate | 19% |
+| Completed | 10 |
+| Remaining | 16 |
+| Completion rate | 38% |
 
 ---
 

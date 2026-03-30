@@ -18,21 +18,21 @@
 
 | # | Task | Status | Commit | Notes |
 | --- | --- | --- | --- | --- |
-| 1 | T-CICD-007: Create security.yml | `in-progress` | — | — |
-| 2 | T-CICD-008: pnpm audit step | `in-progress` | — | — |
-| 3 | T-CICD-009: Trivy filesystem scan | `in-progress` | — | — |
-| 4 | T-CICD-010: gitleaks-action | `in-progress` | — | — |
-| 5 | T-CICD-011: Spectral lint step | `in-progress` | — | — |
+| 1 | T-CICD-007: Create security.yml | `done` | `46c2e3c` | 4 parallel jobs |
+| 2 | T-CICD-008: pnpm audit step | `done` | `46c2e3c` | --audit-level=high |
+| 3 | T-CICD-009: Trivy filesystem scan | `done` | `46c2e3c` | HIGH/CRITICAL, exit-code 1 |
+| 4 | T-CICD-010: gitleaks-action | `done` | `46c2e3c` | fetch-depth: 0 for full history |
+| 5 | T-CICD-011: Spectral lint step | `done` | `46c2e3c` | openapi.yaml glob |
 
 ## Current State
 
 | Field | Value |
 | --- | --- |
-| Current task # | 1-5 (all in single file) |
-| Last completed gate | G4 |
-| Guard function status | `not-run` |
-| Commits on branch | 0 |
-| Tests passing | 1080 (baseline) |
+| Current task # | done |
+| Last completed gate | G7 |
+| Guard function status | `pass` |
+| Commits on branch | 1 (`46c2e3c`) |
+| Tests passing | 1080 (unchanged) |
 | Blockers | none |
 
 ## Decisions Log
