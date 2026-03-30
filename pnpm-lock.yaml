@@ -249,6 +249,9 @@ importers:
       '@ipf/eslint-config':
         specifier: workspace:*
         version: link:../eslint-config
+      '@ipf/testing':
+        specifier: workspace:*
+        version: link:../testing
       '@types/node':
         specifier: ^22.0.0
         version: 22.19.15

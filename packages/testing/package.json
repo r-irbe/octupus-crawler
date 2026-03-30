@@ -8,6 +8,8 @@
     "./generators/ssrf-payload": "./src/generators/ssrf-payload.generator.ts",
     "./generators/dns-rebinding": "./src/generators/dns-rebinding.generator.ts",
     "./containers/redis": "./src/containers/redis-container.ts",
+    "./containers/postgres": "./src/containers/postgres-container.ts",
+    "./containers/minio": "./src/containers/minio-container.ts",
     "./property-test-template": "./src/property-test-template.ts",
     "./simulators/web-simulator": "./src/simulators/web-simulator.ts",
     "./simulators/site-graph-builder": "./src/simulators/site-graph-builder.ts",
