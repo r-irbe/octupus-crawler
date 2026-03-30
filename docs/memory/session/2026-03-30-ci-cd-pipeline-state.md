@@ -19,21 +19,21 @@
 
 | # | Task | Status | Commit | Notes |
 | --- | --- | --- | --- | --- |
-| 1 | T-CICD-001: Create ci.yml with PR trigger | `in-progress` | — | — |
-| 2 | T-CICD-002: Add dorny/paths-filter | `in-progress` | — | — |
-| 3 | T-CICD-003: Add guard-functions job | `in-progress` | — | — |
-| 4 | T-CICD-004: Configure Turborepo remote cache | `in-progress` | — | — |
-| 5 | T-CICD-005: Add matrix test job | `in-progress` | — | — |
+| 1 | T-CICD-001: Create ci.yml with PR trigger | `done` | `7808735` | PR trigger on main |
+| 2 | T-CICD-002: Add dorny/paths-filter | `done` | `7808735` | 18 packages detected |
+| 3 | T-CICD-003: Add guard-functions job | `done` | `7808735` | typecheck→lint→test sequential |
+| 4 | T-CICD-004: Configure Turborepo remote cache | `done` | `7808735` | TURBO_TOKEN/TURBO_TEAM env vars |
+| 5 | T-CICD-005: Add matrix test job | `done` | `7808735` | fail-fast: false, per-package status |
 
 ## Current State
 
 | Field | Value |
 | --- | --- |
-| Current task # | 1-5 (all in single file) |
-| Last completed gate | G4 |
-| Guard function status | `not-run` |
-| Commits on branch | 0 |
-| Tests passing | 1080 (baseline) |
+| Current task # | done |
+| Last completed gate | G7 |
+| Guard function status | `pass` |
+| Commits on branch | 1 (`7808735`) |
+| Tests passing | 1080 (unchanged) |
 | Blockers | none |
 
 ## Decisions Log

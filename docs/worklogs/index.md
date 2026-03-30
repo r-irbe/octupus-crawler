@@ -61,6 +61,7 @@ Chronological work session logs documenting what was done, decisions made, and o
 | [2026-03-30: Data Layer Integration Tests](2026-03-30-data-layer-integration-tests.md) | Data layer integration: PG+MinIO Testcontainers, 18 tests (CRUD, S3, CB, pool, shutdown) | Complete | 2026-03-30 |
 | [2026-03-30: Data Layer Prisma Generate](2026-03-30-data-layer-prisma-generate.md) | Data layer Prisma: typed client generation, initial migration, re-export module, build pipeline | Complete | 2026-03-30 |
 | [2026-03-30: Redis Streams Events](2026-03-30-redis-streams-events.md) | Redis Streams: publisher (XADD), consumer (XREADGROUP), @ipf/redis package, 31 tests | Complete | 2026-03-30 |
+| [2026-03-30: CI/CD Pipeline](2026-03-30-ci-cd-pipeline.md) | CI/CD pipeline: ci.yml with paths-filter, guard functions, matrix testing, remote cache | Complete | 2026-03-30 |
 
 ## Index
 

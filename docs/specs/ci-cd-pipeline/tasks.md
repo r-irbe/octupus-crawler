@@ -7,11 +7,11 @@
 
 ## Phase 1: PR Pipeline
 
-- [ ] **T-CICD-001**: Create `.github/workflows/ci.yml` with pull_request trigger on main → REQ-CICD-002
-- [ ] **T-CICD-002**: Add `dorny/paths-filter` job to detect changed packages → REQ-CICD-004
-- [ ] **T-CICD-003**: Add guard-functions job: pnpm install --frozen-lockfile, turbo typecheck lint test → REQ-CICD-005, REQ-CICD-007
-- [ ] **T-CICD-004**: Configure Turborepo remote cache for CI → REQ-CICD-006
-- [ ] **T-CICD-005**: Add matrix test job: only test affected packages from paths-filter → REQ-CICD-004
+- [x] **T-CICD-001**: Create `.github/workflows/ci.yml` with pull_request trigger on main → REQ-CICD-002
+- [x] **T-CICD-002**: Add `dorny/paths-filter` job to detect changed packages → REQ-CICD-004
+- [x] **T-CICD-003**: Add guard-functions job: pnpm install --frozen-lockfile, turbo typecheck lint test → REQ-CICD-005, REQ-CICD-007
+- [x] **T-CICD-004**: Configure Turborepo remote cache for CI → REQ-CICD-006
+- [x] **T-CICD-005**: Add matrix test job: only test affected packages from paths-filter → REQ-CICD-004
 - [ ] **T-CICD-006**: Verify PR pipeline completes < 5 min for incremental changes → REQ-CICD-003
 
 ## Phase 2: Security Scanning
@@ -58,9 +58,9 @@ T-CICD-001 → T-CICD-003 → T-CICD-007 → T-CICD-008 → T-CICD-012 → T-CIC
 | Metric | Count |
 | --- | --- |
 | Total tasks | 26 |
-| Completed | 0 |
-| Remaining | 26 |
-| Completion rate | 0% |
+| Completed | 5 |
+| Remaining | 21 |
+| Completion rate | 19% |
 
 ---
 
