@@ -30,6 +30,10 @@ export type DiscoveryEventPublisher = {
 export type DiscoverWithEventsConfig = {
   readonly streamKey: string;
   readonly source: string;
+  /** Max events per batch to prevent unbounded allocation on hub pages. Default: 500. */
+  readonly maxEventsPerBatch?: number;
+  /** Optional metric counter for failed publishes (REQ-RES-001 observability). */
+  readonly onPublishFailure?: (count: number, error: string) => void;
 };
 
 // --- Wrapper ---
@@ -54,7 +58,9 @@ export function discoverLinksWithEvents(
   if (result.isOk() && result.value.length > 0) {
     const sourceUrl = (fetchResult.finalUrl ?? fetchResult.requestedUrl).normalized;
     const now = new Date().toISOString();
-    const events: DiscoveryEvent[] = result.value.map((url, i) => ({
+    const maxEvents = config.maxEventsPerBatch ?? 500;
+    const urlsToPublish = result.value.slice(0, maxEvents);
+    const events: DiscoveryEvent[] = urlsToPublish.map((url, i) => ({
       type: 'URLDiscovered',
       version: 1,
       payload: {
@@ -68,8 +74,16 @@ export function discoverLinksWithEvents(
     }));
 
     // Fire-and-forget — we don't await or propagate publish errors
+    if (result.value.length > maxEvents) {
+      logger.warn('URLDiscovered events capped at maxEventsPerBatch', {
+        source: sourceUrl,
+        total: result.value.length,
+        published: maxEvents,
+      });
+    }
     publisher.publishBatch(config.streamKey, events).then((pubResult) => {
       if (pubResult.isErr()) {
+        config.onPublishFailure?.(events.length, pubResult.error.message);
         logger.warn('Failed to publish URLDiscovered events', {
           source: sourceUrl,
           count: events.length,
@@ -77,9 +91,11 @@ export function discoverLinksWithEvents(
         });
       }
     }).catch((cause: unknown) => {
+      const errMsg = cause instanceof Error ? cause.message : String(cause);
+      config.onPublishFailure?.(events.length, errMsg);
       logger.warn('URLDiscovered event publishing threw', {
         source: sourceUrl,
-        error: cause instanceof Error ? cause.message : String(cause),
+        error: errMsg,
       });
     });
   }

@@ -30,6 +30,13 @@ export type EventPublishingConfig = {
   readonly source: string;
 };
 
+/** Optional context for richer event payloads. */
+export type StatusChangeContext = {
+  readonly url?: string;
+  readonly errorKind?: string;
+  readonly errorMessage?: string;
+};
+
 // --- Decorator factory ---
 
 /**
@@ -39,13 +46,17 @@ export type EventPublishingConfig = {
  *
  * Event publishing is fire-and-forget: DB write succeeds even if event fails.
  * Failed publishes are logged but do not propagate errors to callers.
+ *
+ * Use `setContext` to enrich events with URL and error details before `updateStatus`.
  */
 export function createEventPublishingCrawlURLRepository(
   repo: CrawlURLRepository,
   publisher: StatusEventPublisher,
   config: EventPublishingConfig,
   logger: { readonly warn: (msg: string, ctx: Record<string, unknown>) => void },
-): CrawlURLRepository {
+): CrawlURLRepository & { readonly setContext: (id: bigint, ctx: StatusChangeContext) => void } {
+  const contextMap = new Map<bigint, StatusChangeContext>();
+
   return {
     findById: repo.findById,
     findByHash: repo.findByHash,
@@ -53,16 +64,23 @@ export function createEventPublishingCrawlURLRepository(
     saveBatch: repo.saveBatch,
     findPendingByDomain: repo.findPendingByDomain,
 
+    setContext(id: bigint, ctx: StatusChangeContext): void {
+      contextMap.set(id, ctx);
+    },
+
     async updateStatus(
       id: bigint,
       status: CrawlURLStatus,
       result?: FetchResult,
     ): Promise<Result<void, DataError>> {
+      const ctx = contextMap.get(id);
+      contextMap.delete(id);
+
       const dbResult = await repo.updateStatus(id, status, result);
       if (dbResult.isErr()) return dbResult;
 
       // Fire-and-forget event publishing
-      const event = buildStatusEvent(id, status, result, config.source);
+      const event = buildStatusEvent(id, status, result, config.source, ctx);
       if (event !== undefined) {
         const publishResult = await publisher.publish(config.streamKey, event);
         if (publishResult.isErr()) {
@@ -86,9 +104,11 @@ function buildStatusEvent(
   status: CrawlURLStatus,
   result: FetchResult | undefined,
   source: string,
+  ctx: StatusChangeContext | undefined,
 ): StatusChangeEvent | undefined {
   const now = new Date().toISOString();
   const eventId = `${String(id)}-${now}`;
+  const url = ctx?.url ?? '';
 
   if (status === 'fetched' && result) {
     return {
@@ -96,7 +116,7 @@ function buildStatusEvent(
       version: 1,
       payload: {
         jobId: String(id),
-        url: '',
+        url,
         statusCode: result.statusCode,
         contentLength: 0,
         fetchDurationMs: 0,
@@ -113,9 +133,9 @@ function buildStatusEvent(
       version: 1,
       payload: {
         jobId: String(id),
-        url: '',
-        errorKind: 'unknown',
-        message: 'Status updated to failed',
+        url,
+        errorKind: ctx?.errorKind ?? 'unknown',
+        message: ctx?.errorMessage ?? 'Status updated to failed',
         attempt: 1,
       },
       id: eventId,

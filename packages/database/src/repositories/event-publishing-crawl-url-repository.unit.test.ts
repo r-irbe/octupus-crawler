@@ -57,6 +57,7 @@ describe('createEventPublishingCrawlURLRepository', () => {
     const logger = makeLogger();
     const decorated = createEventPublishingCrawlURLRepository(repo, pub, CONFIG, logger);
 
+    decorated.setContext(1n, { url: 'https://example.com/page' });
     const fetchResult: FetchResult = { statusCode: 200, contentType: 'text/html', s3Key: 'abc' };
     const result = await decorated.updateStatus(1n, 'fetched', fetchResult);
 
@@ -68,6 +69,9 @@ describe('createEventPublishingCrawlURLRepository', () => {
       version: 1,
       source: 'test-worker',
     });
+    // A-004 fix: URL should be populated
+    const payload = (pub.publishCalls[0]?.event as { payload: { url: string } }).payload;
+    expect(payload.url).toBe('https://example.com/page');
   });
 
   it('publishes CrawlFailed event when status is failed', async () => {
@@ -77,14 +81,15 @@ describe('createEventPublishingCrawlURLRepository', () => {
     const logger = makeLogger();
     const decorated = createEventPublishingCrawlURLRepository(repo, pub, CONFIG, logger);
 
+    decorated.setContext(2n, { url: 'https://example.com/fail', errorKind: 'timeout', errorMessage: 'Timed out' });
     const result = await decorated.updateStatus(2n, 'failed');
 
     expect(result.isOk()).toBe(true);
     expect(pub.publishCalls).toHaveLength(1);
-    expect(pub.publishCalls[0]?.event).toMatchObject({
-      type: 'CrawlFailed',
-      version: 1,
-    });
+    const event = pub.publishCalls[0]?.event as { payload: { url: string; errorKind: string; message: string } };
+    expect(event.payload.url).toBe('https://example.com/fail');
+    expect(event.payload.errorKind).toBe('timeout');
+    expect(event.payload.message).toBe('Timed out');
   });
 
   it('does not publish events for pending status', async () => {

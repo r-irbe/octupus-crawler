@@ -19,21 +19,21 @@
 
 | # | Task | Status | Commit | Notes |
 | --- | --- | --- | --- | --- |
-| 1 | T-RES-017: Integrate resilience into http-fetching | `in-progress` | — | — |
-| 2 | T-COMM-013: CrawlCompleted/CrawlFailed event publishing | `in-progress` | — | — |
-| 3 | T-COMM-014: URLDiscovered event publishing in discover stage | `in-progress` | — | — |
-| 4 | T-DATA-023: Domain event publishing on status update | `in-progress` | — | — |
-| 5 | T-COMM-026: Integration test: unknown event version skipped | `in-progress` | — | — |
-| 6 | T-CICD-021: Architecture conformance CI job | `in-progress` | — | — |
+| 1 | T-RES-017: Integrate resilience into http-fetching | `done` | b793efb | FetchPolicyPort minimal interface |
+| 2 | T-COMM-013: CrawlCompleted/CrawlFailed event publishing | `done` | b793efb | Fire-and-forget decorator |
+| 3 | T-COMM-014: URLDiscovered event publishing in discover stage | `done` | b793efb | Batch publish via publishBatch |
+| 4 | T-DATA-023: Domain event publishing on status update | `done` | b793efb | Merged with T-COMM-013 |
+| 5 | T-COMM-026: Integration test: unknown event version skipped | `done` | b793efb | Zod validation rejects v99 |
+| 6 | T-CICD-021: Architecture conformance CI job | `done` | b793efb | Shell script + CI workflow job |
 
 ## Current State
 
 | Field | Value |
 | --- | --- |
-| Current task # | 1-6 |
-| Last completed gate | G4 |
-| Guard function status | `not-run` |
-| Commits on branch | 0 |
+| Current task # | all done |
+| Last completed gate | G7 |
+| Guard function status | `passed` (17/17 typecheck, 17/17 lint, 17/17 test) |
+| Commits on branch | 1 (b793efb) |
 | Blockers | none |
 
 ## Decisions Log
