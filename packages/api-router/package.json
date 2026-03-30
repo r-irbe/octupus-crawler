@@ -9,7 +9,8 @@
     "./schemas": "./src/schemas.ts",
     "./domain-events": "./src/domain-events.ts",
     "./event-handler": "./src/event-handler.ts",
-    "./otel-middleware": "./src/otel-middleware.ts"
+    "./otel-middleware": "./src/otel-middleware.ts",
+    "./api-versioning": "./src/api-versioning.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",

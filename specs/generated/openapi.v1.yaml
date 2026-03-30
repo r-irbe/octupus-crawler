@@ -1,0 +1,203 @@
+openapi: 3.0.0
+info:
+  title: IPF Crawler API
+  description: Public API for the IPF distributed web crawler. Submit crawl jobs, monitor status, and check service health.
+  version: v1
+tags:
+  - name: Crawl
+  - name: Health
+paths:
+  /api/v1/crawl:
+    post:
+      operationId: Crawl_submit
+      description: Submit URLs for crawling
+      parameters: []
+      responses:
+        '201':
+          description: The request has succeeded and a new resource has been created as a result.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CrawlSubmitResponse'
+        '400':
+          description: The server could not understand the request due to invalid syntax.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '401':
+          description: Access is unauthorized.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      tags:
+        - Crawl
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CrawlSubmitRequest'
+  /api/v1/crawl/{jobId}:
+    get:
+      operationId: Crawl_getStatus
+      description: Get crawl job status
+      parameters:
+        - name: jobId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CrawlStatusResponse'
+        '404':
+          description: The server cannot find the requested resource.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      tags:
+        - Crawl
+  /api/v1/health:
+    get:
+      operationId: Health_check
+      description: Health check endpoint
+      parameters: []
+      responses:
+        '200':
+          description: The request has succeeded.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+      tags:
+        - Health
+components:
+  schemas:
+    CrawlStatus:
+      type: string
+      enum:
+        - queued
+        - running
+        - completed
+        - failed
+        - cancelled
+    CrawlStatusResponse:
+      type: object
+      required:
+        - jobId
+        - status
+        - urlsTotal
+        - urlsCrawled
+        - urlsFailed
+      properties:
+        jobId:
+          type: string
+        status:
+          $ref: '#/components/schemas/CrawlStatus'
+        urlsTotal:
+          type: integer
+          format: int32
+        urlsCrawled:
+          type: integer
+          format: int32
+        urlsFailed:
+          type: integer
+          format: int32
+        startedAt:
+          type: string
+          format: date-time
+        completedAt:
+          type: string
+          format: date-time
+    CrawlSubmitRequest:
+      type: object
+      required:
+        - urls
+      properties:
+        urls:
+          type: array
+          items:
+            type: string
+            format: uri
+          minItems: 1
+          maxItems: 1000
+          description: URLs to crawl (1–1000)
+        maxDepth:
+          type: integer
+          format: int32
+          minimum: 0
+          maximum: 100
+          description: Maximum crawl depth (0–100, default 3)
+          default: 3
+        maxConcurrent:
+          type: integer
+          format: int32
+          minimum: 1
+          maximum: 100
+          description: Maximum concurrent requests (1–100, default 10)
+          default: 10
+        allowedDomains:
+          type: array
+          items:
+            type: string
+          description: Restrict crawling to these domains
+        userAgent:
+          type: string
+          maxLength: 500
+          description: Custom user agent string (max 500 chars)
+    CrawlSubmitResponse:
+      type: object
+      required:
+        - jobId
+        - urlCount
+        - status
+      properties:
+        jobId:
+          type: string
+        urlCount:
+          type: integer
+          format: int32
+        status:
+          type: string
+          enum:
+            - queued
+    ErrorResponse:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+        correlationId:
+          type: string
+    HealthResponse:
+      type: object
+      required:
+        - status
+      properties:
+        status:
+          $ref: '#/components/schemas/HealthStatus'
+    HealthStatus:
+      type: string
+      enum:
+        - ok
+        - degraded
+        - unhealthy
+    Versions:
+      type: string
+      enum:
+        - v1
+servers:
+  - url: http://localhost:3000
+    description: Development server
+    variables: {}

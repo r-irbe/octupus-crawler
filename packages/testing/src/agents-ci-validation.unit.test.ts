@@ -87,14 +87,15 @@ describe('T-AGENT-050: CI workflow triggers on work/* branches', () => {
     expect(existsSync(path)).toBe(true);
   });
 
-  // Validates REQ-AGENT-041: triggers on pull_request to main
-  it('workflow triggers on pull_request to main', () => {
+  // Validates REQ-AGENT-041: agent branch filtering in ci-quality.yml (supersedes agent-pr-validation.yml)
+  it('ci-quality.yml triggers on pull_request to main with agent branch filtering', () => {
     const content = readFileSync(
-      resolve(ROOT, '.github/workflows/agent-pr-validation.yml'),
+      resolve(ROOT, '.github/workflows/ci-quality.yml'),
       'utf-8',
     );
     expect(content).toContain('pull_request:');
     expect(content).toContain('branches: [main]');
+    expect(content).toContain("startsWith(github.head_ref, 'work/')");
   });
 
   // Validates REQ-AGENT-041: work/* branch filter in job
@@ -117,13 +118,15 @@ describe('T-AGENT-050: CI workflow triggers on work/* branches', () => {
     expect(content).toContain('pnpm turbo test');
   });
 
-  // Validates REQ-AGENT-041: quality-gate workflow also exists
-  it('quality-gate.yml workflow exists with main triggers', () => {
+  // Validates REQ-AGENT-041: quality-gate jobs in ci-quality.yml (T-CICD-023)
+  it('ci-quality.yml contains quality-gate jobs', () => {
     const content = readFileSync(
-      resolve(ROOT, '.github/workflows/quality-gate.yml'),
+      resolve(ROOT, '.github/workflows/ci-quality.yml'),
       'utf-8',
     );
-    expect(content).toContain('push:');
+    expect(content).toContain('pull_request:');
     expect(content).toContain('branches: [main]');
+    expect(content).toContain('integration-tests:');
+    expect(content).toContain('alert-tests:');
   });
 });

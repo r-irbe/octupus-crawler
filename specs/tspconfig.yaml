@@ -1,0 +1,12 @@
+# TypeSpec configuration for IPF Crawler API
+# REQ-COMM-005: Contract-first API defined in TypeSpec, compiled to OpenAPI
+# NOTE: @typespec/openapi3 v1.10.0 generates OpenAPI 3.0.0; upgrade to 3.1 when supported
+# ADR-017: TypeSpec → OpenAPI for external/non-TS consumers
+
+emit:
+  - "@typespec/openapi3"
+
+options:
+  "@typespec/openapi3":
+    emitter-output-dir: "{project-root}/generated"
+    file-type: yaml

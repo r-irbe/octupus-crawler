@@ -26,7 +26,9 @@
     "k6:backpressure": "k6 run packages/testing/src/load/backpressure.k6.js --out json=packages/testing/test-results/k6-backpressure.json",
     "changeset": "changeset",
     "version-packages": "changeset version",
-    "release": "changeset publish"
+    "release": "changeset publish",
+    "typespec:compile": "tsp compile specs/",
+    "typespec:lint": "spectral lint specs/generated/openapi.v1.yaml --ruleset specs/.spectral.yaml"
   },
   "dependencies": {
     "tsx": "^4.19.0"
@@ -34,6 +36,12 @@
   "devDependencies": {
     "@changesets/changelog-github": "^0.6.0",
     "@changesets/cli": "^2.30.0",
+    "@stoplight/spectral-cli": "^6.15.0",
+    "@typespec/compiler": "^1.10.0",
+    "@typespec/http": "^1.10.0",
+    "@typespec/openapi3": "^1.10.0",
+    "@typespec/rest": "^0.80.0",
+    "@typespec/versioning": "^0.80.0",
     "turbo": "^2.8.0",
     "typescript": "^6.0.0"
   },

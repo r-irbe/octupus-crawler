@@ -1,0 +1,9 @@
+# Spectral ruleset for IPF Crawler API
+# info-contact: TypeSpec @service does not support contact metadata
+# oas3-unused-component: @versioned auto-generates Versions enum
+extends:
+  - "spectral:oas"
+
+rules:
+  info-contact: warn
+  oas3-unused-component: warn
