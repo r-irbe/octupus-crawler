@@ -32,16 +32,16 @@
 
 ## Phase 4: Release & Versioning
 
-- [ ] **T-CICD-017**: Configure Changesets with `@changesets/cli` → REQ-CICD-018
-- [ ] **T-CICD-018**: Add Changesets GitHub Action for "Version Packages" PR automation → REQ-CICD-019
+- [x] **T-CICD-017**: Configure Changesets with `@changesets/cli` → REQ-CICD-018
+- [x] **T-CICD-018**: Add Changesets GitHub Action for "Version Packages" PR automation → REQ-CICD-019
 - [ ] **T-CICD-019**: Add Kustomize image tag update step in release workflow → REQ-CICD-020
 - [ ] **T-CICD-020**: Verify ArgoCD auto-sync within 1 min of tag update → REQ-CICD-020
 
 ## Phase 5: Architecture Conformance
 
 - [x] **T-CICD-021**: Add architecture conformance CI job: barrel import check, circular deps, file size → REQ-CICD-022
-- [ ] **T-CICD-022**: Add ADR compliance scan as advisory (non-blocking) check → REQ-CICD-023
-- [ ] **T-CICD-023**: Integrate existing agent-pr-validation.yml and quality-gate.yml into unified pipeline → REQ-CICD-009
+- [x] **T-CICD-022**: Add ADR compliance scan as advisory (non-blocking) check → REQ-CICD-023
+- [x] **T-CICD-023**: Integrate existing agent-pr-validation.yml and quality-gate.yml into unified pipeline → REQ-CICD-009
 
 ## Phase 6: Validation
 
@@ -58,9 +58,9 @@ T-CICD-001 → T-CICD-003 → T-CICD-007 → T-CICD-008 → T-CICD-012 → T-CIC
 | Metric | Count |
 | --- | --- |
 | Total tasks | 26 |
-| Completed | 16 |
-| Remaining | 10 |
-| Completion rate | 62% |
+| Completed | 20 |
+| Remaining | 6 |
+| Completion rate | 77% |
 
 ---
 

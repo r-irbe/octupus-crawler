@@ -67,6 +67,7 @@ Chronological work session logs documenting what was done, decisions made, and o
 | [2026-03-30: Resilience Blockers Unblock](2026-03-30-resilience-blockers-unblock.md) | Resilience unblock: Redis sliding window rate limiter, BullMQ DLQ handler, 25 tests | Complete | 2026-03-30 |
 | [2026-03-30: Infra Circuit Breaker + Redis](2026-03-30-infra-circuit-breaker-redis.md) | Redis CB, idempotency store, Pub/Sub, resilient repository, 45 tests, RALPH fixes | Complete | 2026-03-30 |
 | [2026-03-30: Event Publishing + Resilience + CI](2026-03-30-event-publishing-resilience-ci.md) | Resilient fetcher, event publishing decorators, version skip test, architecture conformance CI | Complete | 2026-03-30 |
+| [2026-03-30: OTel + Changesets + CI Unification](2026-03-30-otel-changesets-ci-unify.md) | OTel tRPC middleware, Changesets, ADR compliance scan, unified CI pipeline | Complete | 2026-03-30 |
 
 ## Index
 
