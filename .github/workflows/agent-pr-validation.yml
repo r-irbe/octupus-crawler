@@ -1,3 +1,7 @@
+# SUPERSEDED: Unique jobs from this workflow have been integrated into ci.yml
+# per T-CICD-023 (REQ-CICD-009). This file is retained for reference.
+# New changes should go to ci.yml instead.
+
 name: Agent PR Validation
 
 on:

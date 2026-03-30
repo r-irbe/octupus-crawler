@@ -1,0 +1,21 @@
+{
+  "$schema": "https://unpkg.com/@changesets/config@3.1.1/schema.json",
+  "changelog": [
+    "@changesets/changelog-github",
+    { "repo": "ipf-org/ipf" }
+  ],
+  "commit": false,
+  "fixed": [],
+  "linked": [
+    ["@ipf/core", "@ipf/config", "@ipf/validation"],
+    ["@ipf/redis", "@ipf/database"],
+    ["@ipf/api-router", "@ipf/observability"]
+  ],
+  "access": "restricted",
+  "baseBranch": "main",
+  "updateInternalDependencies": "patch",
+  "ignore": [
+    "@ipf/eslint-config",
+    "@ipf/testing"
+  ]
+}

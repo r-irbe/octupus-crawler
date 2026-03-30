@@ -1,3 +1,5 @@
+# SUPERSEDED: Coverage upload and artifact features integrated into ci.yml
+# per T-CICD-023. This file is retained for its integration test + alert test jobs.
 # Quality Gate — Fail-fast pipeline with coverage enforcement
 # Implements: REQ-TEST-013 (fail-fast chain), REQ-TEST-014 (skip on failure)
 #             REQ-TEST-015 (JUnit XML), REQ-TEST-016 (service containers)
