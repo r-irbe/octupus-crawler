@@ -1,0 +1,114 @@
+# CI Pipeline — PR validation with paths-filter + guard functions + matrix testing
+# Implements: REQ-CICD-002 (PR trigger), REQ-CICD-004 (paths-filter),
+#             REQ-CICD-005 (frozen-lockfile), REQ-CICD-006 (remote cache),
+#             REQ-CICD-007 (guard function chain)
+# Design: docs/specs/ci-cd-pipeline/design.md
+# ADR: docs/adr/ADR-012-ci-cd-pipeline.md
+
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.head_ref }}
+  cancel-in-progress: true
+
+# T-CICD-004: Turborepo remote cache for CI (REQ-CICD-006)
+env:
+  TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+  TURBO_TEAM: ${{ vars.TURBO_TEAM }}
+
+jobs:
+  # T-CICD-002: Detect changed packages (REQ-CICD-004)
+  changes:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: read
+    outputs:
+      packages: ${{ steps.filter.outputs.changes }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            api-router:
+              - 'packages/api-router/**'
+            application-lifecycle:
+              - 'packages/application-lifecycle/**'
+            completion-detection:
+              - 'packages/completion-detection/**'
+            config:
+              - 'packages/config/**'
+            core:
+              - 'packages/core/**'
+            crawl-pipeline:
+              - 'packages/crawl-pipeline/**'
+            database:
+              - 'packages/database/**'
+            http-fetching:
+              - 'packages/http-fetching/**'
+            job-queue:
+              - 'packages/job-queue/**'
+            observability:
+              - 'packages/observability/**'
+            redis:
+              - 'packages/redis/**'
+            resilience:
+              - 'packages/resilience/**'
+            ssrf-guard:
+              - 'packages/ssrf-guard/**'
+            testing:
+              - 'packages/testing/**'
+            url-frontier:
+              - 'packages/url-frontier/**'
+            validation:
+              - 'packages/validation/**'
+            virtual-memory:
+              - 'packages/virtual-memory/**'
+            worker-management:
+              - 'packages/worker-management/**'
+
+  # T-CICD-003: Guard function chain (REQ-CICD-005, REQ-CICD-007)
+  # Sequential: typecheck → lint → test (fail-fast per ADR-018)
+  guard-functions:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: pnpm
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Typecheck
+        run: pnpm turbo typecheck
+      - name: Lint
+        run: pnpm turbo lint
+      - name: Test
+        run: pnpm turbo test
+
+  # T-CICD-005: Matrix test for affected packages only (REQ-CICD-004)
+  # Provides per-package status checks in PR — Turborepo cache makes re-run fast
+  test-affected:
+    needs: [changes, guard-functions]
+    if: needs.changes.outputs.packages != '[]'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        package: ${{ fromJson(needs.changes.outputs.packages) }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+          cache: pnpm
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Test ${{ matrix.package }}
+        run: pnpm turbo test --filter=@ipf/${{ matrix.package }}
