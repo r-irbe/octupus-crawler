@@ -108,7 +108,9 @@ type TokenBucket = {
 };
 
 // REQ-RES-011: Redis sliding window for API rate limiting
-// Key: `rate:{ip}:{window}` → INCR + EXPIRE
+// Key: `rate:{key}` → sorted set: ZADD timestamp, ZREMRANGEBYSCORE, ZCARD
+// Single pipeline (atomic): cleanup + count + optimistic add + expire
+// Rollback via ZREM if over limit
 ```
 
 ---

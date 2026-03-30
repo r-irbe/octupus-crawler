@@ -7,7 +7,8 @@
     "./bullmq-queue-backend": "./src/bullmq-queue-backend.ts",
     "./bullmq-job-consumer": "./src/bullmq-job-consumer.ts",
     "./bullmq-queue-adapter": "./src/bullmq-queue-adapter.ts",
-    "./connection-config": "./src/connection-config.ts"
+    "./connection-config": "./src/connection-config.ts",
+    "./dlq-handler": "./src/dlq-handler.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",

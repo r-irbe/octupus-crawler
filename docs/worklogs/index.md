@@ -64,6 +64,7 @@ Chronological work session logs documenting what was done, decisions made, and o
 | [2026-03-30: CI/CD Pipeline](2026-03-30-ci-cd-pipeline.md) | CI/CD pipeline: ci.yml with paths-filter, guard functions, matrix testing, remote cache | Complete | 2026-03-30 |
 | [2026-03-30: CI/CD Security Scanning](2026-03-30-ci-cd-security-scanning.md) | Security scanning: pnpm audit, Trivy, gitleaks, Spectral OpenAPI lint | Complete | 2026-03-30 |
 | [2026-03-30: CI/CD Release Pipeline](2026-03-30-ci-cd-release-pipeline.md) | Release pipeline: Docker buildx, multi-arch, Trivy scan, ghcr.io publish | Complete | 2026-03-30 |
+| [2026-03-30: Resilience Blockers Unblock](2026-03-30-resilience-blockers-unblock.md) | Resilience unblock: Redis sliding window rate limiter, BullMQ DLQ handler, 25 tests | Complete | 2026-03-30 |
 
 ## Index
 
