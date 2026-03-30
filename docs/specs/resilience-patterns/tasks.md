@@ -5,7 +5,7 @@
 
 ---
 
-## Completion: 17/25 (68%)
+## Completion: 18/25 (72%)
 
 ---
 
@@ -39,7 +39,7 @@
 ## Phase 5: Integration & Composition
 
 - [x] **T-RES-016**: Create `createFetchPolicy(domain)` that composes full 7-layer stack — REQ-RES-018, REQ-RES-019
-- [ ] **T-RES-017**: Integrate resilience policies into http-fetching package fetch pipeline — REQ-RES-001
+- [x] **T-RES-017**: Integrate resilience policies into http-fetching package fetch pipeline — REQ-RES-001
 - [x] **T-RES-018**: Integrate circuit breaker into Redis client wrapper — REQ-RES-001
 - [x] **T-RES-019**: Integrate circuit breaker into database query layer — REQ-RES-001
 - [x] **T-RES-020**: Wire Zod-validated configuration for all resilience parameters — REQ-RES-003, REQ-RES-008

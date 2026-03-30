@@ -25,8 +25,8 @@
 - [x] **T-COMM-010**: Define DomainEvent discriminated union with versioned schemas → REQ-COMM-010
 - [x] **T-COMM-011**: Implement `RedisStreamPublisher` with XADD → REQ-COMM-009
 - [x] **T-COMM-012**: Implement `RedisStreamConsumer` with consumer groups (XREADGROUP) → REQ-COMM-011
-- [ ] **T-COMM-013**: Add CrawlCompleted/CrawlFailed event publishing to worker pipeline → REQ-COMM-012
-- [ ] **T-COMM-014**: Add URLDiscovered event publishing to parse stage → REQ-COMM-013
+- [x] **T-COMM-013**: Add CrawlCompleted/CrawlFailed event publishing to worker pipeline → REQ-COMM-012
+- [x] **T-COMM-014**: Add URLDiscovered event publishing to parse stage → REQ-COMM-013
 - [x] **T-COMM-015**: Implement unknown event version handling (skip + warn) → REQ-COMM-014
 
 ## Phase 4: Temporal Workflows (MEDIUM-TERM — per ADR-017 §5)
@@ -49,7 +49,7 @@
 - [x] **T-COMM-023**: Unit tests for tRPC router procedures and Zod validation → REQ-COMM-001
 - [x] **T-COMM-024**: Integration test: Redis Streams publish/consume round-trip (Testcontainers) → REQ-COMM-009
 - [x] **T-COMM-025**: Integration test: idempotency key returns cached response → REQ-COMM-021
-- [ ] **T-COMM-026**: Integration test: unknown event version is skipped → REQ-COMM-014
+- [x] **T-COMM-026**: Integration test: unknown event version is skipped → REQ-COMM-014
 - [ ] **T-COMM-027**: Integration test: Temporal workflow survives worker restart → REQ-COMM-015
 
 ## MVP Critical Path
@@ -61,9 +61,9 @@ T-COMM-001 → T-COMM-002 → T-COMM-010 → T-COMM-011 → T-COMM-012 → T-COM
 | Metric | Count |
 | --- | --- |
 | Total tasks | 27 |
-| Completed | 8 |
-| Remaining | 19 |
-| Completion rate | 30% |
+| Completed | 11 |
+| Remaining | 16 |
+| Completion rate | 41% |
 
 ---
 

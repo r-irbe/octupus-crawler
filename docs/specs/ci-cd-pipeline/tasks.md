@@ -39,7 +39,7 @@
 
 ## Phase 5: Architecture Conformance
 
-- [ ] **T-CICD-021**: Add architecture conformance CI job: barrel import check, circular deps, file size → REQ-CICD-022
+- [x] **T-CICD-021**: Add architecture conformance CI job: barrel import check, circular deps, file size → REQ-CICD-022
 - [ ] **T-CICD-022**: Add ADR compliance scan as advisory (non-blocking) check → REQ-CICD-023
 - [ ] **T-CICD-023**: Integrate existing agent-pr-validation.yml and quality-gate.yml into unified pipeline → REQ-CICD-009
 
@@ -58,9 +58,9 @@ T-CICD-001 → T-CICD-003 → T-CICD-007 → T-CICD-008 → T-CICD-012 → T-CIC
 | Metric | Count |
 | --- | --- |
 | Total tasks | 26 |
-| Completed | 15 |
-| Remaining | 11 |
-| Completion rate | 58% |
+| Completed | 16 |
+| Remaining | 10 |
+| Completion rate | 62% |
 
 ---
 

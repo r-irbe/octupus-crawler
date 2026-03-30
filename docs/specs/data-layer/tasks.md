@@ -38,7 +38,7 @@
 - [x] **T-DATA-020**: Create `PageContentRepository` interface (port) → REQ-DATA-014
 - [x] **T-DATA-021**: Implement `S3PageContentRepository` — store (Zstandard compress), retrieve, delete → REQ-DATA-006, REQ-DATA-014
 - [x] **T-DATA-022**: Create `CrawlSessionRepository` interface and Prisma implementation — REQ-DATA-005
-- [ ] **T-DATA-023**: Implement domain event publishing on status update (CrawlCompleted/CrawlFailed to Redis Streams) → REQ-DATA-027
+- [x] **T-DATA-023**: Implement domain event publishing on status update (CrawlCompleted/CrawlFailed to Redis Streams) → REQ-DATA-027
 
 ## Phase 5: Configuration
 
@@ -71,9 +71,9 @@ T-DATA-001 → T-DATA-006 → T-DATA-007 → T-DATA-009 → T-DATA-012 → T-DAT
 | Metric | Count |
 | --- | --- |
 | Total tasks | 36 |
-| Completed | 32 |
-| Remaining | 4 |
-| Completion rate | 89% |
+| Completed | 33 |
+| Remaining | 3 |
+| Completion rate | 92% |
 
 ---
 
