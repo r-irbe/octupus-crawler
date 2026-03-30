@@ -17,3 +17,14 @@ labels:
   - pairs:
       app.kubernetes.io/part-of: ipf-crawler
       app.kubernetes.io/managed-by: kustomize
+
+# Image tags — updated by release pipeline (T-CICD-019, REQ-CICD-020)
+# CI runs `kustomize edit set image` to set newName (registry) and newTag (SHA).
+# Initial newTag: unreleased — first release pipeline run populates real values.
+images:
+  - name: ipf-api-gateway
+    newTag: unreleased
+  - name: ipf-crawler
+    newTag: unreleased
+  - name: ipf-scheduler
+    newTag: unreleased
