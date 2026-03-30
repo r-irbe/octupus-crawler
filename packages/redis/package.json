@@ -6,7 +6,10 @@
   "exports": {
     "./connection": "./src/connection.ts",
     "./stream-publisher": "./src/stream-publisher.ts",
-    "./stream-consumer": "./src/stream-consumer.ts"
+    "./stream-consumer": "./src/stream-consumer.ts",
+    "./circuit-breaker": "./src/circuit-breaker.ts",
+    "./idempotency-store": "./src/idempotency-store.ts",
+    "./pubsub": "./src/pubsub.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
@@ -15,6 +18,7 @@
     "clean": "rm -rf dist .turbo"
   },
   "dependencies": {
+    "cockatiel": "^3.2.1",
     "ioredis": "^5.6.0",
     "neverthrow": "^8.2.0",
     "zod": "^3.25.0"
