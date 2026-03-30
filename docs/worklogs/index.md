@@ -58,6 +58,7 @@ Chronological work session logs documenting what was done, decisions made, and o
 | [2026-03-29: Data Layer Infra](2026-03-29-data-layer-infra.md) | Data layer infra: PostgreSQL + MinIO to docker-compose + K8s, Prisma schema, connection pool, S3 client, 13 tests | Complete | 2026-03-29 |
 | [2026-03-29: Data Layer Repos](2026-03-29-data-layer-repos.md) | Data layer repos: DrizzleCrawlURLRepository, S3PageContentRepository, saveBatch, Zstandard, 17 tests | Complete | 2026-03-29 |
 | [2026-03-30: Data Layer Resilience](2026-03-30-data-layer-resilience.md) | Data layer resilience: circuit breaker (cockatiel), graceful shutdown, 18 tests, RALPH DA1 fix | Complete | 2026-03-30 |
+| [2026-03-30: Data Layer Integration Tests](2026-03-30-data-layer-integration-tests.md) | Data layer integration: PG+MinIO Testcontainers, 18 tests (CRUD, S3, CB, pool, shutdown) | Complete | 2026-03-30 |
 
 ## Index
 

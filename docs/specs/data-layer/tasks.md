@@ -48,13 +48,13 @@
 ## Phase 6: Testing
 
 - [x] **T-DATA-026**: Unit tests for DataError types and repository interface contracts → REQ-DATA-016
-- [ ] **T-DATA-027**: Integration test: CrawlURLRepository CRUD with Testcontainers PostgreSQL → REQ-DATA-023
-- [ ] **T-DATA-028**: Integration test: batch insert throughput > 10K rows/sec → REQ-DATA-025
-- [ ] **T-DATA-029**: Integration test: URL dedup via hash constraint (insert duplicate returns DuplicateKey) → REQ-DATA-024
-- [ ] **T-DATA-030**: Integration test: S3PageContentRepository round-trip with Testcontainers MinIO → REQ-DATA-023
-- [ ] **T-DATA-031**: Integration test: circuit breaker opens after consecutive failures → REQ-DATA-020
-- [ ] **T-DATA-032**: Integration test: connection pool lifecycle and `using` cleanup → REQ-DATA-018
-- [ ] **T-DATA-033**: Integration test: graceful shutdown drains in-flight queries → REQ-DATA-019
+- [x] **T-DATA-027**: Integration test: CrawlURLRepository CRUD with Testcontainers PostgreSQL → REQ-DATA-023
+- [x] **T-DATA-028**: Integration test: batch insert throughput > 10K rows/sec → REQ-DATA-025
+- [x] **T-DATA-029**: Integration test: URL dedup via hash constraint (insert duplicate returns DuplicateKey) → REQ-DATA-024
+- [x] **T-DATA-030**: Integration test: S3PageContentRepository round-trip with Testcontainers MinIO → REQ-DATA-023
+- [x] **T-DATA-031**: Integration test: circuit breaker opens after consecutive failures → REQ-DATA-020
+- [x] **T-DATA-032**: Integration test: connection pool lifecycle and `using` cleanup → REQ-DATA-018
+- [x] **T-DATA-033**: Integration test: graceful shutdown drains in-flight queries → REQ-DATA-019
 
 ## Phase 7: Performance Validation
 
