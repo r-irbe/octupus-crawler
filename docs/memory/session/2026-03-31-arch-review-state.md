@@ -27,17 +27,17 @@
 | 2 | Write architectural review document | `done` | `8b7174b` | 334 lines, 6 findings |
 | 3 | G5 guard functions | `done` | — | 18/18 all pass |
 | 4 | G6 commit | `done` | `8b7174b` | — |
-| 5 | G8 RALPH review | `in-progress` | — | — |
-| 6 | G9 worklog + G10 report + G11 specs | `pending` | — | — |
+| 5 | G8 RALPH review | `done` | — | Round 1: CHANGES REQUESTED, Round 2: APPROVED |
+| 6 | G9 worklog + G10 report + G11 specs | `done` | — | — |
 
 ## Current State
 
 | Field | Value |
 | --- | --- |
-| Current task # | 5 (G8 RALPH review) |
-| Last completed gate | G7 (state update) |
+| Current task # | 6 (complete) |
+| Last completed gate | G11 (spec update) |
 | Guard function status | `pass` (18/18 typecheck, 18/18 lint, 18/18 test) |
-| Commits on branch | 1 (`8b7174b`) |
+| Commits on branch | 3 |
 | Tests passing | 18/18 |
 | Blockers | none |
 
