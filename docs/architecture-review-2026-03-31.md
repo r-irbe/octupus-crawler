@@ -3,15 +3,17 @@
 > **Date**: 2026-03-31
 > **Scope**: All 18 packages + 1 app (19 workspace members)
 > **Branch**: `work/arch-review`
+> **Deployment status**: Pre-production (local dev + CI only — no staging/production deployment yet)
 > **Methodology**: Multi-perspective analysis (Architect, Security, SRE, Test, Gateway, Research, Review)
+> **Appendix**: [Verification evidence and operational checklists](architecture-review-2026-03-31-appendix.md)
 
 ---
 
 ## Executive Summary
 
-The IPF crawler demonstrates **strong architectural discipline** across a well-organized TypeScript monorepo. Strict typing (TS 6.0.2, zero `any`), comprehensive testing (179 tests, 7 property test suites), and systematic spec coverage (22/22 complete) position this codebase well for production readiness. Five findings require attention, with one critical K8s security gap and several tactical improvements.
+The IPF crawler demonstrates **strong architectural discipline** across a well-organized TypeScript monorepo. Strict typing (TS 6.0.2, zero `any`), comprehensive testing (179 tests, 7 property test suites), and systematic spec coverage (22/22 complete) position this codebase well for pre-production readiness. Code quality is high; operational readiness requires additional work before production deployment.
 
-**Overall Compliance Score: 86%** (4/5 ADR areas fully compliant, 1 partial)
+**ADR Compliance**: 5/6 audited ADRs fully compliant, 1 partially compliant (ADR-016 coding standards — `kind` vs `_tag`, OTel gap). AGENTS.md MUST rules: 12/14 verified compliant, 2 pending (OTel first import, contract tests). See [appendix](architecture-review-2026-03-31-appendix.md) for full MUST rules audit.
 
 ---
 
@@ -74,116 +76,49 @@ No explicit `src/features/` subdirectories exist. Packages use horizontal layer 
 
 ## 2. Security Posture (Security Perspective)
 
-### 2.1 Input Validation
+### 2.1 Input Validation — COMPLIANT
 
-**Status: COMPLIANT**
+Zero `process.env` access in production code. Zod config-first pattern enforced. Fail-fast startup on invalid config (ADR-013). Zero `any` types (ESLint error-level rule). No unsafe `as` casts.
 
-| Check | Finding |
-|-------|---------|
-| Raw `process.env` access | Zero violations in production code (all 15 matches are in docs/) |
-| Zod validation | Config-first pattern enforced — all env vars validated via Zod before use |
-| Fail-fast startup | App exits on invalid config per ADR-013 |
-| `any` type usage | Zero violations — ESLint `@typescript-eslint/no-explicit-any` enforced as error |
-| `as` casts | Strict mode + ESLint enforcement — no unsafe casts found |
+### 2.2 SSRF Protection — COMPLIANT
 
-### 2.2 SSRF Protection
+`@ipf/ssrf-guard` provides `SsrfValidator`; `@ipf/http-fetching` injects it for per-hop validation in redirect loops. RFC 6890 coverage verified via property tests. OpenAPI.yaml documents validation for crawl endpoints.
 
-**Status: COMPLIANT**
+### 2.3 Secrets Management — COMPLIANT
 
-- `@ipf/ssrf-guard` package provides `SsrfValidator` type
-- `@ipf/http-fetching` injects SSRF validator as dependency — per-hop validation in redirect loop
-- RFC 6890 IP range coverage verified via property tests
-- OpenAPI.yaml documents SSRF validation for crawl endpoints
+Zero hardcoded secrets. External Secrets Operator → K8s Secrets → env vars strategy documented. Docker Compose dev defaults scoped to local only. CI/CD uses `${{ secrets.* }}`. Gitleaks scan on every commit.
 
-### 2.3 Secrets Management
+### 2.4 K8s Security Context — CRITICAL GAP
 
-**Status: COMPLIANT**
+`infra/k8s/base/crawler-deployment.yml` missing: `runAsNonRoot: true`, `runAsUser: 1000`, `readOnlyRootFilesystem: true`, `allowPrivilegeEscalation: false`. Dockerfile uses `USER node` but K8s-level enforcement provides defense-in-depth.
 
-- Zero hardcoded secrets in source code
-- External Secrets Operator → K8s Secrets → env vars strategy documented
-- Docker Compose dev defaults (postgres/minioadmin) properly scoped to local dev
-- CI/CD uses `${{ secrets.* }}` — no stored secrets in code
-- Gitleaks scan runs on every commit via security workflow
+### 2.5 ESLint Compliance — COMPLIANT
 
-### 2.4 K8s Security Context
-
-**Status: CRITICAL GAP**
-
-`infra/k8s/base/crawler-deployment.yml` is missing Pod Security Context:
-
-| Missing Setting | Impact |
-|----------------|--------|
-| `runAsNonRoot: true` | Container could run as root despite Dockerfile `USER node` |
-| `runAsUser: 1000` | No UID enforcement at K8s level |
-| `readOnlyRootFilesystem: true` | Container filesystem writable — attack surface |
-| `allowPrivilegeEscalation: false` | Privilege escalation not explicitly blocked |
-
-**Recommendation**: Add `securityContext` block to deployment manifest. The Dockerfile already uses `USER node`, but K8s-level enforcement provides defense-in-depth.
-
-### 2.5 ESLint Compliance
-
-**Status: COMPLIANT**
-
-- 3 justified `eslint-disable` comments found (all in tests for BullMQ `require-await` pattern)
-- Pre-commit gate validates all eslint-disable have justification comments
+3 justified `eslint-disable` comments (all in tests for BullMQ `require-await` pattern). Pre-commit gate validates justification.
 
 ---
 
 ## 3. Operational Readiness (SRE Perspective)
 
-### 3.1 Graceful Shutdown
+### 3.1 Graceful Shutdown — COMPLIANT
 
-**Status: COMPLIANT**
+SIGTERM/SIGINT handlers in `apps/api-gateway/src/main.ts`. Full lifecycle orchestration via `@ipf/application-lifecycle`. GracefulShutdown class with unit + integration tests. Typed exit codes per shutdown reason.
 
-- SIGTERM/SIGINT handlers in `apps/api-gateway/src/main.ts`
-- Full lifecycle orchestration via `@ipf/application-lifecycle` package
-- GracefulShutdown class with unit + integration tests
-- Typed exit codes per shutdown reason
+### 3.2 Health Endpoints — COMPLIANT
 
-**Concern**: No explicit `terminationGracePeriodSeconds` in K8s deployment. Default is 30s but should be explicit.
+`/health` liveness + `/readyz` readiness probes. K8s probe configuration: liveness (10s initial, 15s period), readiness (5s initial, 10s period). Both unit-tested + integration-tested.
 
-### 3.2 Health Endpoints
+### 3.3 Circuit Breakers & Resilience — COMPLIANT
 
-**Status: COMPLIANT**
+Cockatiel library per ADR-009. Full stack: CircuitBreaker, RetryPolicy, TokenBucket, TimeoutPolicy, Bulkhead, Fallback. State transitions logged. Property tests verify invariants. **Deviation**: Rate limiting uses Redis Lua (SlidingWindowRateLimiter) — defensible for distributed performance.
 
-- `/health` liveness probe: returns `{ status: 'ok' }`
-- `/readyz` readiness probe: validates dependency connectivity
-- K8s probe configuration: liveness (10s initial, 15s period), readiness (5s initial, 10s period)
-- Both endpoints unit-tested + integration-tested
+### 3.4 Observability — PARTIAL
 
-### 3.3 Circuit Breakers & Resilience
+Pino structured logging with AsyncLocalStorage request context: COMPLIANT. Metrics export config (OTEL_EXPORTER_OTLP_ENDPOINT): COMPLIANT. Prometheus scrape annotations: COMPLIANT. **Gaps**: OTel first import (known deferred), observability strategy (sampling, cardinality, alerting) undefined. See [appendix §G](architecture-review-2026-03-31-appendix.md).
 
-**Status: COMPLIANT**
+### 3.5 Docker Image — COMPLIANT
 
-- Cockatiel library adopted per ADR-009
-- Full resilience stack: CircuitBreaker, RetryPolicy, TokenBucket, TimeoutPolicy, Bulkhead, Fallback
-- State transitions (closed → open → half-open) logged
-- Property tests verify invariants for all critical algorithms
-
-**Deviation**: Rate limiting uses Redis Lua scripts (SlidingWindowRateLimiter) instead of cockatiel. Defensible for distributed rate limiting performance — cockatiel is in-process only.
-
-### 3.4 Observability
-
-**Status: PARTIAL**
-
-| Component | Status |
-|-----------|--------|
-| Structured logging (Pino) | COMPLIANT — request context via AsyncLocalStorage |
-| Metrics export config | COMPLIANT — OTEL_EXPORTER_OTLP_ENDPOINT configured |
-| OTel first import pattern | GAP — TODO comment in main.ts |
-| Prometheus scrape annotations | COMPLIANT — K8s deployment annotated |
-| Grafana dashboards | COMPLIANT — dev docker-compose includes Grafana |
-
-**Recommendation**: Wire `import './otel'` as first import when OTel SDK initialization is ready. Currently tracked as a known TODO.
-
-### 3.5 Docker Image
-
-**Status: COMPLIANT**
-
-- Multi-stage build (build → production)
-- `node:22-slim` base (~200MB vs 800MB+)
-- Non-root user (`USER node`)
-- Optimal layer caching (deps before source)
+Multi-stage build, `node:22-slim`, non-root `USER node`, optimal layer caching.
 
 ---
 
@@ -217,20 +152,11 @@ No explicit `src/features/` subdirectories exist. Packages use horizontal layer 
 
 ### 4.3 Infrastructure Testing
 
-**Status: COMPLIANT**
+Zero mock infrastructure violations — verified via `grep -rn "vi.mock|jest.mock" *.integration.test.ts` (0 results). All integration tests use Testcontainers (Redis/Dragonfly, PostgreSQL, MinIO). Test naming convention enforced by pre-commit gate. Benchmarks: hash lookup < 2ms, batch insert > 10K rows/sec, S3 write > 500 pages/sec.
 
-- Zero mock infrastructure violations — all integration tests use real Testcontainers
-- Redis (Dragonfly), PostgreSQL, MinIO containers for integration tests
-- Test naming convention enforced by pre-commit gate
-- Benchmarks: hash lookup < 2ms, batch insert > 10K rows/sec, S3 write > 500 pages/sec
+### 4.4 Contract Testing — Known Deferred
 
-### 4.4 Contract Testing
-
-**Status: PLANNED (GAP)**
-
-- Pact/Schemathesis documented in specs and ADR-020 but no `*.contract.test.ts` files implemented yet
-- OpenAPI.yaml exists for external API documentation
-- This is a known gap tracked in spec completion
+Contract tests (Pact/Schemathesis) documented in specs and ADR-020 but not yet implemented. Applies to external OpenAPI surface — internal tRPC is end-to-end typed and lower priority for contract testing.
 
 ---
 
@@ -270,65 +196,97 @@ All spec directories contain the full triad: `requirements.md` (EARS format), `d
 
 ## 6. Findings Summary
 
-### Critical (1)
+Findings are separated into **undiscovered gaps** (unknown before this review) and **known deferred work** (tracked TODOs).
+
+### Critical — Undiscovered (1)
 
 | ID | Finding | Area | Impact |
 |----|---------|------|--------|
-| F-001 | K8s SecurityContext missing | Security | Pod runs without explicit security constraints — defense-in-depth gap |
+| F-001 | K8s SecurityContext missing (`runAsNonRoot`, `readOnlyRootFilesystem`, `allowPrivilegeEscalation: false`) | Security | Pre-production gap — must fix before any staging/prod deployment |
 
-### Major (2)
+### Major — Undiscovered (3)
 
 | ID | Finding | Area | Impact |
 |----|---------|------|--------|
-| F-002 | OTel first import not wired | Observability | Traces/metrics not captured — reduces production visibility |
-| F-003 | Contract tests not implemented | Testing | 10% pyramid target at 0% — API compatibility gaps undetected |
+| F-009 | K8s hardening incomplete: missing PodDisruptionBudget, production NetworkPolicy, HPA, explicit `terminationGracePeriodSeconds` | SRE | Full K8s hardening checklist needed before production |
+| F-010 | Backup/recovery/DR procedures not documented for PostgreSQL and MinIO | SRE | No RTO/RPO targets, no runbooks, no failover procedures |
+| F-011 | OTel observability strategy incomplete: trace sampling, metric cardinality limits, log aggregation, SLA-tied alerting undefined | Observability | SDK wiring is known-deferred; strategy gaps are new |
+
+### Major — Known Deferred (2)
+
+| ID | Finding | Area | Impact |
+|----|---------|------|--------|
+| F-002 | OTel first import not wired (tracked TODO in main.ts) | Observability | Known deferral — wire when SDK init is ready |
+| F-003 | Contract tests not implemented (0% of 10% pyramid target) — applies to external OpenAPI surface, not internal tRPC (which is end-to-end typed) | Testing | Tracked in ADR-020 spec completion |
 
 ### Minor (3)
 
 | ID | Finding | Area | Impact |
 |----|---------|------|--------|
-| F-004 | Error discriminant uses `kind` not `_tag` | Domain model | Convention drift from AGENTS.md — cosmetic |
-| F-005 | No explicit `terminationGracePeriodSeconds` | SRE | K8s default (30s) applies but should be documented |
-| F-006 | VSA not used within packages | Architecture | SHOULD deviation — packages act as bounded contexts |
-
-### Informational (2)
-
-| ID | Finding | Area | Notes |
-|----|---------|------|-------|
-| F-007 | Redis Lua for rate limiting | Resilience | Intentional deviation from cockatiel for distributed perf |
-| F-008 | 98.1% spec completion | Process | Remaining 1.9% blocked on external dependencies |
+| F-004 | Error discriminant uses `kind` not `_tag` | Domain model | Convention drift — cosmetic |
+| F-005 | VSA not used within packages | Architecture | SHOULD deviation — packages act as bounded contexts |
+| F-006 | Redis Lua for rate limiting instead of cockatiel | Resilience | Intentional deviation for distributed performance |
 
 ---
 
-## 7. Recommendations (Priority Order)
+## 7. MVP Launch Readiness
 
-### Immediate (address before production)
+**Deployment status**: Pre-production. No staging or production environment exists yet.
 
-1. **F-001**: Add `securityContext` to `infra/k8s/base/crawler-deployment.yml`
-   - `runAsNonRoot: true`, `runAsUser: 1000`, `readOnlyRootFilesystem: true`, `allowPrivilegeEscalation: false`
+### Spec Completion Blockers
 
-2. **F-002**: Wire OTel SDK initialization in `apps/api-gateway/src/main.ts`
-   - `import './otel'` as first import line
+| Category | Done | Total | Blockers |
+|----------|------|-------|----------|
+| All specs | 730 | 744 | 14 remaining |
+| CI/CD | 21 | 26 | 5 tasks need real CI runners/ArgoCD — **blocks production deployment** |
+| Service comm | 17 | 27 | 6 deferred to Temporal, 1 blocked — **does not block MVP** |
+| All other specs | 692 | 692 | None — all complete |
 
-### Short-term (next sprint)
+**Launch-critical path**: CI/CD pipeline completion (ArgoCD, real CI runners) + K8s hardening (F-001, F-009) + backup/recovery runbooks (F-010).
 
-3. **F-003**: Implement contract tests for tRPC API boundaries using Pact
-4. **F-005**: Add explicit `terminationGracePeriodSeconds: 30` to K8s deployment
+**Not launch-critical**: Service communication Temporal tasks, contract tests (tRPC provides type safety), `kind` → `_tag` migration.
+
+### SLA Targets (to be defined)
+
+Production SLAs not yet established. Recommended targets for MVP:
+- Availability: 99.5% (single-region)
+- P99 latency: < 500ms (API), < 5s (crawl job completion)
+- Throughput: > 100 URLs/second sustained
+- Error rate: < 1% of crawl jobs
+
+---
+
+## 8. Recommendations (Priority Order)
+
+## 8. Recommendations (Priority Order)
+
+### Before staging/production deployment (Critical + Major)
+
+1. **F-001**: Add `securityContext` to `infra/k8s/base/crawler-deployment.yml` — `runAsNonRoot`, `readOnlyRootFilesystem`, `allowPrivilegeEscalation: false`
+2. **F-009**: Complete K8s hardening — PodDisruptionBudget, production NetworkPolicy (default-deny ingress), HPA, explicit `terminationGracePeriodSeconds: 30`
+3. **F-010**: Document backup/recovery for PostgreSQL (pg_dump schedule, RTO < 4h, RPO < 1h) and MinIO (replication, cross-region backup)
+4. **F-011**: Define OTel observability strategy — trace sampling rate, metric cardinality limits, log aggregation target, SLA-tied alerting rules
+
+### Before MVP launch (Known Deferred)
+
+5. **F-002**: Wire `import './otel'` as first import in all service entry points
+6. **F-003**: Implement contract tests for external OpenAPI surface (Pact/Schemathesis)
+7. Complete CI/CD pipeline: ArgoCD integration, real CI runners (T-CICD-006/020/024/025/026)
 
 ### Backlog
 
-5. **F-004**: Evaluate `kind` → `_tag` migration (low risk, high consistency)
-6. **F-006**: Document VSA deviation in ADR-015; consider refactoring when packages grow
-7. **F-007**: Document Redis Lua rate limiting rationale in ADR-009 amendment
+8. **F-004**: Evaluate `kind` → `_tag` migration
+9. **F-005**: Document VSA deviation in ADR-015
+10. **F-006**: Document Redis Lua rate limiting rationale in ADR-009 amendment
 
 ---
 
-## 8. Strengths
+## 9. Strengths
 
-1. **Zero `any` types** — strict TypeScript enforcement with ESLint error-level rule
-2. **Zero infrastructure mocks** — all 26 integration tests use real Testcontainers
-3. **7 property test suites** — critical algorithms formally verified with fast-check
-4. **100% spec coverage** — all 22 features have complete requirements/design/tasks triad
-5. **Architecture enforcement automated** — circular dependency and layer boundary checks in CI
-6. **Clean dependency graph** — no circular deps, no barrel imports, inward-only dependency direction
-7. **Security-by-default** — SSRF protection with per-hop validation, URL credential stripping, Zod input validation at all boundaries
+1. **Zero `any` types** — ESLint error-level rule, strict mode enforced
+2. **Zero infrastructure mocks** — verified: `grep -r "vi.mock|jest.mock" *.integration.test.ts` returns 0 results
+3. **7 property test suites** — circuit breaker, retry, token bucket, SSRF, IP range, URL normalizer, job ID
+4. **100% spec coverage** — 22/22 features have complete requirements/design/tasks triad (EARS format)
+5. **Architecture enforcement automated** — `packages/core/src/architecture.integration.test.ts` verifies no circular deps and no layer violations
+6. **File size compliance** — all 192 source files under 300-line hard limit (max: 269 lines in `built-in-scenarios.ts`)
+7. **Security-by-default** — SSRF per-hop validation, URL credential stripping, Zod at all boundaries

@@ -24,21 +24,21 @@
 | # | Task | Status | Commit | Notes |
 | --- | --- | --- | --- | --- |
 | 1 | Data gathering (3 subagents) | `done` | — | Package inventory, security/ops, ADR compliance |
-| 2 | Write architectural review document | `in-progress` | — | Compiling all findings |
-| 3 | G5 guard functions | `pending` | — | — |
-| 4 | G6 commit | `pending` | — | — |
-| 5 | G8 RALPH review | `pending` | — | — |
+| 2 | Write architectural review document | `done` | `8b7174b` | 334 lines, 6 findings |
+| 3 | G5 guard functions | `done` | — | 18/18 all pass |
+| 4 | G6 commit | `done` | `8b7174b` | — |
+| 5 | G8 RALPH review | `in-progress` | — | — |
 | 6 | G9 worklog + G10 report + G11 specs | `pending` | — | — |
 
 ## Current State
 
 | Field | Value |
 | --- | --- |
-| Current task # | 2 |
-| Last completed gate | G4 (state tracker) |
-| Guard function status | `not-run` |
-| Commits on branch | 0 |
-| Tests passing | 18/18 on main |
+| Current task # | 5 (G8 RALPH review) |
+| Last completed gate | G7 (state update) |
+| Guard function status | `pass` (18/18 typecheck, 18/18 lint, 18/18 test) |
+| Commits on branch | 1 (`8b7174b`) |
+| Tests passing | 18/18 |
 | Blockers | none |
 
 ## Decisions Log
