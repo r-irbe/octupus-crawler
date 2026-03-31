@@ -71,6 +71,7 @@ Chronological work session logs documenting what was done, decisions made, and o
 | [2026-03-30: TypeSpec API Contracts](2026-03-30-typespec-api-contracts.md) | TypeSpec compiler + CrawlerAPI definition, Spectral lint, API versioning middleware, CI split | Complete | 2026-03-30 |
 | [2026-03-30: API Gateway tRPC](2026-03-30-api-gateway-trpc.md) | API gateway: Fastify v5 + tRPC adapter, health check, graceful shutdown, 7 tests | Complete | 2026-03-30 |
 | [2026-03-31: Kustomize Image Tags](2026-03-31-kustomize-image-tags.md) | Kustomize image tag update in release pipeline, 3 services, ArgoCD auto-sync | Complete | 2026-03-31 |
+| [2026-03-31: Data Layer Benchmarks](2026-03-31-data-layer-benchmarks.md) | Performance benchmarks: hash lookup, batch insert, S3 write throughput | Complete | 2026-03-31 |
 
 ## Index
 
