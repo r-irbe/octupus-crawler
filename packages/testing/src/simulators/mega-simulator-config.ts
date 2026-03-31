@@ -38,14 +38,29 @@ const DEFAULT_CONFIG: MegaSimulatorConfig = {
 };
 
 export function loadConfigFromEnv(): MegaSimulatorConfig {
+  const domainCount = parseInt(process.env['DOMAIN_COUNT'] ?? String(DEFAULT_CONFIG.domainCount), 10);
+  const pagesPerDomain = parseInt(process.env['PAGES_PER_DOMAIN'] ?? String(DEFAULT_CONFIG.pagesPerDomain), 10);
+  const linksPerPage = parseInt(process.env['LINKS_PER_PAGE'] ?? String(DEFAULT_CONFIG.linksPerPage), 10);
+  const port = parseInt(process.env['MEGA_SIMULATOR_PORT'] ?? String(DEFAULT_CONFIG.port), 10);
+
+  if (domainCount < 1 || domainCount > 10000) {
+    throw new Error(`DOMAIN_COUNT must be 1-10000, got ${String(domainCount)}`);
+  }
+  if (pagesPerDomain < 1 || pagesPerDomain > 1000) {
+    throw new Error(`PAGES_PER_DOMAIN must be 1-1000, got ${String(pagesPerDomain)}`);
+  }
+  if (linksPerPage < 0 || linksPerPage > 100) {
+    throw new Error(`LINKS_PER_PAGE must be 0-100, got ${String(linksPerPage)}`);
+  }
+
   return {
-    domainCount: parseInt(process.env['DOMAIN_COUNT'] ?? String(DEFAULT_CONFIG.domainCount), 10),
-    pagesPerDomain: parseInt(process.env['PAGES_PER_DOMAIN'] ?? String(DEFAULT_CONFIG.pagesPerDomain), 10),
+    domainCount,
+    pagesPerDomain,
     crossDomainLinkRatio: parseFloat(process.env['CROSS_DOMAIN_LINK_RATIO'] ?? String(DEFAULT_CONFIG.crossDomainLinkRatio)),
     chaosDomainRatio: parseFloat(process.env['CHAOS_DOMAIN_RATIO'] ?? String(DEFAULT_CONFIG.chaosDomainRatio)),
     disallowedPathRatio: parseFloat(process.env['DISALLOWED_PATH_RATIO'] ?? String(DEFAULT_CONFIG.disallowedPathRatio)),
-    linksPerPage: parseInt(process.env['LINKS_PER_PAGE'] ?? String(DEFAULT_CONFIG.linksPerPage), 10),
-    port: parseInt(process.env['MEGA_SIMULATOR_PORT'] ?? String(DEFAULT_CONFIG.port), 10),
+    linksPerPage,
+    port,
   };
 }
 

@@ -20,8 +20,16 @@ sim.server.listen(config.port, '0.0.0.0', () => {
   );
 });
 
+const SHUTDOWN_TIMEOUT_MS = 10_000;
+
 const shutdown = (): void => {
   console.log('Shutting down mega simulator...');
+  const forceExit = setTimeout(() => {
+    console.error('Shutdown timed out, forcing exit');
+    process.exit(1);
+  }, SHUTDOWN_TIMEOUT_MS);
+  forceExit.unref();
+
   sim.close().then(
     () => { process.exit(0); },
     () => { process.exit(1); },

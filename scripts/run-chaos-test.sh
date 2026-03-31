@@ -5,6 +5,7 @@
 set -euo pipefail
 
 NAMESPACE="${CHAOS_NAMESPACE:-chaos-mesh}"
+MONITORING_NS="${MONITORING_NAMESPACE:-default}"
 CHAOS_DIR="infra/k8s/chaos"
 RESULTS_DIR="${RESULTS_DIR:-/tmp/chaos-test-results}"
 mkdir -p "$RESULTS_DIR"
@@ -24,16 +25,30 @@ check_prereqs() {
     exit 1
   fi
   log "Chaos Mesh CRDs found"
+
+  # Pause ArgoCD auto-sync during chaos tests to prevent self-heal interference (F-015)
+  if kubectl get app ipf-crawler -n argocd &>/dev/null; then
+    log "Pausing ArgoCD auto-sync for ipf-crawler..."
+    kubectl patch app ipf-crawler -n argocd --type merge \
+      -p '{"spec":{"syncPolicy":{"automated":null}}}' 2>/dev/null || \
+      log "WARNING: Could not pause ArgoCD sync"
+  fi
 }
 
 snapshot_metrics() {
   local phase=$1
   local file="$RESULTS_DIR/${phase}-metrics.txt"
   log "Capturing metrics snapshot: $phase"
-  kubectl exec -n monitoring deploy/prometheus-server -- \
-    wget -qO- 'http://localhost:9090/api/v1/query?query=up' > "$file" 2>/dev/null || true
 
-  # Capture pod status
+  if kubectl get ns "$MONITORING_NS" &>/dev/null; then
+    kubectl exec -n "$MONITORING_NS" deploy/prometheus-server -- \
+      wget -qO- 'http://localhost:9090/api/v1/query?query=up' > "$file" 2>/dev/null || \
+      log "WARNING: Metrics capture failed for $phase (Prometheus unreachable)"
+  else
+    log "WARNING: Namespace $MONITORING_NS not found — skipping metrics capture"
+  fi
+
+  # Capture pod status (always works)
   kubectl get pods -n ipf -o wide > "$RESULTS_DIR/${phase}-pods.txt" 2>/dev/null || true
 }
 
@@ -56,6 +71,14 @@ cleanup() {
   for f in "$CHAOS_DIR"/*.yml; do
     kubectl delete -f "$f" --ignore-not-found=true 2>/dev/null || true
   done
+
+  # Restore ArgoCD auto-sync
+  if kubectl get app ipf-crawler -n argocd &>/dev/null; then
+    log "Restoring ArgoCD auto-sync..."
+    kubectl patch app ipf-crawler -n argocd --type merge \
+      -p '{"spec":{"syncPolicy":{"automated":{"prune":true,"selfHeal":true}}}}' 2>/dev/null || true
+  fi
+
   log "Cleanup complete"
 }
 
