@@ -1,0 +1,109 @@
+{
+  "title": "Log Explorer",
+  "uid": "log-explorer",
+  "panels": [
+    {
+      "title": "Log Volume by Level",
+      "type": "timeseries",
+      "gridPos": { "h": 6, "w": 24, "x": 0, "y": 0 },
+      "datasource": { "type": "loki", "uid": "loki" },
+      "targets": [
+        {
+          "expr": "sum by (level) (count_over_time({service=~\"$service\"} [$__interval]))",
+          "legendFormat": "{{level}}"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "fillOpacity": 40,
+            "stacking": { "mode": "normal" },
+            "drawStyle": "bars"
+          }
+        }
+      }
+    },
+    {
+      "title": "Error Log Rate",
+      "type": "timeseries",
+      "gridPos": { "h": 6, "w": 12, "x": 0, "y": 6 },
+      "datasource": { "type": "loki", "uid": "loki" },
+      "targets": [
+        {
+          "expr": "sum(count_over_time({service=~\"$service\", level=~\"error|fatal\"} [$__interval]))",
+          "legendFormat": "Errors + Fatals"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "custom": { "fillOpacity": 30 },
+          "color": { "fixedColor": "red", "mode": "fixed" }
+        }
+      }
+    },
+    {
+      "title": "Top Error Messages",
+      "type": "table",
+      "gridPos": { "h": 6, "w": 12, "x": 12, "y": 6 },
+      "datasource": { "type": "loki", "uid": "loki" },
+      "targets": [
+        {
+          "expr": "topk(10, sum by (msg) (count_over_time({service=~\"$service\", level=\"error\"} | json | __error__=\"\" [$__range])))",
+          "legendFormat": "{{msg}}"
+        }
+      ]
+    },
+    {
+      "title": "Live Logs — All Services",
+      "type": "logs",
+      "gridPos": { "h": 12, "w": 24, "x": 0, "y": 12 },
+      "datasource": { "type": "loki", "uid": "loki" },
+      "targets": [
+        {
+          "expr": "{service=~\"$service\"} | json"
+        }
+      ],
+      "options": {
+        "showTime": true,
+        "sortOrder": "Descending",
+        "enableLogDetails": true,
+        "dedupStrategy": "none",
+        "wrapLogMessage": true
+      }
+    },
+    {
+      "title": "Logs with Trace Correlation",
+      "type": "logs",
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 24 },
+      "datasource": { "type": "loki", "uid": "loki" },
+      "targets": [
+        {
+          "expr": "{service=~\"$service\"} |= \"traceId\" | json"
+        }
+      ],
+      "options": {
+        "showTime": true,
+        "enableLogDetails": true
+      }
+    }
+  ],
+  "templating": {
+    "list": [
+      {
+        "name": "service",
+        "type": "custom",
+        "current": { "text": "crawler", "value": "crawler" },
+        "options": [
+          { "text": "All", "value": ".*" },
+          { "text": "crawler", "value": "crawler" },
+          { "text": "web-simulator", "value": "web-simulator" },
+          { "text": "mega-simulator", "value": "mega-simulator" }
+        ],
+        "multi": false
+      }
+    ]
+  },
+  "time": { "from": "now-30m", "to": "now" },
+  "refresh": "5s",
+  "schemaVersion": 39
+}

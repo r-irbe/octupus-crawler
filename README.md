@@ -49,11 +49,13 @@ The `--profile demo` flag adds the crawler and a web simulator (7-page determini
 | Prometheus | 9091 | Metrics scraping + alerting |
 | Grafana | 3000 | Dashboards + trace exploration |
 | Jaeger | 16686 | Distributed tracing UI |
+| Loki | 3100 | Centralized log aggregation |
+| Promtail | — | Docker log collection agent |
 
 ### Run on Local Kubernetes (k3d)
 
 ```bash
-pnpm k8s:setup     # Create k3d cluster + install ArgoCD
+pnpm k8s:setup     # Create k3d cluster + install ArgoCD + Chaos Mesh
 pnpm k8s:build     # Build and push Docker image
 pnpm k8s:e2e       # Run E2E tests against the cluster
 pnpm k8s:teardown  # Tear down cluster
@@ -124,6 +126,115 @@ kubectl port-forward -n ipf svc/web-simulator 8080:8080
 ```
 
 For full observability in k8s, deploy the Prometheus/Grafana stack (e.g. via `kube-prometheus-stack` Helm chart) — the crawler pods already expose metrics via annotations (`prometheus.io/scrape: "true"`, `prometheus.io/port: "9090"`).
+
+---
+
+## Load Testing & Chaos Engineering
+
+### Mega Simulator — 1000+ Domains at Scale
+
+The mega simulator generates a configurable virtual web of thousands of domains and tens of thousands of pages for realistic large-scale load testing:
+
+```bash
+# Build and run the mega simulator
+docker build -f infra/docker/Dockerfile.mega-simulator -t mega-simulator .
+docker run -p 8080:8080 \
+  -e DOMAIN_COUNT=1000 \
+  -e PAGES_PER_DOMAIN=50 \
+  -e CHAOS_DOMAIN_RATIO=0.2 \
+  mega-simulator
+```
+
+| Parameter | Default | Description |
+| --------- | ------- | ----------- |
+| `DOMAIN_COUNT` | 1000 | Number of virtual domains |
+| `PAGES_PER_DOMAIN` | 50 | Pages per domain (total: domains × pages) |
+| `CHAOS_DOMAIN_RATIO` | 0.2 | 20% of domains inject chaos (slow, 5xx, redirect chains, intermittent, rate limiting) |
+| `CROSS_DOMAIN_LINK_RATIO` | 0.1 | Percentage of links that cross domain boundaries |
+| `DISALLOWED_PATH_RATIO` | 0.1 | Pages blocked via per-domain `robots.txt` |
+
+Default configuration: **1,000 domains × 50 pages = 50,000 unique URLs** with deterministic content (SHA-256 fingerprints for dedup verification), cross-domain link graphs, per-domain `robots.txt`, and 5 chaos scenario types applied to 200 domains.
+
+### k6 Load Tests
+
+Three load profiles targeting different system properties:
+
+```bash
+# Sustained throughput — 100 URL/s for 60s
+k6 run packages/testing/src/load/throughput.k6.js
+
+# Burst backpressure — 10,000 URLs at once
+k6 run packages/testing/src/load/backpressure.k6.js
+
+# Mega crawl — 500 URL/s for 30 min across 1000 domains
+# With real-time Prometheus metrics:
+k6 run --out experimental-prometheus-rw \
+  -e K6_PROMETHEUS_RW_SERVER_URL=http://localhost:9091/api/v1/write \
+  -e SIMULATOR_HOST=http://localhost:8080 \
+  packages/testing/src/load/mega-crawl.k6.js
+```
+
+### Chaos Testing (Chaos Mesh on k3d)
+
+Five chaos experiment types are pre-defined as Kubernetes CRDs in `infra/k8s/chaos/`:
+
+| Experiment | Type | Effect |
+| ----------- | ------ | ------- |
+| Pod Kill | PodChaos | Kills one crawler-worker pod randomly |
+| Network Delay | NetworkChaos | 200ms latency + 50ms jitter to mega-simulator |
+| Network Partition | NetworkChaos | Full partition between crawler-worker ↔ Dragonfly (Redis) |
+| CPU Stress | StressChaos | 80% CPU load on 2 cores of one crawler pod |
+| DNS Failure | DNSChaos | DNS resolution failures for mega-simulator |
+
+Run the automated 25-minute chaos sequence:
+
+```bash
+scripts/run-chaos-test.sh
+
+# Sequence: 5m baseline → 5m pod kills → 5m network delay
+#         → 5m CPU stress → 5m recovery
+```
+
+### Autoscaling Validation
+
+Test HPA-driven pod scaling under staged load:
+
+```bash
+scripts/run-autoscale-test.sh
+
+# Ramp: 3m at 50 URL/s → 5m at 250 URL/s → 5m at 500 URL/s → 5m cool-down
+```
+
+### Grafana Dashboard Suite
+
+Seven dashboards auto-provision via `infra/monitoring/dashboards/`:
+
+| Dashboard | Key Panels | Data Sources |
+| --------- | ---------- | ------------ |
+| **Crawler Overview** | Fetch rate, error rate, latency P50/P95/P99, frontier size, worker utilization | Prometheus |
+| **Scenario Timeline** | Crawl throughput with chaos/alert annotations, SLO gauges, log volume | Prometheus, Loki |
+| **Chaos Events** | Active experiments, MTTR, circuit breaker state, pod restarts, error rate | Prometheus, Loki |
+| **Infrastructure Health** | CPU/memory per pod, Redis/PostgreSQL metrics, ArgoCD sync status | Prometheus |
+| **Alert Status** | Firing alerts table, history, evaluation rate, state distribution | Prometheus |
+| **Trace Analytics** | Latency heatmap, error by operation, slowest P99, trace search | Jaeger, Prometheus |
+| **Log Explorer** | Volume by level, error rate, top errors, live logs, trace-correlated logs | Loki |
+
+Dashboards use color-coded annotations: **blue** (k6 load phases), **red** (chaos events), **green** (ArgoCD syncs), **orange** (alert firings).
+
+### ArgoCD Integration
+
+The setup script installs ArgoCD in k3d with a pre-configured Application CRD:
+
+```bash
+# Access ArgoCD UI
+kubectl port-forward svc/argocd-server -n argocd 8443:443
+
+# Get initial admin password
+kubectl -n argocd get secret argocd-initial-admin-secret \
+  -o jsonpath='{.data.password}' | base64 -d
+```
+
+ArgoCD syncs from `infra/k8s/overlays/dev` with automated self-healing and retry. Sync events appear as green annotations on the Scenario Timeline dashboard. The Infrastructure Health dashboard tracks ArgoCD sync status and health in real time.
 
 ---
 
@@ -229,7 +340,9 @@ Each decision is documented as an Architecture Decision Record (ADR) in `docs/ad
 | Integration | 26 | Vitest + Testcontainers | Real Redis, PostgreSQL, MinIO |
 | Property | 7 suites | fast-check | None — invariant checking |
 | E2E | 18 | Vitest + k3d | Full Kubernetes cluster |
-| **Total** | **180** | | |
+| Load | 3 | k6 | Mega simulator (50K URLs) |
+| Chaos | 5 CRDs | Chaos Mesh | k3d cluster |
+| **Total** | **180+** | | |
 
 **Zero mock infrastructure** — integration tests use real containers (Testcontainers), never `vi.mock('redis')`. Property tests verify invariants of critical algorithms (circuit breaker state transitions, retry backoff, token bucket capacity, SSRF IP range coverage, URL normalization idempotence).
 
@@ -273,7 +386,7 @@ GET    /metrics                    Prometheus metrics
 
 ## Observability
 
-Structured logging (Pino), metrics (Prometheus + 12 alert rules), tracing (OpenTelemetry → Jaeger), dashboards (Grafana, auto-provisioned). See [Accessing the UIs](#accessing-the-uis) for details.
+Structured logging (Pino → Loki), metrics (Prometheus + 12 alert rules), tracing (OpenTelemetry → Jaeger), centralized log aggregation (Loki + Promtail), dashboards (7 auto-provisioned Grafana dashboards). Full trace-to-log correlation: click a trace ID in Jaeger to see correlated logs in Loki, or click a log entry to jump to the Jaeger trace. See [Accessing the UIs](#accessing-the-uis) and [Load Testing & Chaos Engineering](#load-testing--chaos-engineering) for details.
 
 ---
 
@@ -294,6 +407,7 @@ pnpm typespec:compile        # Compile TypeSpec → OpenAPI
 ## Documentation
 
 - **Architecture Decision Records**: `docs/adr/` — 22 ADRs covering every major technical decision
-- **Feature Specifications**: `docs/specs/` — 22 features with requirements (EARS format), design, and task tracking
+- **Feature Specifications**: `docs/specs/` — 23 features with requirements (EARS format), design, and task tracking
+- **Load Test + Observability Spec**: `docs/specs/load-test-observability/` — 35 requirements (mega simulator, Loki, Grafana dashboards, ArgoCD, Chaos Mesh, scaled load tests)
 - **Architectural Review**: `docs/architecture-review-2026-03-31.md` — multi-perspective review
 - **Worklogs**: `docs/worklogs/` — chronological session logs

@@ -48,10 +48,38 @@ k3d cluster create "$CLUSTER_NAME" \
 echo "Waiting for nodes to be Ready..."
 kubectl wait --for=condition=Ready node --all --timeout=60s
 
+# ── ArgoCD Installation (REQ-LTO-020) ───────────────
+echo ""
+echo "=== Installing ArgoCD ==="
+kubectl create namespace argocd --dry-run=client -o yaml | kubectl apply -f -
+kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/v2.13.3/manifests/install.yaml
+echo "Waiting for ArgoCD server..."
+kubectl wait --for=condition=available deploy/argocd-server -n argocd --timeout=120s
+echo "ArgoCD installed. UI: kubectl port-forward svc/argocd-server -n argocd 8443:443"
+echo "Default password: kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath='{.data.password}' | base64 -d"
+
+# ── Chaos Mesh Installation (REQ-LTO-024) ───────────
+echo ""
+echo "=== Installing Chaos Mesh ==="
+if command -v helm &>/dev/null; then
+  helm repo add chaos-mesh https://charts.chaos-mesh.org 2>/dev/null || true
+  helm repo update chaos-mesh
+  helm upgrade --install chaos-mesh chaos-mesh/chaos-mesh \
+    --namespace chaos-mesh --create-namespace \
+    --set chaosDaemon.runtime=containerd \
+    --set chaosDaemon.socketPath=/run/k3s/containerd/containerd.sock \
+    --wait --timeout=120s
+  echo "Chaos Mesh installed. Dashboard: kubectl port-forward svc/chaos-dashboard -n chaos-mesh 2333:2333"
+else
+  echo "WARNING: helm not found — skipping Chaos Mesh install. Install helm to enable chaos testing."
+fi
+
 echo ""
 echo "=== Cluster Ready ==="
 kubectl cluster-info
 kubectl get nodes -o wide
 echo ""
 echo "Registry: k3d-${REGISTRY_NAME}:${REGISTRY_PORT}"
+echo "ArgoCD UI: kubectl port-forward svc/argocd-server -n argocd 8443:443"
+echo "Chaos Mesh: kubectl port-forward svc/chaos-dashboard -n chaos-mesh 2333:2333"
 echo "To teardown: scripts/teardown-local.sh"

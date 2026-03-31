@@ -162,6 +162,32 @@ services:
       timeout: 3s
       retries: 5
 
+  # ── Loki (Log Aggregation) ───────────────────────────
+  # REQ-LTO-008: Centralized log store for all crawler container logs
+  # REQ-LTO-012: Docker Compose Loki stack
+  loki:
+    image: grafana/loki:3.0.0
+    command: ["-config.file=/etc/loki/local-config.yaml"]
+    ports:
+      - "3100:3100"
+    healthcheck:
+      test: ["CMD-SHELL", "wget --spider -q http://localhost:3100/ready || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── Promtail (Log Collector) ────────────────────────
+  # Scrapes Docker container logs and ships to Loki
+  promtail:
+    image: grafana/promtail:3.0.0
+    volumes:
+      - ../monitoring/promtail-config.yml:/etc/promtail/config.yml:ro
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    command: ["-config.file=/etc/promtail/config.yml"]
+    depends_on:
+      loki:
+        condition: service_healthy
+
   # ── Grafana ────────────────────────────────────────
   # REQ-INFRA-013: Pre-configured dashboards
   grafana:

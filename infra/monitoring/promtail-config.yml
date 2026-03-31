@@ -1,0 +1,50 @@
+# Promtail Configuration for IPF Crawler
+# Collects Docker container logs and ships to Loki
+# Implements: REQ-LTO-008, REQ-LTO-012
+
+server:
+  http_listen_port: 9080
+  grpc_listen_port: 0
+
+positions:
+  filename: /tmp/positions.yaml
+
+clients:
+  - url: http://loki:3100/loki/api/v1/push
+
+scrape_configs:
+  - job_name: docker
+    docker_sd_configs:
+      - host: unix:///var/run/docker.sock
+        refresh_interval: 5s
+    relabel_configs:
+      # Use container name as label
+      - source_labels: ['__meta_docker_container_name']
+        regex: '/(.*)'
+        target_label: container
+      # Use compose service name
+      - source_labels: ['__meta_docker_container_label_com_docker_compose_service']
+        target_label: service
+    pipeline_stages:
+      # Try parsing Pino JSON logs
+      - json:
+          expressions:
+            level: level
+            msg: msg
+            traceId: traceId
+            spanId: spanId
+            jobId: jobId
+            url: url
+            service_name: name
+      # Map Pino numeric levels to labels
+      - template:
+          source: level
+          template: '{{ if eq .Value "10" }}trace{{ else if eq .Value "20" }}debug{{ else if eq .Value "30" }}info{{ else if eq .Value "40" }}warn{{ else if eq .Value "50" }}error{{ else if eq .Value "60" }}fatal{{ else }}{{ .Value }}{{ end }}'
+      - labels:
+          level:
+          service_name:
+      # Keep traceId as structured metadata for log-to-trace correlation
+      - structured_metadata:
+          traceId:
+          spanId:
+          jobId:

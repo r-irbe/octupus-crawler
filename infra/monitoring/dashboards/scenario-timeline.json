@@ -1,0 +1,162 @@
+{
+  "annotations": {
+    "list": [
+      {
+        "datasource": { "type": "loki", "uid": "loki" },
+        "enable": true,
+        "expr": "{service=\"crawler\"} |= \"chaos\" | logfmt",
+        "iconColor": "red",
+        "name": "Chaos Events",
+        "tagKeys": "event",
+        "titleFormat": "Chaos: {{event}}"
+      },
+      {
+        "datasource": { "type": "prometheus", "uid": "prometheus" },
+        "enable": true,
+        "expr": "ALERTS{alertstate=\"firing\"}",
+        "iconColor": "orange",
+        "name": "Alerts Firing"
+      }
+    ]
+  },
+  "title": "Scenario Execution Timeline",
+  "uid": "scenario-timeline",
+  "panels": [
+    {
+      "title": "Crawl Throughput During Scenarios",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 0 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [
+        {
+          "expr": "sum(rate(fetches_total{status=\"success\"}[1m]))",
+          "legendFormat": "Successful fetches/s"
+        },
+        {
+          "expr": "sum(rate(fetches_total{status=\"error\"}[1m]))",
+          "legendFormat": "Failed fetches/s"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": { "unit": "reqps", "custom": { "fillOpacity": 10 } }
+      }
+    },
+    {
+      "title": "SLO Compliance — P95 Latency",
+      "type": "gauge",
+      "gridPos": { "h": 6, "w": 6, "x": 0, "y": 8 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum(rate(fetch_duration_seconds_bucket[5m])) by (le))"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "s",
+          "thresholds": {
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 3 },
+              { "color": "red", "value": 5 }
+            ]
+          },
+          "max": 10
+        }
+      }
+    },
+    {
+      "title": "SLO Compliance — Error Rate",
+      "type": "gauge",
+      "gridPos": { "h": 6, "w": 6, "x": 6, "y": 8 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [
+        {
+          "expr": "sum(rate(fetches_total{status=\"error\"}[5m])) / sum(rate(fetches_total[5m])) * 100"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "thresholds": {
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 3 },
+              { "color": "red", "value": 5 }
+            ]
+          },
+          "max": 100
+        }
+      }
+    },
+    {
+      "title": "Active Crawler Workers",
+      "type": "stat",
+      "gridPos": { "h": 6, "w": 6, "x": 12, "y": 8 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [
+        {
+          "expr": "count(up{job=\"crawler\"} == 1)"
+        }
+      ]
+    },
+    {
+      "title": "Frontier Queue Depth",
+      "type": "stat",
+      "gridPos": { "h": 6, "w": 6, "x": 18, "y": 8 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [
+        {
+          "expr": "frontier_size"
+        }
+      ],
+      "fieldConfig": {
+        "defaults": {
+          "thresholds": {
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "yellow", "value": 5000 },
+              { "color": "red", "value": 20000 }
+            ]
+          }
+        }
+      }
+    },
+    {
+      "title": "Log Volume by Level",
+      "type": "timeseries",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 14 },
+      "datasource": { "type": "loki", "uid": "loki" },
+      "targets": [
+        {
+          "expr": "sum by (level) (count_over_time({service=~\"crawler|web-simulator\"} [1m]))",
+          "legendFormat": "{{level}}"
+        }
+      ]
+    },
+    {
+      "title": "Recent Error Logs",
+      "type": "logs",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 14 },
+      "datasource": { "type": "loki", "uid": "loki" },
+      "targets": [
+        {
+          "expr": "{service=\"crawler\"} |~ \"error|fatal\" | json"
+        }
+      ]
+    }
+  ],
+  "templating": {
+    "list": [
+      {
+        "name": "namespace",
+        "type": "custom",
+        "current": { "text": "ipf", "value": "ipf" },
+        "options": [{ "text": "ipf", "value": "ipf" }]
+      }
+    ]
+  },
+  "time": { "from": "now-1h", "to": "now" },
+  "refresh": "10s",
+  "schemaVersion": 39
+}

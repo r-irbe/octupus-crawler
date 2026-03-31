@@ -1,5 +1,7 @@
 # Grafana Datasource Provisioning
-# Connects Grafana to Prometheus
+# Connects Grafana to Prometheus, Jaeger, and Loki
+# REQ-LTO-009: Loki datasource with trace correlation
+# REQ-LTO-010: Log → trace click-through via derivedFields
 
 apiVersion: 1
 
@@ -8,11 +10,30 @@ datasources:
     type: prometheus
     access: proxy
     url: http://prometheus:9090
+    uid: prometheus
     isDefault: true
     editable: true
+    jsonData:
+      exemplarTraceIdDestinations:
+        - name: traceID
+          datasourceUid: jaeger
 
   - name: Jaeger
     type: jaeger
     access: proxy
     url: http://jaeger:16686
+    uid: jaeger
     editable: true
+
+  - name: Loki
+    type: loki
+    access: proxy
+    url: http://loki:3100
+    uid: loki
+    editable: true
+    jsonData:
+      derivedFields:
+        - name: TraceID
+          datasourceUid: jaeger
+          matcherRegex: '"traceId":"([a-f0-9]+)"'
+          url: "$${__value.raw}"
