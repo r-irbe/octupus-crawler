@@ -36,6 +36,7 @@ services:
       # Observability
       METRICS_PORT: "9090"
       HEALTH_PORT: "8081"
+      OTEL_EXPORTER_OTLP_ENDPOINT: "http://jaeger:4318"
     ports:
       - "9090:9090"
       - "8081:8081"
@@ -48,6 +49,8 @@ services:
       minio:
         condition: service_healthy
       web-simulator:
+        condition: service_healthy
+      jaeger:
         condition: service_healthy
     profiles: ["demo"]
 
@@ -141,6 +144,23 @@ services:
       - "--config.file=/etc/prometheus/prometheus.yml"
       - "--storage.tsdb.path=/prometheus"
       - "--storage.tsdb.retention.time=7d"
+
+  # ── Jaeger (Tracing) ────────────────────────────────
+  # Distributed tracing backend with built-in OTLP collector.
+  # UI: http://localhost:16686 — search traces by service name, operation, tags
+  jaeger:
+    image: jaegertracing/jaeger:2.4
+    environment:
+      COLLECTOR_OTLP_ENABLED: "true"
+    ports:
+      - "16686:16686"   # Jaeger UI
+      - "4317:4317"     # OTLP gRPC
+      - "4318:4318"     # OTLP HTTP
+    healthcheck:
+      test: ["CMD-SHELL", "wget --spider -q http://localhost:16687/ || exit 1"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
 
   # ── Grafana ────────────────────────────────────────
   # REQ-INFRA-013: Pre-configured dashboards

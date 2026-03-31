@@ -37,17 +37,18 @@ docker compose -f infra/docker/docker-compose.dev.yml up
 docker compose -f infra/docker/docker-compose.dev.yml --profile demo up
 ```
 
-The `--profile demo` flag adds the crawler and a web simulator (7-page deterministic site with robots.txt and test scenarios). The crawler fetches pages, populates PostgreSQL/MinIO, and exports metrics — Grafana dashboards at http://localhost:3000 fill with real data.
+The `--profile demo` flag adds the crawler and a web simulator (7-page deterministic site with robots.txt and test scenarios). The crawler fetches pages, populates PostgreSQL/MinIO, and exports metrics — Grafana dashboards at <http://localhost:3000> fill with real data.
 
 | Service | Port | Purpose |
-|---------|------|---------|
+| --------- | ------ | --------- |
 | Crawler | 9090, 8081 | Metrics + health endpoints |
 | Web Simulator | 8080 | Deterministic crawl target (7 pages) |
 | PostgreSQL | 5432 | Crawl metadata storage |
 | MinIO | 9000, 9001 | S3-compatible page content |
 | Dragonfly | 6379 | Redis-compatible state store |
 | Prometheus | 9091 | Metrics scraping + alerting |
-| Grafana | 3000 | Dashboards (no auth in dev) |
+| Grafana | 3000 | Dashboards + trace exploration |
+| Jaeger | 16686 | Distributed tracing UI |
 
 ### Run on Local Kubernetes (k3d)
 
@@ -57,6 +58,72 @@ pnpm k8s:build     # Build and push Docker image
 pnpm k8s:e2e       # Run E2E tests against the cluster
 pnpm k8s:teardown  # Tear down cluster
 ```
+
+---
+
+## Accessing the UIs
+
+### Docker Compose
+
+Start the full demo stack:
+
+```bash
+docker compose -f infra/docker/docker-compose.dev.yml --profile demo up
+```
+
+| UI | URL | What to look for |
+| ---- | ----- | ----------------- |
+| **Grafana** | <http://localhost:3000> | Pre-provisioned "IPF Crawler Overview" dashboard (no login needed) |
+| **Prometheus** | <http://localhost:9091> | Raw PromQL queries, alert rule status |
+| **Jaeger** | <http://localhost:16686> | Distributed traces — search by service `ipf-crawler` |
+| **MinIO Console** | <http://localhost:9001> | Stored page content (login: `minioadmin` / `minioadmin`) |
+| **Web Simulator** | <http://localhost:8080> | The 7-page site the crawler targets |
+| **Crawler Health** | <http://localhost:8081> | Liveness + readiness probes |
+| **Crawler Metrics** | <http://localhost:9090/metrics> | Raw Prometheus metrics |
+
+#### Grafana Dashboard — IPF Crawler Overview
+
+The dashboard auto-provisions with 8 panels. After starting the demo, allow ~30 seconds for the first scrape cycle, then:
+
+| Panel | What it shows |
+| ------- | -------------- |
+| **Fetch Rate** | Successful vs errored fetches per second (timeseries) |
+| **Error Rate** | Percentage of failed fetches — green/yellow/red gauge |
+| **Stalled Jobs** | Rate of jobs stuck in BullMQ (should be zero) |
+| **Fetch Latency** | P50/P95/P99 response times as histogram quantiles |
+| **Frontier Size** | Current URL queue depth — drops to zero when crawl completes |
+| **URLs Discovered** | Rate of new URLs found via link extraction |
+| **Worker Utilization** | Percentage of worker capacity in use |
+| **Coordinator Restarts** | Restart counter — should stay at zero |
+
+You can also explore traces directly in Grafana under **Explore → Jaeger** datasource.
+
+#### Viewing Traces in Jaeger
+
+Open <http://localhost:16686> and select service **ipf-crawler** from the dropdown. Each trace shows the crawl pipeline for a single URL: DNS resolution → HTTP fetch → SSRF validation → HTML parse → link extraction. Click any trace to see the full span waterfall with timing, status codes, and error details.
+
+### Local Kubernetes (k3d)
+
+Monitoring is not deployed in k8s by default (it uses Prometheus pod annotations for scraping). Use `kubectl port-forward` to access services:
+
+```bash
+# Crawler metrics
+kubectl port-forward -n ipf deploy/crawler-worker 9090:9090
+
+# MinIO Console
+kubectl port-forward -n ipf svc/minio 9001:9001
+
+# PostgreSQL (for debugging)
+kubectl port-forward -n ipf svc/postgresql 5432:5432
+
+# Dragonfly/Redis
+kubectl port-forward -n ipf svc/dragonfly 6379:6379
+
+# Web Simulator (e2e overlay only)
+kubectl port-forward -n ipf svc/web-simulator 8080:8080
+```
+
+For full observability in k8s, deploy the Prometheus/Grafana stack (e.g. via `kube-prometheus-stack` Helm chart) — the crawler pods already expose metrics via annotations (`prometheus.io/scrape: "true"`, `prometheus.io/port: "9090"`).
 
 ---
 
@@ -79,7 +146,7 @@ Build a web crawler that can:
 
 ### High-Level Design
 
-```
+```text
                     ┌─────────────┐
                     │ API Gateway │  Fastify + tRPC
                     │  (port 3000)│  Zod-validated requests
@@ -111,7 +178,7 @@ Build a web crawler that can:
 
 The domain layer has zero dependencies on infrastructure. All external concerns are behind port interfaces:
 
-```
+```text
 Domain (pure)          Ports (interfaces)           Adapters (infra)
 ─────────────          ──────────────────           ────────────────
 CrawlURL               Frontier                    BullMQQueueBackend
@@ -124,93 +191,40 @@ DomainEvents            CrawlURLRepository          DrizzleCrawlURLRepository
 
 ### Monorepo Structure
 
-```
-apps/
-  api-gateway/              # Fastify + tRPC HTTP API
+```text
+apps/api-gateway/              # Fastify + tRPC HTTP API
 packages/
-  core/                     # Domain types, errors, contracts (zero deps)
-  config/                   # Zod-validated environment config
-  database/                 # PostgreSQL (Drizzle) + S3 (MinIO) repositories
-  redis/                    # Redis connection, streams, pub/sub, circuit breaker
-  job-queue/                # BullMQ adapters (queue, consumer, DLQ)
-  http-fetching/            # HTTP client with SSRF guard, retry, politeness
-  url-frontier/             # URL priority queue + SHA-256 deduplication
-  crawl-pipeline/           # URL normalization, link discovery, pipeline stages
-  ssrf-guard/               # RFC 6890 IP validation, DNS pinning, per-hop SSRF checks
-  resilience/               # Circuit breaker, retry, timeout, token bucket, bulkhead
-  worker-management/        # Job consumer adapter, utilization tracking
-  completion-detection/     # Crawl completion via control plane + leader election
-  application-lifecycle/    # Startup orchestration, graceful shutdown
-  observability/            # OpenTelemetry + Pino + Prometheus metrics
-  api-router/               # tRPC router, Zod schemas, domain events
-  testing/                  # Testcontainers, generators, web simulator, E2E helpers
-  virtual-memory/           # Context budgeting for AI agent workflows
-  eslint-config/            # Shared strict ESLint configuration
+  core/                        # Domain types, errors, contracts (zero deps)
+  config/ database/ redis/     # Infrastructure adapters
+  job-queue/ url-frontier/     # BullMQ + priority queue + SHA-256 dedup
+  http-fetching/ ssrf-guard/   # HTTP client + RFC 6890 SSRF protection
+  crawl-pipeline/              # URL normalization, link discovery
+  resilience/                  # Circuit breaker, retry, timeout, token bucket
+  worker-management/           # Job consumer, utilization tracking
+  completion-detection/        # Crawl completion via control plane
+  application-lifecycle/       # Startup orchestration, graceful shutdown
+  observability/               # OpenTelemetry + Pino + Prometheus
+  api-router/ testing/         # tRPC router + Testcontainers helpers
 infra/
-  docker/                   # Dockerfile (multi-stage) + docker-compose.dev.yml
-  k8s/                      # Kustomize base + overlays (dev/staging/prod/e2e)
+  docker/                      # Dockerfile + docker-compose.dev.yml
+  k8s/                         # Kustomize base + overlays (dev/staging/prod/e2e)
 ```
 
 ---
 
 ## Key Design Decisions
 
-Each decision is documented as an Architecture Decision Record (ADR) in `docs/adr/`.
+Each decision is documented as an Architecture Decision Record (ADR) in `docs/adr/`. Highlights:
 
-### Error Handling — `neverthrow` Result Types
-
-Domain errors use `Result<T, DomainError>` (not thrown exceptions). Errors are discriminated unions:
-
-```typescript
-type FetchError =
-  | { kind: 'timeout'; url: string; ms: number }
-  | { kind: 'network'; url: string; cause: string }
-  | { kind: 'ssrf_blocked'; url: string; ip: string }
-  | { kind: 'too_many_redirects'; url: string; count: number }
-  // ... 5 more variants
-```
-
-`try/catch` is only used at infrastructure boundaries (HTTP handlers, database adapters).
-
-### SSRF Protection — Per-Hop Validation
-
-Every HTTP redirect is validated against RFC 6890 reserved IP ranges before following. This prevents attackers from using redirects to reach internal services:
-
-```
-Client → example.com → 302 → http://169.254.169.254/metadata → BLOCKED
-```
-
-The SSRF guard validates: private IPs, loopback, link-local, CGNAT, IPv4-mapped IPv6, multicast, and broadcast ranges. Verified with property-based tests (fast-check).
-
-### Resilience — 7-Layer Stack
-
-Built on `cockatiel` (ADR-009):
-
-1. **Circuit Breaker** — trips open after N failures, half-open recovery
-2. **Retry** — exponential backoff with jitter
-3. **Timeout** — cooperative cancellation
-4. **Bulkhead** — concurrency limits per domain
-5. **Token Bucket** — rate limiting
-6. **Sliding Window Rate Limiter** — Redis Lua for distributed rate limiting
-7. **Fallback** — degraded mode with metrics
-
-### TypeScript Strict Mode
-
-```json
-{
-  "strict": true,
-  "exactOptionalPropertyTypes": true,
-  "noUncheckedIndexedAccess": true,
-  "noImplicitOverride": true
-}
-```
-
-Zero `any` types across the entire codebase — enforced by ESLint as an error. All external input validated with Zod schemas. Array/map access returns `T | undefined`.
+- **Error Handling** — `neverthrow` `Result<T, DomainError>` with discriminated unions (9 variants for `FetchError`). `try/catch` only at infrastructure boundaries.
+- **SSRF Protection** — Every HTTP redirect validated against RFC 6890 reserved IP ranges before following. Blocks private IPs, loopback, link-local, CGNAT, IPv4-mapped IPv6. Verified with property-based tests.
+- **Resilience** — 7-layer stack on `cockatiel`: circuit breaker, retry (exponential + jitter), timeout, bulkhead, token bucket, Redis Lua sliding window, fallback.
+- **TypeScript Strict** — `strict: true`, `exactOptionalPropertyTypes`, `noUncheckedIndexedAccess`. Zero `any` types (ESLint error). All input validated with Zod.
 
 ### Testing Strategy
 
 | Type | Count | Framework | Infrastructure |
-|------|-------|-----------|---------------|
+| ------ | ------- | ----------- | --------------- |
 | Unit | 129 | Vitest | None — pure logic |
 | Integration | 26 | Vitest + Testcontainers | Real Redis, PostgreSQL, MinIO |
 | Property | 7 suites | fast-check | None — invariant checking |
@@ -224,7 +238,7 @@ Zero `any` types across the entire codebase — enforced by ESLint as an error. 
 ## Tech Stack
 
 | Layer | Technology | Why |
-|-------|-----------|-----|
+| ------- | ----------- | ----- |
 | Runtime | Node.js 22 | Native ESM, `using` keyword support |
 | Language | TypeScript 6.0 | Strict mode, `exactOptionalPropertyTypes` |
 | Monorepo | Turborepo + pnpm | Fast builds, dependency deduplication |
@@ -243,31 +257,23 @@ Zero `any` types across the entire codebase — enforced by ESLint as an error. 
 
 ## API
 
-Contract-first design (OpenAPI 3.1 at `openapi.yaml`, TypeSpec source at `specs/`).
+Contract-first design (OpenAPI 3.1 + TypeSpec). Internal services communicate via tRPC.
 
-```
+```text
 POST   /api/v1/crawls              Create a crawl session
 GET    /api/v1/crawls/:id          Get crawl status
 GET    /api/v1/crawls/:id/results  Get crawl results
 DELETE /api/v1/crawls/:id          Cancel a crawl
-
 GET    /health                     Liveness probe
-GET    /readyz                     Readiness probe (checks DB + Redis)
+GET    /readyz                     Readiness probe
 GET    /metrics                    Prometheus metrics
 ```
-
-Internal services communicate via tRPC (end-to-end typed, no codegen needed).
 
 ---
 
 ## Observability
 
-- **Logging**: Pino (structured JSON), request-scoped via AsyncLocalStorage
-- **Metrics**: Prometheus with 12 alert rules (fetch errors, queue depth, memory, latency)
-- **Tracing**: OpenTelemetry SDK with context propagation across services
-- **Dashboards**: Grafana (auto-provisioned in dev via Docker Compose)
-
-Alert rules are tested with `promtool` (`pnpm test:alerts`).
+Structured logging (Pino), metrics (Prometheus + 12 alert rules), tracing (OpenTelemetry → Jaeger), dashboards (Grafana, auto-provisioned). See [Accessing the UIs](#accessing-the-uis) for details.
 
 ---
 
@@ -277,29 +283,17 @@ Alert rules are tested with `promtool` (`pnpm test:alerts`).
 pnpm install                 # Install dependencies
 pnpm build                   # Build all packages
 pnpm test                    # Run unit tests
-pnpm lint                    # ESLint (strict mode)
-pnpm typecheck               # TypeScript type checking
-
 pnpm verify:guards           # Full guard chain (typecheck + lint + test)
-
 pnpm k8s:setup               # Create local k3d cluster
-pnpm k8s:build               # Build + push Docker image
 pnpm k8s:e2e                 # Run E2E tests on cluster
 pnpm k8s:teardown            # Tear down cluster
-
-pnpm k6:load                 # Load test (throughput)
-pnpm k6:backpressure         # Load test (backpressure)
-
 pnpm test:alerts             # Validate Prometheus alert rules
 pnpm typespec:compile        # Compile TypeSpec → OpenAPI
-pnpm typespec:lint           # Lint OpenAPI spec
 ```
-
----
 
 ## Documentation
 
 - **Architecture Decision Records**: `docs/adr/` — 22 ADRs covering every major technical decision
 - **Feature Specifications**: `docs/specs/` — 22 features with requirements (EARS format), design, and task tracking
-- **Architectural Review**: `docs/architecture-review-2026-03-31.md` — comprehensive multi-perspective review
-- **Worklogs**: `docs/worklogs/` — chronological session logs of all implementation work
+- **Architectural Review**: `docs/architecture-review-2026-03-31.md` — multi-perspective review
+- **Worklogs**: `docs/worklogs/` — chronological session logs
