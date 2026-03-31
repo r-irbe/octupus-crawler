@@ -19,14 +19,14 @@ Variant A (Full Stack): Mega simulator + chaos framework + Loki + ArgoCD + Grafa
 | G5 Guards | Done | 18/18 typecheck, 18/18 lint, 18/18 test |
 | G6 Commit | Done | `94ba9a0` |
 | G7 Update | Done | This update |
-| G8 RALPH | In Progress | |
-| G9 Worklog | Pending | |
-| G10 Report | Pending | |
-| G11 Specs | Pending | |
+| G8 RALPH | Done | APPROVED — 4 Major findings fixed (F-001,F-004,F-011,F-015) |
+| G9 Worklog | Done | docs/worklogs/2026-03-31-load-test-observability.md |
+| G10 Report | Done | Summary to user |
+| G11 Specs | Done | specs/index.md updated |
 
 ## Current State
 
-All implementation complete. Running G8 RALPH review council.
+Complete. All gates passed.
 
 ## Existing Requirement IDs (do NOT reuse)
 

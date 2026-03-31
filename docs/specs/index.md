@@ -86,6 +86,7 @@ Recommended build order based on dependency analysis across all task files:
 12. **infrastructure** — Docker, K8s, compose (needs application code)
 13. **testing-quality** — Test infrastructure, CI pipeline (needs all features)
 14. **agentic-setup** — Agent configuration, enforcement hooks, TDD workflows, CI pipeline for agent PRs (independent — can be implemented in parallel with features)
+15. **load-test-observability** — Mega simulator (50K URLs), Loki centralized logging, 6 Grafana dashboards, Chaos Mesh chaos testing, ArgoCD integration, k6 mega-crawl load tests (needs infrastructure)
 
 ## Gap Analysis Integration
 
