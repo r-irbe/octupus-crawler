@@ -30,14 +30,19 @@ pnpm verify:guards
 ### Run Locally (Docker Compose)
 
 ```bash
+# Infrastructure only (PostgreSQL, Redis, MinIO, Prometheus, Grafana)
 docker compose -f infra/docker/docker-compose.dev.yml up
+
+# Full demo — crawler + web simulator generating real traffic
+docker compose -f infra/docker/docker-compose.dev.yml --profile demo up
 ```
 
-This starts the full stack:
+The `--profile demo` flag adds the crawler and a web simulator (7-page deterministic site with robots.txt and test scenarios). The crawler fetches pages, populates PostgreSQL/MinIO, and exports metrics — Grafana dashboards at http://localhost:3000 fill with real data.
 
 | Service | Port | Purpose |
 |---------|------|---------|
 | Crawler | 9090, 8081 | Metrics + health endpoints |
+| Web Simulator | 8080 | Deterministic crawl target (7 pages) |
 | PostgreSQL | 5432 | Crawl metadata storage |
 | MinIO | 9000, 9001 | S3-compatible page content |
 | Dragonfly | 6379 | Redis-compatible state store |
