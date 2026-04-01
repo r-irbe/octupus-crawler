@@ -52,28 +52,15 @@
       "@typescript-eslint/typescript-estree>typescript": "^6.0.0"
     },
     "onlyBuiltDependencies": [
-      "-",
-      "'",
-      "[",
-      "]",
-      "@",
-      "*",
-      "a",
-      "b",
-      "c",
-      "e",
-      "f",
-      "g",
-      "j",
-      "k",
-      "m",
-      "o",
-      "p",
-      "r",
-      "s",
-      "t",
-      "u",
-      "x"
+      "@prisma/client",
+      "@prisma/engines",
+      "prisma",
+      "esbuild",
+      "cpu-features",
+      "msgpackr-extract",
+      "protobufjs",
+      "ssh2",
+      "unrs-resolver"
     ]
   }
 }

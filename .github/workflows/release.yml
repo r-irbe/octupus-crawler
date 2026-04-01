@@ -132,7 +132,7 @@ jobs:
           else
             git commit -m "chore(k8s): update image tags to sha-${GITHUB_SHA::7} [skip ci]
 
-Full commit: ${GITHUB_SHA}"
+            Full commit: ${GITHUB_SHA}"
             git pull --rebase origin main
             git push
           fi
