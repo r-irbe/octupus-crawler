@@ -22,9 +22,19 @@ spec:
       labels:
         app: dragonfly
     spec:
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 999
+        fsGroup: 999
+        seccompProfile:
+          type: RuntimeDefault
       containers:
         - name: dragonfly
           image: docker.dragonflydb.io/dragonflydb/dragonfly:v1.37.2
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop: ["ALL"]
           args: ["--appendonly", "yes"]
           ports:
             - containerPort: 6379
