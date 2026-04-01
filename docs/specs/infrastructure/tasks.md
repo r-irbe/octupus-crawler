@@ -52,6 +52,10 @@
 - [x] **T-INFRA-025**: Verify Prometheus data persists after container restart → REQ-INFRA-020 — *verified: `up` metric data survives Prometheus container restart via named volume*
 - [x] **T-INFRA-026**: Verify all runbook URLs resolve to existing documents → REQ-INFRA-021
 
+## Phase 8: K8s Security Hardening
+
+- [x] **T-INFRA-027**: Add pod + container security contexts to all K8s workloads → REQ-INFRA-002 — *11 workloads: runAsNonRoot, seccompProfile RuntimeDefault, drop ALL caps, allowPrivilegeEscalation false*
+
 ---
 
 ## Dependencies
