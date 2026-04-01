@@ -4,6 +4,7 @@ kind: Kustomization
 
 resources:
   - ../../base
+  - ../../monitoring
 
 patches:
   - target:

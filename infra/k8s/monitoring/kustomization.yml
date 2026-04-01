@@ -1,0 +1,19 @@
+# Kustomize — Monitoring stack (Prometheus, Jaeger, Loki, Promtail, Grafana)
+# Composes all monitoring components for k8s deployment
+# Note: grafana-dashboards ConfigMap created by scripts/create-dashboard-configmap.sh
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+namespace: ipf
+
+resources:
+  - prometheus.yml
+  - jaeger.yml
+  - loki.yml
+  - promtail.yml
+  - grafana.yml
+  - mega-simulator.yml
+
+labels:
+  - pairs:
+      app.kubernetes.io/part-of: ipf-monitoring

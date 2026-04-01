@@ -57,22 +57,34 @@ This starts the crawler targeting a 7-page deterministic web simulator. Within 3
 
 ## Running on Kubernetes (k3d)
 
-For production-like testing with pod scheduling, HPA autoscaling, ArgoCD GitOps, and Chaos Mesh fault injection:
+For production-like testing with full observability parity, HPA autoscaling, ArgoCD GitOps, and Chaos Mesh fault injection. The k8s deployment includes the **same monitoring stack** as Docker Compose — Prometheus, Jaeger, Loki, Grafana with all 7 dashboards:
 
 ```bash
-pnpm k8s:setup      # Creates k3d cluster + installs ArgoCD + Chaos Mesh
-pnpm k8s:build      # Builds Docker image → pushes to k3d registry
-pnpm k8s:e2e        # Runs 18 E2E tests against the live cluster
-pnpm k8s:teardown   # Tears down everything
+scripts/setup-local.sh        # Creates k3d cluster + ArgoCD + Chaos Mesh + monitoring
+scripts/run-k8s-e2e-test.sh   # Full E2E: simulator, monitoring, scaling, chaos (all scenarios)
+scripts/teardown-local.sh     # Tears down everything
 ```
+
+### What the E2E Test Verifies
+
+The test script (`scripts/run-k8s-e2e-test.sh`) runs 25+ assertions across 5 phases:
+
+1. **Mega Simulator** — health, pages, robots.txt, metrics, all 5 chaos types (slow/error/redirect/rate-limit/intermittent)
+2. **Monitoring Stack** — Prometheus scraping, Grafana datasources (Prometheus+Jaeger+Loki), Loki ready, Jaeger UI
+3. **Scale Up** — `kubectl scale` to 5 replicas, verify all ready, generate load
+4. **Scale Down** — scale to 1 replica, verify termination
+5. **Chaos** — Pod Kill (recovery), Network Delay (latency), CPU Stress (survival), DNS Failure (survival), Network Partition (worker↔Redis)
 
 ### Access Services in k3d
 
 ```bash
-kubectl port-forward -n ipf deploy/crawler-worker 9090:9090    # Metrics
-kubectl port-forward -n ipf svc/minio 9001:9001                # MinIO UI
+kubectl port-forward -n ipf svc/grafana 3000:3000              # Grafana (7 dashboards)
+kubectl port-forward -n ipf svc/jaeger 16686:16686             # Jaeger tracing
+kubectl port-forward -n ipf svc/prometheus 9091:9090           # Prometheus
+kubectl port-forward -n ipf svc/loki 3100:3100                 # Loki logs
+kubectl port-forward -n ipf svc/mega-simulator 8080:8080       # Mega simulator
 kubectl port-forward svc/argocd-server -n argocd 8443:443      # ArgoCD UI
-kubectl port-forward svc/chaos-dashboard -n chaos-mesh 2333:2333  # Chaos Mesh UI
+kubectl port-forward svc/chaos-dashboard -n chaos-mesh 2333:2333  # Chaos Mesh
 ```
 
 ArgoCD admin password: `kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath='{.data.password}' | base64 -d`
@@ -302,17 +314,18 @@ GET    /metrics                    Prometheus metrics
 ## Project Commands
 
 ```bash
-pnpm install                 # Install dependencies
-pnpm build                   # Build all packages
-pnpm test                    # Run unit tests
-pnpm verify:guards           # Full guard chain (typecheck + lint + test)
-pnpm k8s:setup               # Create k3d cluster + ArgoCD + Chaos Mesh
-pnpm k8s:e2e                 # Run E2E tests on cluster
-pnpm k8s:teardown            # Tear down cluster
-pnpm test:alerts             # Validate Prometheus alert rules
-pnpm typespec:compile        # Compile TypeSpec → OpenAPI
-scripts/run-chaos-test.sh    # 25-min orchestrated chaos sequence
-scripts/run-autoscale-test.sh  # HPA autoscaling ramp test
+pnpm install                       # Install dependencies
+pnpm build                         # Build all packages
+pnpm test                          # Run unit tests
+pnpm verify:guards                 # Full guard chain (typecheck + lint + test)
+scripts/setup-local.sh             # Create k3d cluster + ArgoCD + Chaos Mesh + monitoring
+scripts/run-k8s-e2e-test.sh       # Full E2E: simulator, monitoring, scaling, chaos
+scripts/run-k8s-chaos-e2e.sh      # Chaos + scaling tests only (requires port-forwards)
+scripts/run-chaos-test.sh          # 25-min orchestrated chaos sequence
+scripts/run-autoscale-test.sh      # HPA autoscaling ramp test
+scripts/teardown-local.sh          # Tear down k3d cluster
+pnpm test:alerts                   # Validate Prometheus alert rules
+pnpm typespec:compile              # Compile TypeSpec → OpenAPI
 ```
 
 ## Documentation

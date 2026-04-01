@@ -80,6 +80,40 @@ kubectl cluster-info
 kubectl get nodes -o wide
 echo ""
 echo "Registry: k3d-${REGISTRY_NAME}:${REGISTRY_PORT}"
-echo "ArgoCD UI: kubectl port-forward svc/argocd-server -n argocd 8443:443"
-echo "Chaos Mesh: kubectl port-forward svc/chaos-dashboard -n chaos-mesh 2333:2333"
-echo "To teardown: scripts/teardown-local.sh"
+echo ""
+
+# ── Build & Push Images ─────────────────────────────
+echo "=== Building & Pushing Images ==="
+REGISTRY="k3d-${REGISTRY_NAME}:${REGISTRY_PORT}"
+
+echo "Building mega-simulator..."
+docker build -t "${REGISTRY}/ipf-mega-simulator:latest" \
+  -f infra/docker/Dockerfile.mega-simulator . 2>/dev/null && \
+  docker push "${REGISTRY}/ipf-mega-simulator:latest" && \
+  echo "  mega-simulator pushed" || \
+  echo "WARNING: mega-simulator build failed (non-critical)"
+
+echo "Building web-simulator..."
+docker build -t "${REGISTRY}/ipf-web-simulator:latest" \
+  -f infra/docker/Dockerfile.web-simulator . 2>/dev/null && \
+  docker push "${REGISTRY}/ipf-web-simulator:latest" && \
+  echo "  web-simulator pushed" || \
+  echo "WARNING: web-simulator build failed (non-critical)"
+
+# ── Deploy Base + Monitoring ─────────────────────────
+echo ""
+echo "=== Deploying IPF Stack ==="
+kubectl create namespace ipf --dry-run=client -o yaml | kubectl apply -f -
+bash "$(dirname "$0")/create-dashboard-configmap.sh" || \
+  echo "WARNING: dashboard configmap creation failed"
+kubectl apply -k infra/k8s/overlays/dev/ 2>/dev/null || \
+  echo "WARNING: kustomize apply failed — some resources may need image builds first"
+
+echo ""
+echo "=== Setup Complete ==="
+echo "ArgoCD UI:     kubectl port-forward svc/argocd-server -n argocd 8443:443"
+echo "Chaos Mesh:    kubectl port-forward svc/chaos-dashboard -n chaos-mesh 2333:2333"
+echo "Grafana:       kubectl port-forward svc/grafana -n ipf 3000:3000"
+echo "Jaeger:        kubectl port-forward svc/jaeger -n ipf 16686:16686"
+echo "Prometheus:    kubectl port-forward svc/prometheus -n ipf 9091:9090"
+echo "To teardown:   scripts/teardown-local.sh"

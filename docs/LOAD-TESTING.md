@@ -261,24 +261,32 @@ The Application CRD (`infra/k8s/argocd/ipf-application.yml`) syncs from `infra/k
 
 ### On k3d (Full Production Simulation)
 
+The new `run-k8s-e2e-test.sh` script automates the entire workflow — build, deploy, verify, scale, chaos:
+
 ```bash
-# 1. Create cluster with ArgoCD + Chaos Mesh
-pnpm k8s:setup
+# 1. Create cluster with ArgoCD + Chaos Mesh + monitoring stack
+scripts/setup-local.sh
 
-# 2. Build and deploy crawler
-pnpm k8s:build
+# 2. Run full E2E test (builds image, deploys, tests all scenarios)
+scripts/run-k8s-e2e-test.sh
 
-# 3. Deploy mega simulator
-docker build -f infra/docker/Dockerfile.mega-simulator -t mega-simulator .
-docker tag mega-simulator k3d-ipf-registry.localhost:5111/mega-simulator:latest
-docker push k3d-ipf-registry.localhost:5111/mega-simulator:latest
+# 3. Or run chaos + scaling tests separately (with port-forwards active)
+scripts/run-k8s-chaos-e2e.sh
+```
 
-# 4. Port-forward Grafana, then run chaos test
+The E2E test verifies 25+ assertions in 5 phases: simulator endpoints, monitoring stack, scale up/down, all chaos scenarios, and post-chaos recovery. Results saved to `/tmp/k8s-e2e-results/`.
+
+```bash
+# Port-forward to access dashboards during tests
+kubectl port-forward -n ipf svc/grafana 3000:3000 &
+kubectl port-forward -n ipf svc/jaeger 16686:16686 &
+
+# Run full chaos sequence (25 min) with Grafana dashboard open
 scripts/run-chaos-test.sh
 
-# 5. In parallel, run mega crawl
+# In parallel, run mega crawl with live Grafana metrics
 k6 run --out experimental-prometheus-rw \
-  -e K6_PROMETHEUS_RW_SERVER_URL=http://prometheus:9090/api/v1/write \
+  -e K6_PROMETHEUS_RW_SERVER_URL=http://localhost:9091/api/v1/write \
   packages/testing/src/load/mega-crawl.k6.js
 ```
 
@@ -301,4 +309,4 @@ Full EARS requirements (35 requirements: REQ-LTO-001..035), architecture design,
 
 ---
 
-> **Provenance**: Created 2026-03-31. Verified with manual testing of mega simulator (all 5 chaos types confirmed working), Loki + Grafana datasource provisioning (7 dashboards auto-provisioned).
+> **Provenance**: Created 2026-03-31. Updated 2026-04-01: added k8s monitoring parity (Prometheus, Jaeger, Loki, Grafana deployed via kustomize), E2E test script with scaling and chaos verification.

@@ -1,13 +1,15 @@
 # Kustomize — E2E test overlay
 # Implements: REQ-K8E-009
-# Minimal resources for local k3d E2E testing
+# Full observability + mega simulator + chaos testing
 
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 
 resources:
   - ../../base
+  - ../../monitoring
   - web-simulator.yml
+  - hpa.yaml
 
 patches:
   - target:

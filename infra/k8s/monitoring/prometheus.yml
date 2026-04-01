@@ -1,0 +1,191 @@
+# Prometheus — Metrics collection for k8s deployment
+# Matches docker-compose parity: scrapes crawler, alert rules, 7d retention
+# REQ-INFRA-012, REQ-INFRA-014, REQ-INFRA-020
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-config
+  namespace: ipf
+  labels:
+    app: prometheus
+data:
+  prometheus.yml: |
+    global:
+      scrape_interval: 15s
+      evaluation_interval: 15s
+    rule_files:
+      - "/etc/prometheus/alert-rules.yml"
+    scrape_configs:
+      - job_name: "crawler"
+        kubernetes_sd_configs:
+          - role: pod
+            namespaces:
+              names: ["ipf"]
+        relabel_configs:
+          - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scrape]
+            action: keep
+            regex: "true"
+          - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_port]
+            action: replace
+            target_label: __address__
+            regex: (.+)
+            replacement: ${1}:$1
+          - source_labels: [__meta_kubernetes_pod_ip, __meta_kubernetes_pod_annotation_prometheus_io_port]
+            action: replace
+            target_label: __address__
+            regex: (.+);(.+)
+            replacement: $1:$2
+          - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_path]
+            action: replace
+            target_label: __metrics_path__
+            regex: (.+)
+          - source_labels: [__meta_kubernetes_pod_name]
+            target_label: pod
+          - source_labels: [__meta_kubernetes_pod_label_app]
+            target_label: app
+      - job_name: "prometheus"
+        static_configs:
+          - targets: ["localhost:9090"]
+      - job_name: "mega-simulator"
+        kubernetes_sd_configs:
+          - role: pod
+            namespaces:
+              names: ["ipf"]
+        relabel_configs:
+          - source_labels: [__meta_kubernetes_pod_label_app]
+            action: keep
+            regex: mega-simulator
+          - source_labels: [__meta_kubernetes_pod_ip]
+            action: replace
+            target_label: __address__
+            regex: (.+)
+            replacement: $1:8080
+  alert-rules.yml: |
+    groups:
+      - name: ipf-crawler-alerts
+        rules:
+          - alert: HighErrorRate
+            expr: |
+              (sum(rate(fetches_total{status="error"}[2m])) / sum(rate(fetches_total[2m]))) > 0.5
+              and sum(rate(fetches_total[2m])) > 0.1
+            for: 2m
+            labels:
+              severity: warning
+            annotations:
+              summary: "High fetch error rate ({{ $value | humanizePercentage }})"
+          - alert: ZeroFetchRate
+            expr: |
+              frontier_size > 0
+              and on() sum(rate(fetches_total{status="success"}[5m])) == 0
+            for: 5m
+            labels:
+              severity: critical
+            annotations:
+              summary: "Zero successful fetches with non-empty frontier"
+          - alert: P95LatencyHigh
+            expr: histogram_quantile(0.95, rate(fetch_duration_seconds_bucket[3m])) > 10
+            for: 3m
+            labels:
+              severity: warning
+            annotations:
+              summary: "P95 fetch latency > 10s"
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prometheus
+  namespace: ipf
+  labels:
+    app: prometheus
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: prometheus
+  template:
+    metadata:
+      labels:
+        app: prometheus
+    spec:
+      serviceAccountName: prometheus
+      containers:
+        - name: prometheus
+          image: prom/prometheus:v2.50.0
+          args:
+            - "--config.file=/etc/prometheus/prometheus.yml"
+            - "--storage.tsdb.path=/prometheus"
+            - "--storage.tsdb.retention.time=7d"
+            - "--web.enable-lifecycle"
+          ports:
+            - containerPort: 9090
+          volumeMounts:
+            - name: config
+              mountPath: /etc/prometheus/prometheus.yml
+              subPath: prometheus.yml
+            - name: config
+              mountPath: /etc/prometheus/alert-rules.yml
+              subPath: alert-rules.yml
+            - name: data
+              mountPath: /prometheus
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+          readinessProbe:
+            httpGet:
+              path: /-/ready
+              port: 9090
+            initialDelaySeconds: 5
+            periodSeconds: 10
+      volumes:
+        - name: config
+          configMap:
+            name: prometheus-config
+        - name: data
+          emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: prometheus
+  namespace: ipf
+  labels:
+    app: prometheus
+spec:
+  selector:
+    app: prometheus
+  ports:
+    - port: 9090
+      targetPort: 9090
+---
+# ServiceAccount + RBAC for pod discovery
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: prometheus
+  namespace: ipf
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: prometheus-ipf
+rules:
+  - apiGroups: [""]
+    resources: ["pods", "nodes", "endpoints", "services"]
+    verbs: ["get", "list", "watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: prometheus-ipf
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: prometheus-ipf
+subjects:
+  - kind: ServiceAccount
+    name: prometheus
+    namespace: ipf

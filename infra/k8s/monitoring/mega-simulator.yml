@@ -1,0 +1,76 @@
+# Mega Simulator — thousands of domains with chaos scenarios for k8s E2E
+# Replaces simple web-simulator with full-scale test target
+# REQ-LTO-007: Multi-pod stateless deployment
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mega-simulator
+  namespace: ipf
+  labels:
+    app: mega-simulator
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mega-simulator
+  template:
+    metadata:
+      labels:
+        app: mega-simulator
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8080"
+        prometheus.io/path: "/metrics"
+    spec:
+      containers:
+        - name: simulator
+          image: k3d-ipf-registry.localhost:5111/ipf-mega-simulator:latest
+          env:
+            - name: DOMAIN_COUNT
+              value: "100"
+            - name: PAGES_PER_DOMAIN
+              value: "20"
+            - name: CROSS_DOMAIN_LINK_RATIO
+              value: "0.1"
+            - name: CHAOS_DOMAIN_RATIO
+              value: "0.2"
+            - name: MEGA_SIMULATOR_PORT
+              value: "8080"
+          ports:
+            - name: http
+              containerPort: 8080
+              protocol: TCP
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 256Mi
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 3
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 15
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mega-simulator
+  namespace: ipf
+  labels:
+    app: mega-simulator
+spec:
+  selector:
+    app: mega-simulator
+  ports:
+    - name: http
+      port: 8080
+      targetPort: 8080

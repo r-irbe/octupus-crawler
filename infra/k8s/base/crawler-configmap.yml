@@ -23,5 +23,5 @@ data:
   ALLOW_PRIVATE_IPS: "false"
   S3_ENDPOINT: "http://minio:9000"
   S3_BUCKET: "ipf-crawl-pages"
-  OTEL_EXPORTER_OTLP_ENDPOINT: "http://otel-collector:4318"
+  OTEL_EXPORTER_OTLP_ENDPOINT: "http://jaeger:4318"
   LOG_LEVEL: "info"
