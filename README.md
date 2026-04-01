@@ -1,6 +1,19 @@
 # IPF — Distributed Web Crawler
 
-A production-grade distributed web crawler built with TypeScript, designed as a monorepo with strict type safety, hexagonal architecture, and comprehensive testing — including property-based tests, integration tests with real infrastructure (Testcontainers), and Kubernetes E2E tests.
+A production-grade distributed web crawler built with TypeScript, designed as a monorepo with strict type safety, hexagonal architecture, and comprehensive testing — including property-based tests, integration tests with real infrastructure (Testcontainers), chaos engineering with Chaos Mesh, and Kubernetes E2E tests.
+
+## Why This Architecture?
+
+Every design choice solves a specific problem encountered in production web crawling:
+
+| Problem | Solution | Why Not Simpler? |
+| ------- | -------- | ---------------- |
+| Crawl at scale needs horizontal workers | BullMQ job queue + stateless workers | In-process queues can't survive crashes or scale across nodes |
+| Following redirects can hit internal IPs | RFC 6890 SSRF validation on every hop | Validating only the initial URL misses redirect-based SSRF |
+| 500s from one domain shouldn't stop others | cockatiel circuit breaker per domain | Global error handling would block healthy domains |
+| Redis/DB failures shouldn't crash workers | `neverthrow` Result types, not exceptions | Thrown exceptions cross boundaries silently; Results force handling |
+| "It passes unit tests" proves nothing | Testcontainers (real Redis/PG/MinIO), never mocks | Mocked Redis doesn't catch Lua script bugs or connection pool leaks |
+| Crawling 7 test pages isn't realistic | Mega simulator: 1000 domains × 50K pages with chaos | Happy-path tests don't reveal backpressure, rate limiting, or recovery gaps |
 
 ## Quick Start
 
@@ -10,246 +23,132 @@ A production-grade distributed web crawler built with TypeScript, designed as a 
 - **pnpm** 10.x (`corepack enable && corepack prepare pnpm@10.33.0 --activate`)
 - **Docker** (for local infrastructure and integration tests)
 
-### Install & Build
-
 ```bash
-pnpm install
-pnpm build
+pnpm install && pnpm build
+pnpm test                     # Unit tests (fast, no infra)
+pnpm verify:guards            # Full guard chain (typecheck + lint + test)
 ```
 
-### Run Tests
+## Running with Docker Compose
+
+The fastest way to see everything working — one command starts the full stack:
 
 ```bash
-# All unit tests (fast, no infrastructure needed)
-pnpm test
-
-# Type checking + linting + tests (full guard chain)
-pnpm verify:guards
-```
-
-### Run Locally (Docker Compose)
-
-```bash
-# Infrastructure only (PostgreSQL, Redis, MinIO, Prometheus, Grafana)
-docker compose -f infra/docker/docker-compose.dev.yml up
-
-# Full demo — crawler + web simulator generating real traffic
+# Full demo: crawler + web simulator + all monitoring
 docker compose -f infra/docker/docker-compose.dev.yml --profile demo up
 ```
 
-The `--profile demo` flag adds the crawler and a web simulator (7-page deterministic site with robots.txt and test scenarios). The crawler fetches pages, populates PostgreSQL/MinIO, and exports metrics — Grafana dashboards at <http://localhost:3000> fill with real data.
+This starts the crawler targeting a 7-page deterministic web simulator. Within 30 seconds, Grafana dashboards fill with real metrics, traces appear in Jaeger, and logs flow into Loki.
 
-| Service | Port | Purpose |
-| --------- | ------ | --------- |
-| Crawler | 9090, 8081 | Metrics + health endpoints |
-| Web Simulator | 8080 | Deterministic crawl target (7 pages) |
-| PostgreSQL | 5432 | Crawl metadata storage |
-| MinIO | 9000, 9001 | S3-compatible page content |
-| Dragonfly | 6379 | Redis-compatible state store |
-| Prometheus | 9091 | Metrics scraping + alerting |
-| Grafana | 3000 | Dashboards + trace exploration |
-| Jaeger | 16686 | Distributed tracing UI |
-| Loki | 3100 | Centralized log aggregation |
-| Promtail | — | Docker log collection agent |
+| UI | URL | What You'll See |
+| -- | --- | --------------- |
+| **Grafana** | <http://localhost:3000> | 7 auto-provisioned dashboards — start with "IPF Crawler Overview" |
+| **Jaeger** | <http://localhost:16686> | Trace waterfall: DNS → HTTP fetch → SSRF check → HTML parse → links |
+| **Prometheus** | <http://localhost:9091> | 12 alert rules, PromQL queries, target health |
+| **MinIO** | <http://localhost:9001> | Stored page content (login: `minioadmin` / `minioadmin`) |
 
-### Run on Local Kubernetes (k3d)
+**Services**: PostgreSQL (:5432), Dragonfly/Redis (:6379), Loki (:3100), Promtail (log collector), Crawler (:9090 metrics, :8081 health), Web Simulator (:8080).
 
-```bash
-pnpm k8s:setup     # Create k3d cluster + install ArgoCD + Chaos Mesh
-pnpm k8s:build     # Build and push Docker image
-pnpm k8s:e2e       # Run E2E tests against the cluster
-pnpm k8s:teardown  # Tear down cluster
-```
+### What to Observe in the Demo
 
----
+1. **Grafana → IPF Crawler Overview**: Watch fetch rate climb, then frontier size drop to zero as the crawl completes. Error rate should stay green (< 5%).
+2. **Jaeger**: Select service `ipf-crawler` → each trace shows the full pipeline for one URL. Click spans to see timing, status codes, SSRF validation results.
+3. **Grafana → Explore → Loki**: Query `{job="docker"} | json` to see structured crawler logs with `traceId` fields. Click a traceId to jump directly to the Jaeger trace.
 
-## Accessing the UIs
+## Running on Kubernetes (k3d)
 
-### Docker Compose
-
-Start the full demo stack:
+For production-like testing with pod scheduling, HPA autoscaling, ArgoCD GitOps, and Chaos Mesh fault injection:
 
 ```bash
-docker compose -f infra/docker/docker-compose.dev.yml --profile demo up
+pnpm k8s:setup      # Creates k3d cluster + installs ArgoCD + Chaos Mesh
+pnpm k8s:build      # Builds Docker image → pushes to k3d registry
+pnpm k8s:e2e        # Runs 18 E2E tests against the live cluster
+pnpm k8s:teardown   # Tears down everything
 ```
 
-| UI | URL | What to look for |
-| ---- | ----- | ----------------- |
-| **Grafana** | <http://localhost:3000> | Pre-provisioned "IPF Crawler Overview" dashboard (no login needed) |
-| **Prometheus** | <http://localhost:9091> | Raw PromQL queries, alert rule status |
-| **Jaeger** | <http://localhost:16686> | Distributed traces — search by service `ipf-crawler` |
-| **MinIO Console** | <http://localhost:9001> | Stored page content (login: `minioadmin` / `minioadmin`) |
-| **Web Simulator** | <http://localhost:8080> | The 7-page site the crawler targets |
-| **Crawler Health** | <http://localhost:8081> | Liveness + readiness probes |
-| **Crawler Metrics** | <http://localhost:9090/metrics> | Raw Prometheus metrics |
-
-#### Grafana Dashboard — IPF Crawler Overview
-
-The dashboard auto-provisions with 8 panels. After starting the demo, allow ~30 seconds for the first scrape cycle, then:
-
-| Panel | What it shows |
-| ------- | -------------- |
-| **Fetch Rate** | Successful vs errored fetches per second (timeseries) |
-| **Error Rate** | Percentage of failed fetches — green/yellow/red gauge |
-| **Stalled Jobs** | Rate of jobs stuck in BullMQ (should be zero) |
-| **Fetch Latency** | P50/P95/P99 response times as histogram quantiles |
-| **Frontier Size** | Current URL queue depth — drops to zero when crawl completes |
-| **URLs Discovered** | Rate of new URLs found via link extraction |
-| **Worker Utilization** | Percentage of worker capacity in use |
-| **Coordinator Restarts** | Restart counter — should stay at zero |
-
-You can also explore traces directly in Grafana under **Explore → Jaeger** datasource.
-
-#### Viewing Traces in Jaeger
-
-Open <http://localhost:16686> and select service **ipf-crawler** from the dropdown. Each trace shows the crawl pipeline for a single URL: DNS resolution → HTTP fetch → SSRF validation → HTML parse → link extraction. Click any trace to see the full span waterfall with timing, status codes, and error details.
-
-### Local Kubernetes (k3d)
-
-Monitoring is not deployed in k8s by default (it uses Prometheus pod annotations for scraping). Use `kubectl port-forward` to access services:
+### Access Services in k3d
 
 ```bash
-# Crawler metrics
-kubectl port-forward -n ipf deploy/crawler-worker 9090:9090
-
-# MinIO Console
-kubectl port-forward -n ipf svc/minio 9001:9001
-
-# PostgreSQL (for debugging)
-kubectl port-forward -n ipf svc/postgresql 5432:5432
-
-# Dragonfly/Redis
-kubectl port-forward -n ipf svc/dragonfly 6379:6379
-
-# Web Simulator (e2e overlay only)
-kubectl port-forward -n ipf svc/web-simulator 8080:8080
+kubectl port-forward -n ipf deploy/crawler-worker 9090:9090    # Metrics
+kubectl port-forward -n ipf svc/minio 9001:9001                # MinIO UI
+kubectl port-forward svc/argocd-server -n argocd 8443:443      # ArgoCD UI
+kubectl port-forward svc/chaos-dashboard -n chaos-mesh 2333:2333  # Chaos Mesh UI
 ```
 
-For full observability in k8s, deploy the Prometheus/Grafana stack (e.g. via `kube-prometheus-stack` Helm chart) — the crawler pods already expose metrics via annotations (`prometheus.io/scrape: "true"`, `prometheus.io/port: "9090"`).
+ArgoCD admin password: `kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath='{.data.password}' | base64 -d`
 
 ---
 
 ## Load Testing & Chaos Engineering
 
-### Mega Simulator — 1000+ Domains at Scale
+A crawler that works on 7 pages doesn't prove much. Real-world crawling involves thousands of domains with varying response characteristics, network partitions, pod failures, and DNS outages. This suite validates the crawler **maintains SLOs under chaos**.
 
-The mega simulator generates a configurable virtual web of thousands of domains and tens of thousands of pages for realistic large-scale load testing:
+> Full guide: [docs/LOAD-TESTING.md](docs/LOAD-TESTING.md)
+
+### Mega Simulator — 50,000 URLs at Scale
+
+The mega simulator generates a virtual web of **1,000 domains × 50 pages** with cross-domain links, per-domain `robots.txt`, SHA-256 content fingerprints for dedup verification, and 5 chaos scenario types injected into 20% of domains:
+
+| Chaos Type | Effect | Why It Matters |
+| ---------- | ------ | -------------- |
+| **Slow** (200ms–5s) | Tests timeout handling + circuit breaker activation |
+| **Error** (500/502/503) | Tests error classification + retry policy |
+| **Redirect Chain** (5 hops) | Tests SSRF validation on every redirect + loop detection |
+| **Intermittent** (30% fail) | Tests circuit breaker state transitions (closed→open→half-open) |
+| **Rate Limited** (429 after 10 req) | Tests per-domain rate limiting + Retry-After compliance |
 
 ```bash
-# Build and run the mega simulator
+# Quick local test (2,000 pages)
+DOMAIN_COUNT=100 PAGES_PER_DOMAIN=20 \
+  npx tsx packages/testing/src/simulators/mega-simulator-entrypoint.ts
+
+# Docker (50,000 pages)
 docker build -f infra/docker/Dockerfile.mega-simulator -t mega-simulator .
-docker run -p 8080:8080 \
-  -e DOMAIN_COUNT=1000 \
-  -e PAGES_PER_DOMAIN=50 \
-  -e CHAOS_DOMAIN_RATIO=0.2 \
-  mega-simulator
+docker run -p 8080:8080 mega-simulator
 ```
 
-| Parameter | Default | Description |
-| --------- | ------- | ----------- |
-| `DOMAIN_COUNT` | 1000 | Number of virtual domains |
-| `PAGES_PER_DOMAIN` | 50 | Pages per domain (total: domains × pages) |
-| `CHAOS_DOMAIN_RATIO` | 0.2 | 20% of domains inject chaos (slow, 5xx, redirect chains, intermittent, rate limiting) |
-| `CROSS_DOMAIN_LINK_RATIO` | 0.1 | Percentage of links that cross domain boundaries |
-| `DISALLOWED_PATH_RATIO` | 0.1 | Pages blocked via per-domain `robots.txt` |
-
-Default configuration: **1,000 domains × 50 pages = 50,000 unique URLs** with deterministic content (SHA-256 fingerprints for dedup verification), cross-domain link graphs, per-domain `robots.txt`, and 5 chaos scenario types applied to 200 domains.
-
-### k6 Load Tests
-
-Three load profiles targeting different system properties:
+### k6 Load Profiles
 
 ```bash
-# Sustained throughput — 100 URL/s for 60s
+# 100 URL/s sustained for 60s — validates steady-state SLOs
 k6 run packages/testing/src/load/throughput.k6.js
 
-# Burst backpressure — 10,000 URLs at once
+# 10,000 URLs burst — validates backpressure without OOM
 k6 run packages/testing/src/load/backpressure.k6.js
 
-# Mega crawl — 500 URL/s for 30 min across 1000 domains
-# With real-time Prometheus metrics:
+# 500 URL/s for 30 min with real-time Grafana metrics
 k6 run --out experimental-prometheus-rw \
   -e K6_PROMETHEUS_RW_SERVER_URL=http://localhost:9091/api/v1/write \
-  -e SIMULATOR_HOST=http://localhost:8080 \
   packages/testing/src/load/mega-crawl.k6.js
 ```
 
-### Chaos Testing (Chaos Mesh on k3d)
+### Chaos Testing on k3d
 
-Five chaos experiment types are pre-defined as Kubernetes CRDs in `infra/k8s/chaos/`:
-
-| Experiment | Type | Effect |
-| ----------- | ------ | ------- |
-| Pod Kill | PodChaos | Kills one crawler-worker pod randomly |
-| Network Delay | NetworkChaos | 200ms latency + 50ms jitter to mega-simulator |
-| Network Partition | NetworkChaos | Full partition between crawler-worker ↔ Dragonfly (Redis) |
-| CPU Stress | StressChaos | 80% CPU load on 2 cores of one crawler pod |
-| DNS Failure | DNSChaos | DNS resolution failures for mega-simulator |
-
-Run the automated 25-minute chaos sequence:
+Five Chaos Mesh experiments test resilience under real Kubernetes failure modes:
 
 ```bash
+# Automated 25-minute chaos sequence
 scripts/run-chaos-test.sh
+# → 5m baseline → 5m pod kills → 5m network delay → 5m CPU stress → 5m recovery
 
-# Sequence: 5m baseline → 5m pod kills → 5m network delay
-#         → 5m CPU stress → 5m recovery
-```
-
-### Autoscaling Validation
-
-Test HPA-driven pod scaling under staged load:
-
-```bash
+# HPA autoscaling validation
 scripts/run-autoscale-test.sh
-
-# Ramp: 3m at 50 URL/s → 5m at 250 URL/s → 5m at 500 URL/s → 5m cool-down
+# → 50 URL/s → 250 URL/s → 500 URL/s → cool-down, verify pod scaling
 ```
 
 ### Grafana Dashboard Suite
 
-Seven dashboards auto-provision via `infra/monitoring/dashboards/`:
+Seven dashboards auto-provision with trace-to-log correlation:
 
-| Dashboard | Key Panels | Data Sources |
-| --------- | ---------- | ------------ |
-| **Crawler Overview** | Fetch rate, error rate, latency P50/P95/P99, frontier size, worker utilization | Prometheus |
-| **Scenario Timeline** | Crawl throughput with chaos/alert annotations, SLO gauges, log volume | Prometheus, Loki |
-| **Chaos Events** | Active experiments, MTTR, circuit breaker state, pod restarts, error rate | Prometheus, Loki |
-| **Infrastructure Health** | CPU/memory per pod, Redis/PostgreSQL metrics, ArgoCD sync status | Prometheus |
-| **Alert Status** | Firing alerts table, history, evaluation rate, state distribution | Prometheus |
-| **Trace Analytics** | Latency heatmap, error by operation, slowest P99, trace search | Jaeger, Prometheus |
-| **Log Explorer** | Volume by level, error rate, top errors, live logs, trace-correlated logs | Loki |
-
-Dashboards use color-coded annotations: **blue** (k6 load phases), **red** (chaos events), **green** (ArgoCD syncs), **orange** (alert firings).
-
-### ArgoCD Integration
-
-The setup script installs ArgoCD in k3d with a pre-configured Application CRD:
-
-```bash
-# Access ArgoCD UI
-kubectl port-forward svc/argocd-server -n argocd 8443:443
-
-# Get initial admin password
-kubectl -n argocd get secret argocd-initial-admin-secret \
-  -o jsonpath='{.data.password}' | base64 -d
-```
-
-ArgoCD syncs from `infra/k8s/overlays/dev` with automated self-healing and retry. Sync events appear as green annotations on the Scenario Timeline dashboard. The Infrastructure Health dashboard tracks ArgoCD sync status and health in real time.
-
----
-
-## Problem Statement
-
-Build a web crawler that can:
-
-1. **Crawl websites** starting from seed URLs, following links up to a configurable depth
-2. **Respect politeness** — per-domain rate limiting, robots.txt compliance, configurable delays
-3. **Handle failures gracefully** — circuit breakers, retries with exponential backoff, dead letter queues
-4. **Scale horizontally** — job queue (BullMQ) distributes work, stateless workers, leader election for coordination
-5. **Store results** — crawl metadata in PostgreSQL, page content in S3 (MinIO)
-6. **Be observable** — structured logging (Pino), metrics (Prometheus), tracing (OpenTelemetry), alerting
-7. **Be secure** — SSRF protection with RFC 6890 IP validation on every redirect hop, DNS pinning, input validation via Zod
-8. **Detect completion** — know when a crawl session has finished (no more URLs to process)
+| Dashboard | Purpose |
+| --------- | ------- |
+| **Crawler Overview** | Day-to-day: fetch rate, error %, latency P50/P95/P99 |
+| **Scenario Timeline** | Load/chaos tests: throughput + event annotations (blue=k6, red=chaos, green=ArgoCD) |
+| **Chaos Events** | Chaos analysis: MTTR, circuit breaker state, pod restarts |
+| **Infrastructure Health** | Resources: CPU/memory, Redis, PostgreSQL, ArgoCD sync |
+| **Alert Status** | Alert triage: firing table, history, evaluation rate |
+| **Trace Analytics** | Performance: latency heatmap, P99 by operation, trace search |
+| **Log Explorer** | Debugging: live tail, error patterns, click traceId → Jaeger |
 
 ---
 
@@ -332,39 +231,55 @@ Each decision is documented as an Architecture Decision Record (ADR) in `docs/ad
 - **Resilience** — 7-layer stack on `cockatiel`: circuit breaker, retry (exponential + jitter), timeout, bulkhead, token bucket, Redis Lua sliding window, fallback.
 - **TypeScript Strict** — `strict: true`, `exactOptionalPropertyTypes`, `noUncheckedIndexedAccess`. Zero `any` types (ESLint error). All input validated with Zod.
 
-### Testing Strategy
+---
 
-| Type | Count | Framework | Infrastructure |
-| ------ | ------- | ----------- | --------------- |
-| Unit | 129 | Vitest | None — pure logic |
-| Integration | 26 | Vitest + Testcontainers | Real Redis, PostgreSQL, MinIO |
-| Property | 7 suites | fast-check | None — invariant checking |
-| E2E | 18 | Vitest + k3d | Full Kubernetes cluster |
-| Load | 3 | k6 | Mega simulator (50K URLs) |
-| Chaos | 5 CRDs | Chaos Mesh | k3d cluster |
+## Testing Strategy
+
+| Type | Count | Framework | What It Proves |
+| ---- | ----- | --------- | -------------- |
+| Unit | 129 | Vitest | Pure logic correctness — no infra needed |
+| Integration | 26 | Vitest + Testcontainers | Real Redis/PG/MinIO behavior, not mock assumptions |
+| Property | 7 suites | fast-check | Invariants hold for _all_ inputs (circuit breaker, SSRF, URL normalization) |
+| E2E | 18 | Vitest + k3d | Full K8s cluster: pod scheduling, service discovery, health checks |
+| Load | 3 | k6 | Sustained throughput, burst backpressure, 30-min mega crawl |
+| Chaos | 5 CRDs | Chaos Mesh | Pod kill, network partition, CPU stress, DNS failure recovery |
 | **Total** | **180+** | | |
 
 **Zero mock infrastructure** — integration tests use real containers (Testcontainers), never `vi.mock('redis')`. Property tests verify invariants of critical algorithms (circuit breaker state transitions, retry backoff, token bucket capacity, SSRF IP range coverage, URL normalization idempotence).
 
 ---
 
+## Observability Stack
+
+```text
+Crawler Pods ──► Prometheus ──► Grafana (7 dashboards, 12 alert rules)
+             ──► Jaeger     ──► Grafana (trace analytics, latency heatmap)
+             ──► Loki       ──► Grafana (log explorer, error analysis)
+                    ▲
+                    └── Full correlation: traceId links logs ↔ traces ↔ metrics
+```
+
+Click a trace ID in Loki → jumps to Jaeger trace. Click a trace in Jaeger → see correlated logs. Prometheus exemplars link metrics → traces. All three signals connected.
+
+---
+
 ## Tech Stack
 
 | Layer | Technology | Why |
-| ------- | ----------- | ----- |
+| ----- | ---------- | --- |
 | Runtime | Node.js 22 | Native ESM, `using` keyword support |
 | Language | TypeScript 6.0 | Strict mode, `exactOptionalPropertyTypes` |
 | Monorepo | Turborepo + pnpm | Fast builds, dependency deduplication |
 | HTTP API | Fastify 5 + tRPC 11 | End-to-end type safety, Zod validation |
 | Job Queue | BullMQ 5 | Redis-backed, priorities, rate limiting, DLQ |
-| Database | PostgreSQL 16 (Drizzle ORM) | Relational metadata, batch operations |
+| Database | PostgreSQL 16 (Drizzle) | Relational metadata, batch operations |
 | Object Storage | MinIO (S3-compatible) | Page content, local/cloud parity |
 | Cache/State | Dragonfly (Redis-compatible) | High-performance, multi-threaded |
 | Resilience | cockatiel | Circuit breaker, retry, timeout (composable) |
 | Error Handling | neverthrow | `Result<T, E>` without exceptions |
-| Observability | OpenTelemetry + Pino + Prometheus | Traces, structured logs, metrics |
-| Testing | Vitest + Testcontainers + fast-check | Real infra tests, property-based testing |
-| Infrastructure | Docker + Kustomize + k3d | Multi-stage builds, K8s overlays |
+| Observability | OTel + Pino + Prometheus + Loki | Traces, structured logs, metrics, log aggregation |
+| Testing | Vitest + Testcontainers + fast-check + k6 + Chaos Mesh | Real infra, property-based, load, chaos |
+| Deployment | Docker + Kustomize + k3d + ArgoCD | Multi-stage builds, GitOps, chaos experiments |
 
 ---
 
@@ -384,12 +299,6 @@ GET    /metrics                    Prometheus metrics
 
 ---
 
-## Observability
-
-Structured logging (Pino → Loki), metrics (Prometheus + 12 alert rules), tracing (OpenTelemetry → Jaeger), centralized log aggregation (Loki + Promtail), dashboards (7 auto-provisioned Grafana dashboards). Full trace-to-log correlation: click a trace ID in Jaeger to see correlated logs in Loki, or click a log entry to jump to the Jaeger trace. See [Accessing the UIs](#accessing-the-uis) and [Load Testing & Chaos Engineering](#load-testing--chaos-engineering) for details.
-
----
-
 ## Project Commands
 
 ```bash
@@ -397,17 +306,19 @@ pnpm install                 # Install dependencies
 pnpm build                   # Build all packages
 pnpm test                    # Run unit tests
 pnpm verify:guards           # Full guard chain (typecheck + lint + test)
-pnpm k8s:setup               # Create local k3d cluster
+pnpm k8s:setup               # Create k3d cluster + ArgoCD + Chaos Mesh
 pnpm k8s:e2e                 # Run E2E tests on cluster
 pnpm k8s:teardown            # Tear down cluster
 pnpm test:alerts             # Validate Prometheus alert rules
 pnpm typespec:compile        # Compile TypeSpec → OpenAPI
+scripts/run-chaos-test.sh    # 25-min orchestrated chaos sequence
+scripts/run-autoscale-test.sh  # HPA autoscaling ramp test
 ```
 
 ## Documentation
 
+- **[Load Testing & Chaos Engineering Guide](docs/LOAD-TESTING.md)** — Full guide: mega simulator, k6 profiles, Chaos Mesh, autoscaling, Grafana dashboards
 - **Architecture Decision Records**: `docs/adr/` — 22 ADRs covering every major technical decision
 - **Feature Specifications**: `docs/specs/` — 23 features with requirements (EARS format), design, and task tracking
-- **Load Test + Observability Spec**: `docs/specs/load-test-observability/` — 35 requirements (mega simulator, Loki, Grafana dashboards, ArgoCD, Chaos Mesh, scaled load tests)
-- **Architectural Review**: `docs/architecture-review-2026-03-31.md` — multi-perspective review
+- **Architectural Review**: `docs/architecture-review-2026-03-31.md` — multi-perspective RALPH review
 - **Worklogs**: `docs/worklogs/` — chronological session logs
