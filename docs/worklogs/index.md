@@ -76,6 +76,7 @@ Chronological work session logs documenting what was done, decisions made, and o
 | [2026-03-31: Load Test + Observability](2026-03-31-load-test-observability.md) | Mega simulator (50K URLs), Loki, 6 Grafana dashboards, Chaos Mesh, ArgoCD, k6 mega-crawl, 35 REQs | Complete | 2026-03-31 |
 | [2026-04-01: K8s Observability E2E](2026-04-01-k8s-observability-e2e.md) | K8s monitoring parity (Prometheus, Jaeger, Loki, Promtail, Grafana), E2E test suite, chaos + scaling | Complete | 2026-04-01 |
 | [2026-04-01: Fix CI Failures](2026-04-01-fix-ci-failures.md) | Fix 3 GitHub Actions failures: YAML parse, pnpm builds, integration test exclusion | Complete | 2026-04-01 |
+| [2026-04-01: K8s Security Contexts](2026-04-01-k8s-security-contexts.md) | Security contexts on all 11 K8s workloads: runAsNonRoot, drop ALL caps, seccomp, RALPH 6/6 | Complete | 2026-04-01 |
 
 ## Index
 

@@ -10,9 +10,20 @@ metadata:
   labels:
     app: web-simulator
 spec:
+  securityContext:
+    runAsNonRoot: true
+    runAsUser: 1000
+    fsGroup: 2000
+    seccompProfile:
+      type: RuntimeDefault
   containers:
     - name: simulator
       image: k3d-ipf-registry.localhost:5111/ipf-web-simulator:latest
+      securityContext:
+        allowPrivilegeEscalation: false
+        readOnlyRootFilesystem: true
+        capabilities:
+          drop: ["ALL"]
       ports:
         - name: http
           containerPort: 8080

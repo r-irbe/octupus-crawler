@@ -30,9 +30,20 @@ spec:
     spec:
       # REQ-INFRA-007: Restart on non-zero exit
       restartPolicy: Always
+      securityContext:
+        runAsNonRoot: true
+        runAsUser: 1000
+        fsGroup: 2000
+        seccompProfile:
+          type: RuntimeDefault
       containers:
         - name: crawler
           image: ipf-crawler:latest
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop: ["ALL"]
           ports:
             - name: metrics
               containerPort: 9090
