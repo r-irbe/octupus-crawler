@@ -36,14 +36,21 @@ assert_status() {
   fi
 }
 
+millis_now() {
+  # Cross-platform millisecond timestamp (F-001: macOS date lacks %N)
+  perl -MTime::HiRes -e 'printf "%d\n", Time::HiRes::time*1000' 2>/dev/null || \
+    python3 -c 'import time; print(int(time.time()*1000))' 2>/dev/null || \
+    echo $(( $(date +%s) * 1000 ))
+}
+
 assert_latency_gt() {
   local desc=$1 url=$2 min_ms=$3
   TOTAL=$((TOTAL + 1))
   local start end ms
-  start=$(date +%s%N)
+  start=$(millis_now)
   curl -s --max-time 15 "$url" >/dev/null 2>&1 || true
-  end=$(date +%s%N)
-  ms=$(( (end - start) / 1000000 ))
+  end=$(millis_now)
+  ms=$(( end - start ))
   if [ "$ms" -gt "$min_ms" ]; then
     PASS=$((PASS + 1))
     log "  ✓ $desc (${ms}ms > ${min_ms}ms)"

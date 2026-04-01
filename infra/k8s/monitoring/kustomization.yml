@@ -12,7 +12,6 @@ resources:
   - loki.yml
   - promtail.yml
   - grafana.yml
-  - mega-simulator.yml
 
 labels:
   - pairs:

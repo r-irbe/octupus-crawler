@@ -29,56 +29,65 @@ trap cleanup_chaos EXIT
 log ""
 log "=== Scaling: Scale Up ==="
 
-INITIAL_REPLICAS=$(get_replicas)
-INITIAL_REPLICAS=${INITIAL_REPLICAS:-1}
-log "Initial crawler-worker replicas: $INITIAL_REPLICAS"
-
-kubectl scale deployment crawler-worker -n "$NAMESPACE" --replicas=5
-sleep 5
-kubectl wait --for=condition=available deploy/crawler-worker -n "$NAMESPACE" \
-  --timeout=120s 2>/dev/null || true
-sleep 10
-
-SCALED_UP=$(get_replicas)
-TOTAL=$((TOTAL + 1))
-if [ "${SCALED_UP:-0}" -ge 4 ]; then
-  PASS=$((PASS + 1))
-  log "  ✓ Scale-up successful: $SCALED_UP replicas ready"
+# F-004: Pre-condition — skip scaling if crawler-worker not deployed
+if ! kubectl get deployment crawler-worker -n "$NAMESPACE" &>/dev/null; then
+  log "SKIP: crawler-worker not deployed — scaling tests require crawler image build"
+  log "  Build with: docker build -t <registry>/ipf-crawler:latest -f infra/docker/Dockerfile ."
+  INITIAL_REPLICAS=0
 else
-  FAIL=$((FAIL + 1))
-  log "  ✗ FAIL: Scale-up: only ${SCALED_UP:-0} replicas (expected ≥4)"
+  INITIAL_REPLICAS=$(get_replicas)
+  INITIAL_REPLICAS=${INITIAL_REPLICAS:-1}
+  log "Initial crawler-worker replicas: $INITIAL_REPLICAS"
+
+  kubectl scale deployment crawler-worker -n "$NAMESPACE" --replicas=5
+  sleep 5
+  kubectl wait --for=condition=available deploy/crawler-worker -n "$NAMESPACE" \
+    --timeout=120s 2>/dev/null || true
+  sleep 10
+
+  SCALED_UP=$(get_replicas)
+  TOTAL=$((TOTAL + 1))
+  if [ "${SCALED_UP:-0}" -ge 4 ]; then
+    PASS=$((PASS + 1))
+    log "  ✓ Scale-up successful: $SCALED_UP replicas ready"
+  else
+    FAIL=$((FAIL + 1))
+    log "  ✗ FAIL: Scale-up: only ${SCALED_UP:-0} replicas (expected ≥4)"
+  fi
+  record_state "scale-up"
+
+  # Generate load during scaled state
+  log "Generating load across scaled workers..."
+  for i in $(seq 1 50); do
+    curl -s -o /dev/null --max-time 5 \
+      "http://localhost:8080/domain-00$((i % 80))/page-$((i % 15))" &
+  done
+  wait 2>/dev/null || true
+  sleep 5
+
+  log ""
+  log "=== Scaling: Scale Down ==="
+  kubectl scale deployment crawler-worker -n "$NAMESPACE" --replicas=1
+  sleep 30
+
+  SCALED_DOWN=$(get_replicas)
+  TOTAL=$((TOTAL + 1))
+  if [ "${SCALED_DOWN:-0}" -le 2 ]; then
+    PASS=$((PASS + 1))
+    log "  ✓ Scale-down successful: $SCALED_DOWN replicas"
+  else
+    FAIL=$((FAIL + 1))
+    log "  ✗ FAIL: Still ${SCALED_DOWN:-0} replicas (expected ≤2)"
+  fi
+  record_state "scale-down"
 fi
-record_state "scale-up"
-
-# Generate load during scaled state
-log "Generating load across scaled workers..."
-for i in $(seq 1 50); do
-  curl -s -o /dev/null --max-time 5 \
-    "http://localhost:8080/domain-00$((i % 80))/page-$((i % 15))" &
-done
-wait 2>/dev/null || true
-sleep 5
-
-log ""
-log "=== Scaling: Scale Down ==="
-kubectl scale deployment crawler-worker -n "$NAMESPACE" --replicas=1
-sleep 30
-
-SCALED_DOWN=$(get_replicas)
-TOTAL=$((TOTAL + 1))
-if [ "${SCALED_DOWN:-0}" -le 2 ]; then
-  PASS=$((PASS + 1))
-  log "  ✓ Scale-down successful: $SCALED_DOWN replicas"
-else
-  FAIL=$((FAIL + 1))
-  log "  ✗ FAIL: Still ${SCALED_DOWN:-0} replicas (expected ≤2)"
-fi
-record_state "scale-down"
 
 # Restore
-kubectl scale deployment crawler-worker -n "$NAMESPACE" \
-  --replicas="$INITIAL_REPLICAS"
-sleep 5
+if [ "$INITIAL_REPLICAS" -gt 0 ]; then
+  kubectl scale deployment crawler-worker -n "$NAMESPACE" \
+    --replicas="$INITIAL_REPLICAS"
+  sleep 5
+fi
 
 # ═══════════════════════════════════════════════════════
 # Chaos Testing

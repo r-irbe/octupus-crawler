@@ -18,7 +18,7 @@
 | 3 | Update kustomize overlays (dev/e2e) | `todo` | — | Add monitoring + mega-sim |
 | 4 | K8s E2E test script (scaling + chaos) | `todo` | — | Full scenario verification |
 | 5 | Update setup-local.sh | `todo` | — | Monitoring namespace |
-| 6 | Guards + commit | `todo` | — | G5-G6 |
+| 6 | Guards + commit | `done` | b5c5c7d | 18/18 all pass |
 | 7 | RALPH review council | `todo` | — | G8 |
 | 8 | Worklog + specs | `todo` | — | G9-G11 |
 

@@ -13,11 +13,14 @@ spec:
   policyTypes:
     - Egress
   egress:
-    # Allow egress to web-simulator only (blocks Redis by omission)
+    # Allow egress to simulators only (blocks Redis by omission)
     - to:
         - podSelector:
             matchLabels:
               app: web-simulator
+        - podSelector:
+            matchLabels:
+              app: mega-simulator
     # Allow DNS resolution
     - ports:
         - port: 53
