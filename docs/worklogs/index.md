@@ -74,6 +74,7 @@ Chronological work session logs documenting what was done, decisions made, and o
 | [2026-03-31: Data Layer Benchmarks](2026-03-31-data-layer-benchmarks.md) | Performance benchmarks: hash lookup, batch insert, S3 write throughput | Complete | 2026-03-31 |
 | [2026-03-31: Architectural Review](2026-03-31-arch-review.md) | Deep multi-perspective review: 18 packages, MUST audit, K8s/SRE gaps, RALPH approved | Complete | 2026-03-31 |
 | [2026-03-31: Load Test + Observability](2026-03-31-load-test-observability.md) | Mega simulator (50K URLs), Loki, 6 Grafana dashboards, Chaos Mesh, ArgoCD, k6 mega-crawl, 35 REQs | Complete | 2026-03-31 |
+| [2026-04-01: K8s Observability E2E](2026-04-01-k8s-observability-e2e.md) | K8s monitoring parity (Prometheus, Jaeger, Loki, Promtail, Grafana), E2E test suite, chaos + scaling | Complete | 2026-04-01 |
 
 ## Index
 

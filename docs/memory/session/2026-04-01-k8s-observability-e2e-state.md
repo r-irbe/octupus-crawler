@@ -13,24 +13,24 @@
 
 | # | Task | Status | Commit | Notes |
 | --- | --- | --- | --- | --- |
-| 1 | K8s monitoring manifests (Prometheus, Jaeger, Loki, Grafana) | `todo` | — | Match docker-compose parity |
-| 2 | Mega simulator k8s deployment | `todo` | — | With configurable chaos |
-| 3 | Update kustomize overlays (dev/e2e) | `todo` | — | Add monitoring + mega-sim |
-| 4 | K8s E2E test script (scaling + chaos) | `todo` | — | Full scenario verification |
-| 5 | Update setup-local.sh | `todo` | — | Monitoring namespace |
+| 1 | K8s monitoring manifests (Prometheus, Jaeger, Loki, Grafana) | `done` | b5c5c7d | 5 manifests + kustomization |
+| 2 | Mega simulator k8s deployment | `done` | b5c5c7d | In e2e overlay (per RALPH F-003) |
+| 3 | Update kustomize overlays (dev/e2e) | `done` | b5c5c7d | monitoring in both, mega-sim in e2e only |
+| 4 | K8s E2E test script (scaling + chaos) | `done` | b5c5c7d | 25+ assertions across 5 phases |
+| 5 | Update setup-local.sh | `done` | b5c5c7d | Image builds + monitoring deploy |
 | 6 | Guards + commit | `done` | b5c5c7d | 18/18 all pass |
-| 7 | RALPH review council | `todo` | — | G8 |
-| 8 | Worklog + specs | `todo` | — | G9-G11 |
+| 7 | RALPH review council | `done` | 0db171e | 4 Major + 1 Minor fixed, APPROVED |
+| 8 | Worklog + specs | `done` | — | G9-G11 complete |
 
 ## Current State
 
 | Field | Value |
 | --- | --- |
-| Current task # | 1 |
-| Last completed gate | G4 |
-| Guard function status | `pending` |
-| Commits on branch | 0 |
-| Tests passing | 18/18 (from main) |
+| Current task # | 8 (complete) |
+| Last completed gate | G11 |
+| Guard function status | `pass` |
+| Commits on branch | 2 (b5c5c7d + 0db171e) |
+| Tests passing | 18/18 |
 | Blockers | none |
 
 ## Gap Analysis
