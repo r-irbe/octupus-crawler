@@ -130,9 +130,8 @@ jobs:
           if git diff --staged --quiet; then
             echo "No Kustomize changes to commit"
           else
-            git commit -m "chore(k8s): update image tags to sha-${GITHUB_SHA::7} [skip ci]
-
-            Full commit: ${GITHUB_SHA}"
+            git commit -m "chore(k8s): update image tags to sha-${GITHUB_SHA::7} [skip ci]" \
+              -m "Full commit: ${GITHUB_SHA}"
             git pull --rebase origin main
             git push
           fi
