@@ -13,19 +13,19 @@
 
 | # | Task | Status | Commit | Notes |
 | --- | --- | --- | --- | --- |
-| 1 | Fix release.yml YAML parse error | `todo` | — | `Full commit:` at col 0 breaks run block |
-| 2 | Fix onlyBuiltDependencies corruption | `todo` | — | Individual chars instead of package names |
-| 3 | Fix changeset config repo reference | `todo` | — | `ipf-org/ipf` → `r-irbe/octupus-crawler` |
+| 1 | Fix release.yml YAML parse error | `done` | 01b5646 | Indented `Full commit:`, then switched to `-m` flags |
+| 2 | Fix onlyBuiltDependencies corruption | `done` | 01b5646 | 9 actual package names |
+| 3 | Fix changeset config repo reference | `done` | 01b5646 | `r-irbe/octupus-crawler` |
 
 ## Current State
 
 | Field | Value |
 | --- | --- |
-| Current task # | 1 |
-| Last completed gate | G4 |
-| Guard function status | `pending` |
-| Commits on branch | 0 |
-| Tests passing | TBD |
+| Current task # | 3 (complete) |
+| Last completed gate | G11 |
+| Guard function status | `pass` |
+| Commits on branch | 2 (01b5646 + 1219d4e) |
+| Tests passing | 18/18 |
 | Blockers | none |
 
 ## Root Cause Analysis
