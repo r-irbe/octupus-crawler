@@ -12,7 +12,7 @@
 - [x] **T-CICD-003**: Add guard-functions job: pnpm install --frozen-lockfile, turbo typecheck lint test → REQ-CICD-005, REQ-CICD-007
 - [x] **T-CICD-004**: Configure Turborepo remote cache for CI → REQ-CICD-006
 - [x] **T-CICD-005**: Add matrix test job: only test affected packages from paths-filter → REQ-CICD-004
-- [ ] **T-CICD-006**: Verify PR pipeline completes < 5 min for incremental changes → REQ-CICD-003
+- [x] **T-CICD-006**: Verify PR pipeline completes < 5 min for incremental changes → REQ-CICD-003 — *verified: ~3 min (PR #1, run 23891819260)*
 
 ## Phase 2: Security Scanning
 
@@ -35,7 +35,7 @@
 - [x] **T-CICD-017**: Configure Changesets with `@changesets/cli` → REQ-CICD-018
 - [x] **T-CICD-018**: Add Changesets GitHub Action for "Version Packages" PR automation → REQ-CICD-019
 - [x] **T-CICD-019**: Add Kustomize image tag update step in release workflow → REQ-CICD-020
-- [ ] **T-CICD-020**: Verify ArgoCD auto-sync within 1 min of tag update → REQ-CICD-020
+- [ ] **T-CICD-020**: Verify ArgoCD auto-sync within 1 min of tag update → REQ-CICD-020 — *deferred: requires running ArgoCD cluster*
 
 ## Phase 5: Architecture Conformance
 
@@ -45,9 +45,9 @@
 
 ## Phase 6: Validation
 
-- [ ] **T-CICD-024**: End-to-end: open PR, verify all CI jobs run and pass → REQ-CICD-002
-- [ ] **T-CICD-025**: End-to-end: merge PR, verify release pipeline builds + pushes images → REQ-CICD-014
-- [ ] **T-CICD-026**: Verify Turborepo cache hit rate > 80% on incremental PR → REQ-CICD-006
+- [x] **T-CICD-024**: End-to-end: open PR, verify all CI jobs run and pass → REQ-CICD-002 — *verified: PR #1-#5, all 4 workflows (CI, Security, CI Quality, K8s E2E) pass*
+- [x] **T-CICD-025**: End-to-end: merge PR, verify release pipeline builds + pushes images → REQ-CICD-014 — *verified: Release + Version Packages pass on merge (run 23914894309), 3 services + kustomize update*
+- [ ] **T-CICD-026**: Verify Turborepo cache hit rate > 80% on incremental PR → REQ-CICD-006 — *deferred: requires TURBO_TOKEN secret for remote cache*
 
 ## MVP Critical Path
 
@@ -58,9 +58,9 @@ T-CICD-001 → T-CICD-003 → T-CICD-007 → T-CICD-008 → T-CICD-012 → T-CIC
 | Metric | Count |
 | --- | --- |
 | Total tasks | 26 |
-| Completed | 21 |
-| Remaining | 5 |
-| Completion rate | 81% |
+| Completed | 24 |
+| Remaining | 2 (deferred) |
+| Completion rate | 92% |
 
 ---
 
