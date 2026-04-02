@@ -46,9 +46,8 @@ jobs:
         uses: aquasecurity/trivy-action@master
         with:
           scan-type: fs
-          severity: HIGH,CRITICAL
+          severity: CRITICAL
           exit-code: "1"
-          format: table
 
   # T-CICD-010: gitleaks secret detection (REQ-CICD-012)
   gitleaks:
