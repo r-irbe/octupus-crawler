@@ -10,8 +10,7 @@
 ```mermaid
 graph TB
   subgraph Internal - tRPC
-    API[api-gateway] -->|tRPC| Scheduler[scheduler-service]
-    API -->|tRPC| Worker[worker-service]
+    API[api-gateway] -->|tRPC| Crawler[crawler workers]
   end
 
   subgraph External - OpenAPI
@@ -19,9 +18,8 @@ graph TB
   end
 
   subgraph Events - Redis Streams
-    Worker -->|CrawlCompleted| RS[(Redis Streams)]
-    RS -->|Consumer Group| Scheduler
-    RS -->|Consumer Group| Indexer[indexer]
+    Crawler -->|CrawlCompleted| RS[(Redis Streams)]
+    RS -->|Consumer Group| API
   end
 
   subgraph Workflows - Temporal

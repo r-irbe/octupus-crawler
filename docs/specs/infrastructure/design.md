@@ -23,7 +23,7 @@ WORKDIR /app
 COPY pnpm-lock.yaml package.json ./
 RUN corepack enable && pnpm install --frozen-lockfile
 COPY . .
-RUN pnpm turbo build --filter=worker-service
+RUN pnpm turbo build --filter=api-gateway
 
 # Stage 2: Production
 FROM node:22-slim

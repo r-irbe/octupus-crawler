@@ -352,14 +352,11 @@ PR pipeline completes in ~3 minutes. All K8s workloads run with security context
 The release pipeline builds, scans (Trivy), and publishes a multi-arch (amd64 + arm64) container image to GitHub Container Registry on every merge to main:
 
 ```text
-ghcr.io/r-irbe/octupus-crawler/api-gateway:latest
-ghcr.io/r-irbe/octupus-crawler/worker-service:latest
-ghcr.io/r-irbe/octupus-crawler/scheduler-service:latest
+ghcr.io/r-irbe/octupus-crawler/crawler:latest
+ghcr.io/r-irbe/octupus-crawler/crawler:sha-<commit>
 ```
 
-> **Note**: Currently all three images are built from the same Dockerfile and entrypoint (`packages/application-lifecycle/src/main.ts`) — the crawler runs as a monolith. The separate image names prepare for the planned microservice split (API gateway, fetch workers, URL scheduler) per ADR-015. The K8s Deployment (`ipf-crawler`) uses the `worker-service` image via Kustomize image mapping.
-
-SHA-tagged images are also published for pinned deployments. Kustomize overlays are automatically updated with new image tags, triggering ArgoCD auto-sync.
+SHA-tagged images are published for pinned deployments. Kustomize overlays are automatically updated with new image tags, triggering ArgoCD auto-sync.
 
 ## Documentation
 

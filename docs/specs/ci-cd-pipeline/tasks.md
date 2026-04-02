@@ -28,7 +28,7 @@
 - [x] **T-CICD-013**: Add Docker BuildKit + buildx setup for multi-arch builds → REQ-CICD-015, REQ-CICD-017
 - [x] **T-CICD-014**: Add build-push-action with ghcr.io registry and SHA tagging → REQ-CICD-016
 - [x] **T-CICD-015**: Add Trivy image scan before publish (blocking) → REQ-CICD-013
-- [x] **T-CICD-016**: Build matrix for api-gateway, worker-service, scheduler-service → REQ-CICD-014
+- [x] **T-CICD-016**: Build crawler image → REQ-CICD-014
 
 ## Phase 4: Release & Versioning
 

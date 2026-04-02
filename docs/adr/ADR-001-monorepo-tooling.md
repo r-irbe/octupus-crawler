@@ -85,9 +85,7 @@ Adopt **Turborepo + pnpm** as the monorepo tooling stack.
 ```text
 /
 ├── apps/
-│   ├── api-gateway/         # Public-facing API (Fastify/NestJS)
-│   ├── worker-service/      # BullMQ job processors + Playwright
-│   └── scheduler-service/   # URL frontier, job production
+│   └── api-gateway/         # Fastify + tRPC HTTP API + crawler monolith
 ├── packages/
 │   ├── core/                # Shared domain types, value objects, errors
 │   ├── redis/               # Redis client abstraction + circuit breaker

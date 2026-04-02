@@ -80,10 +80,7 @@ Phase 12 → Cloud Deployment, Kubernetes, and IaC
 ```
 /
 ├── apps/
-│   ├── api-gateway/         # Public-facing tRPC / REST / GraphQL gateway
-│   ├── auth-service/        # Authentication microservice
-│   ├── worker-service/      # BullMQ job processors
-│   └── ...                  # Additional microservices
+│   └── api-gateway/         # Fastify + tRPC HTTP API + crawler monolith
 ├── packages/
 │   ├── core/                # Shared domain types, value objects, errors
 │   ├── redis/               # Redis client abstraction + circuit breaker

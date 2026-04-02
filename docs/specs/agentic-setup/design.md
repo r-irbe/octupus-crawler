@@ -1149,7 +1149,7 @@ resilience-check:
     - name: Verify idempotency in workers
       run: |
         # Check worker processors for idempotency patterns
-        grep -rq "idempotency\|deduplication\|jobId" apps/worker-service/src/ || exit 1
+        grep -rq "idempotency\|deduplication\|jobId" apps/api-gateway/src/ || exit 1
 ```
 
 ### Resource Cleanup Instruction
