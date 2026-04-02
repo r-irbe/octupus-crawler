@@ -91,7 +91,7 @@ Scenario: High severity CVE blocks merge
 ## 4. Container Builds & Publishing
 
 **REQ-CICD-014** (Event-driven)
-When code is merged to `main`, the pipeline shall build Docker images for all service apps (api-gateway, worker-service, scheduler-service).
+When code is merged to `main`, the pipeline shall build the Docker image for the crawler service.
 
 **REQ-CICD-015** (Ubiquitous)
 Container builds shall use Docker BuildKit with GitHub Actions cache (`type=gha`) for layer caching.

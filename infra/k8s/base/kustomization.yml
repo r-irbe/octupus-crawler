@@ -22,12 +22,6 @@ labels:
 # CI runs `kustomize edit set image` to set newName (registry) and newTag (SHA).
 # Initial newTag: unreleased — first release pipeline run populates real values.
 images:
-- name: ipf-api-gateway
-  newName: ghcr.io/r-irbe/octupus-crawler/api-gateway
-  newTag: sha-e359143
 - name: ipf-crawler
-  newName: ghcr.io/r-irbe/octupus-crawler/worker-service
-  newTag: sha-e359143
-- name: ipf-scheduler
-  newName: ghcr.io/r-irbe/octupus-crawler/scheduler-service
+  newName: ghcr.io/r-irbe/octupus-crawler/crawler
   newTag: sha-e359143

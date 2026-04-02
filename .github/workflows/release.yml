@@ -22,16 +22,12 @@ env:
   IMAGE_PREFIX: ghcr.io/${{ github.repository }}
 
 jobs:
-  # T-CICD-016: Build matrix for all services (REQ-CICD-014)
+  # T-CICD-016: Build and publish crawler image (REQ-CICD-014)
   build-and-publish:
     runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
-    strategy:
-      fail-fast: false
-      matrix:
-        service: [api-gateway, worker-service, scheduler-service]
     steps:
       - uses: actions/checkout@v4
 
@@ -53,7 +49,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ env.IMAGE_PREFIX }}/${{ matrix.service }}
+          images: ${{ env.IMAGE_PREFIX }}/crawler
           tags: |
             type=sha
             type=raw,value=latest
@@ -76,7 +72,7 @@ jobs:
       - name: Trivy image scan
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: ${{ env.IMAGE_PREFIX }}/${{ matrix.service }}:latest
+          image-ref: ${{ env.IMAGE_PREFIX }}/crawler:latest
           severity: CRITICAL
           ignore-unfixed: "true"
           exit-code: "1"
@@ -113,14 +109,12 @@ jobs:
         uses: imranismail/setup-kustomize@v2
 
       # SHA truncation (::7) matches docker/metadata-action type=sha (7-char prefix)
-      - name: Update image tags for all services
+      - name: Update image tag
         run: |
           SHORT_TAG="sha-${GITHUB_SHA::7}"
           cd infra/k8s/base
           kustomize edit set image \
-            "ipf-api-gateway=${IMAGE_PREFIX}/api-gateway:${SHORT_TAG}" \
-            "ipf-crawler=${IMAGE_PREFIX}/worker-service:${SHORT_TAG}" \
-            "ipf-scheduler=${IMAGE_PREFIX}/scheduler-service:${SHORT_TAG}"
+            "ipf-crawler=${IMAGE_PREFIX}/crawler:${SHORT_TAG}"
 
       - name: Commit and push
         run: |

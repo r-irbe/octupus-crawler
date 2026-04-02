@@ -215,7 +215,7 @@ DomainEvents            CrawlURLRepository          DrizzleCrawlURLRepository
 
 ```text
 apps/api-gateway/              # Fastify + tRPC HTTP API
-packages/
+packages/                      # 18 shared libraries (never depend on apps/)
   core/                        # Domain types, errors, contracts (zero deps)
   config/ database/ redis/     # Infrastructure adapters
   job-queue/ url-frontier/     # BullMQ + priority queue + SHA-256 dedup
@@ -226,10 +226,13 @@ packages/
   completion-detection/        # Crawl completion via control plane
   application-lifecycle/       # Startup orchestration, graceful shutdown
   observability/               # OpenTelemetry + Pino + Prometheus
+  virtual-memory/              # Context budget, chunking, eviction
   api-router/ testing/         # tRPC router + Testcontainers helpers
+  eslint-config/               # Shared ESLint config
 infra/
   docker/                      # Dockerfile + docker-compose.dev.yml
   k8s/                         # Kustomize base + overlays (dev/staging/prod/e2e)
+  prometheus/ monitoring/      # Alert rules, Grafana dashboards
 ```
 
 ---
@@ -247,15 +250,15 @@ Each decision is documented as an Architecture Decision Record (ADR) in `docs/ad
 
 ## Testing Strategy
 
-| Type | Count | Framework | What It Proves |
-| ---- | ----- | --------- | -------------- |
-| Unit | 129 | Vitest | Pure logic correctness — no infra needed |
-| Integration | 26 | Vitest + Testcontainers | Real Redis/PG/MinIO behavior, not mock assumptions |
-| Property | 7 suites | fast-check | Invariants hold for _all_ inputs (circuit breaker, SSRF, URL normalization) |
-| E2E | 18 | Vitest + k3d | Full K8s cluster: pod scheduling, service discovery, health checks |
-| Load | 3 | k6 | Sustained throughput, burst backpressure, 30-min mega crawl |
-| Chaos | 5 CRDs | Chaos Mesh | Pod kill, network partition, CPU stress, DNS failure recovery |
-| **Total** | **180+** | | |
+| Type | Files | Assertions | Framework | What It Proves |
+| ---- | ----- | ---------- | --------- | -------------- |
+| Unit | 128 | 880+ | Vitest | Pure logic correctness — no infra needed |
+| Integration | 26 | 150+ | Vitest + Testcontainers | Real Redis/PG/MinIO behavior, not mock assumptions |
+| Property | 7 | 80+ | fast-check | Invariants hold for _all_ inputs (circuit breaker, SSRF, URL normalization) |
+| E2E | 18 | — | Vitest + k3d | Full K8s cluster: pod scheduling, service discovery, health checks |
+| Load | 3 | — | k6 | Sustained throughput, burst backpressure, 30-min mega crawl |
+| Chaos | 5 CRDs | — | Chaos Mesh | Pod kill, network partition, CPU stress, DNS failure recovery |
+| **Total** | **187** | **1,116** | | **Across 18 packages** |
 
 **Zero mock infrastructure** — integration tests use real containers (Testcontainers), never `vi.mock('redis')`. Property tests verify invariants of critical algorithms (circuit breaker state transitions, retry backoff, token bucket capacity, SSRF IP range coverage, URL normalization idempotence).
 
@@ -292,6 +295,7 @@ Click a trace ID in Loki → jumps to Jaeger trace. Click a trace in Jaeger → 
 | Observability | OTel + Pino + Prometheus + Loki | Traces, structured logs, metrics, log aggregation |
 | Testing | Vitest + Testcontainers + fast-check + k6 + Chaos Mesh | Real infra, property-based, load, chaos |
 | Deployment | Docker + Kustomize + k3d + ArgoCD | Multi-stage builds, GitOps, chaos experiments |
+| CI/CD | GitHub Actions (6 workflows) | Guard functions, security scanning, release pipeline |
 
 ---
 
@@ -328,10 +332,36 @@ pnpm test:alerts                   # Validate Prometheus alert rules
 pnpm typespec:compile              # Compile TypeSpec → OpenAPI
 ```
 
+## CI/CD Pipeline
+
+Fully validated GitHub Actions pipeline (6 PRs merged, all passing):
+
+| Workflow | Trigger | Jobs |
+| -------- | ------- | ---- |
+| **CI** | PR to main | Guard functions (typecheck → lint → test), affected-package matrix |
+| **Security** | PR to main | pnpm audit, Trivy filesystem scan, gitleaks, Spectral OpenAPI lint |
+| **CI Quality** | PR to main | Spec drift detection, context file lint, property test coverage, alert rule tests |
+| **K8s E2E** | PR to main | K8s manifest validation (kustomize build) |
+| **Release** | Push to main | Multi-arch Docker build, Trivy image scan, ghcr.io publish, Kustomize tag update |
+| **Version Packages** | Push to main | Changesets version PR automation |
+
+PR pipeline completes in ~3 minutes. All K8s workloads run with security contexts (non-root, seccomp, drop ALL capabilities).
+
+### Container Images
+
+The release pipeline builds, scans (Trivy), and publishes a multi-arch (amd64 + arm64) container image to GitHub Container Registry on every merge to main:
+
+```text
+ghcr.io/r-irbe/octupus-crawler/crawler:latest
+ghcr.io/r-irbe/octupus-crawler/crawler:sha-<commit>
+```
+
+SHA-tagged images are published for pinned deployments. Kustomize overlays are automatically updated with new image tags, triggering ArgoCD auto-sync.
+
 ## Documentation
 
 - **[Load Testing & Chaos Engineering Guide](docs/LOAD-TESTING.md)** — Full guide: mega simulator, k6 profiles, Chaos Mesh, autoscaling, Grafana dashboards
 - **Architecture Decision Records**: `docs/adr/` — 22 ADRs covering every major technical decision
 - **Feature Specifications**: `docs/specs/` — 23 features with requirements (EARS format), design, and task tracking
 - **Architectural Review**: `docs/architecture-review-2026-03-31.md` — multi-perspective RALPH review
-- **Worklogs**: `docs/worklogs/` — chronological session logs
+- **Worklogs**: `docs/worklogs/` — 72 chronological session logs

@@ -81,9 +81,6 @@ on:
 
 jobs:
   build-and-publish:
-    strategy:
-      matrix:
-        service: [api-gateway, worker-service, scheduler-service]
     steps:
       - uses: docker/setup-buildx-action@v3
       - uses: docker/build-push-action@v6
@@ -91,7 +88,7 @@ jobs:
           platforms: linux/amd64,linux/arm64
           cache-from: type=gha
           push: true
-          tags: ghcr.io/${{ github.repository }}/${{ matrix.service }}:${{ github.sha }}
+          tags: ghcr.io/${{ github.repository }}/crawler:${{ github.sha }}
 ```
 
 ## Security Gate Configuration

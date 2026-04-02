@@ -159,10 +159,10 @@ it('should access correlation ID in request scope', () => {
 
 ## BullMQ Worker Integration
 
-For background workers (worker-service), create the ALS store in the job processor:
+For background workers, create the ALS store in the job processor:
 
 ```typescript
-// apps/worker-service/src/processors/crawl.processor.ts
+// apps/api-gateway/src/processors/crawl.processor.ts
 import { requestContext } from '@ipf/core/request-context';
 
 async function processCrawlJob(job: Job<CrawlJobData>): Promise<void> {

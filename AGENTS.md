@@ -149,9 +149,7 @@ Before writing or modifying code, consult the relevant ADR. ADRs are the **bindi
 
 ```text
 apps/                        # Deployable services
-  api-gateway/               # Public API (Fastify/NestJS)
-  worker-service/            # BullMQ job processors + Playwright
-  scheduler-service/         # URL frontier, job production
+  api-gateway/               # Fastify + tRPC HTTP API + crawler monolith
 packages/                    # Shared libraries (never depend on apps/)
   core/                      # Domain types, value objects, errors
   config/                    # Zod-validated configuration
