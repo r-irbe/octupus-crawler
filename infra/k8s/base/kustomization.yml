@@ -24,10 +24,10 @@ labels:
 images:
 - name: ipf-api-gateway
   newName: ghcr.io/r-irbe/octupus-crawler/api-gateway
-  newTag: sha-2dde041
+  newTag: sha-e359143
 - name: ipf-crawler
   newName: ghcr.io/r-irbe/octupus-crawler/worker-service
-  newTag: sha-2dde041
+  newTag: sha-e359143
 - name: ipf-scheduler
   newName: ghcr.io/r-irbe/octupus-crawler/scheduler-service
-  newTag: sha-2dde041
+  newTag: sha-e359143
