@@ -26,4 +26,13 @@ describe('AsyncResult', () => {
     const result = await fetchData();
     expect(result.isOk()).toBe(true);
   });
+
+  // Validates REQ-ARCH-011: Result map transforms ok values
+  it('supports map on resolved ok Result', async () => {
+    const result: AsyncResult<number, string> = Promise.resolve(ok(10));
+    const resolved = await result;
+    const mapped = resolved.map((v) => v * 2);
+    expect(mapped.isOk()).toBe(true);
+    expect(mapped._unsafeUnwrap()).toBe(20);
+  });
 });

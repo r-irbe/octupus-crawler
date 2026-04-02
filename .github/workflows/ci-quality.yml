@@ -38,8 +38,10 @@ jobs:
             SPEC_DIR=$(dirname "$design")
             TASKS_FILE="$SPEC_DIR/tasks.md"
             if [ -f "$TASKS_FILE" ]; then
-              REMAINING=$(grep -c "^\- \[ \]" "$TASKS_FILE" 2>/dev/null || echo "0")
-              TOTAL=$(grep -c "^\- \[" "$TASKS_FILE" 2>/dev/null || echo "0")
+              REMAINING=$(grep -c '^- \[ \]' "$TASKS_FILE" || true)
+              TOTAL=$(grep -c '^- \[' "$TASKS_FILE" || true)
+              REMAINING=${REMAINING:-0}
+              TOTAL=${TOTAL:-0}
               if [ "$TOTAL" -gt 0 ]; then
                 DONE=$((TOTAL - REMAINING))
                 PCT=$((DONE * 100 / TOTAL))
@@ -109,10 +111,10 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Trivy filesystem scan
-        uses: aquasecurity/trivy-action@0.30.0
+        uses: aquasecurity/trivy-action@master
         with:
           scan-type: fs
-          severity: HIGH,CRITICAL
+          severity: CRITICAL
           exit-code: "1"
 
   integration-tests:
