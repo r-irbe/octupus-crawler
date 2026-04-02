@@ -5,26 +5,29 @@ kind: Kustomization
 namespace: ipf
 
 resources:
-  - namespace.yml
-  - crawler-deployment.yml
-  - crawler-configmap.yml
-  - secrets.yml
-  - dragonfly-statefulset.yml
-  - postgresql-statefulset.yml
-  - minio-statefulset.yml
+- namespace.yml
+- crawler-deployment.yml
+- crawler-configmap.yml
+- secrets.yml
+- dragonfly-statefulset.yml
+- postgresql-statefulset.yml
+- minio-statefulset.yml
 
 labels:
-  - pairs:
-      app.kubernetes.io/part-of: ipf-crawler
-      app.kubernetes.io/managed-by: kustomize
+- pairs:
+    app.kubernetes.io/managed-by: kustomize
+    app.kubernetes.io/part-of: ipf-crawler
 
 # Image tags — updated by release pipeline (T-CICD-019, REQ-CICD-020)
 # CI runs `kustomize edit set image` to set newName (registry) and newTag (SHA).
 # Initial newTag: unreleased — first release pipeline run populates real values.
 images:
-  - name: ipf-api-gateway
-    newTag: unreleased
-  - name: ipf-crawler
-    newTag: unreleased
-  - name: ipf-scheduler
-    newTag: unreleased
+- name: ipf-api-gateway
+  newName: ghcr.io/r-irbe/octupus-crawler/api-gateway
+  newTag: sha-2dde041
+- name: ipf-crawler
+  newName: ghcr.io/r-irbe/octupus-crawler/worker-service
+  newTag: sha-2dde041
+- name: ipf-scheduler
+  newName: ghcr.io/r-irbe/octupus-crawler/scheduler-service
+  newTag: sha-2dde041
