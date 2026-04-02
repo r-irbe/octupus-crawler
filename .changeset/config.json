@@ -7,7 +7,7 @@
   "commit": false,
   "fixed": [],
   "linked": [
-    ["@ipf/core", "@ipf/config", "@ipf/validation"],
+    ["@ipf/core", "@ipf/config"],
     ["@ipf/redis", "@ipf/database"],
     ["@ipf/api-router", "@ipf/observability"]
   ],
