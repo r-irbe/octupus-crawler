@@ -24,4 +24,4 @@ labels:
 images:
 - name: ipf-crawler
   newName: ghcr.io/r-irbe/octupus-crawler/crawler
-  newTag: sha-271250c
+  newTag: sha-e210cdb
