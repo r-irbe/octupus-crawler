@@ -5,7 +5,7 @@
 set -euo pipefail
 
 NAMESPACE="${CHAOS_NAMESPACE:-chaos-mesh}"
-MONITORING_NS="${MONITORING_NAMESPACE:-default}"
+MONITORING_NS="${MONITORING_NAMESPACE:-ipf}"
 CHAOS_DIR="infra/k8s/chaos"
 RESULTS_DIR="${RESULTS_DIR:-/tmp/chaos-test-results}"
 mkdir -p "$RESULTS_DIR"
@@ -41,7 +41,7 @@ snapshot_metrics() {
   log "Capturing metrics snapshot: $phase"
 
   if kubectl get ns "$MONITORING_NS" &>/dev/null; then
-    kubectl exec -n "$MONITORING_NS" deploy/prometheus-server -- \
+    kubectl exec -n "$MONITORING_NS" deploy/prometheus -- \
       wget -qO- 'http://localhost:9090/api/v1/query?query=up' > "$file" 2>/dev/null || \
       log "WARNING: Metrics capture failed for $phase (Prometheus unreachable)"
   else
