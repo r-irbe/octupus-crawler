@@ -84,11 +84,17 @@ if [[ "$BRANCH" =~ ^work/ ]]; then
   if [[ -n "$TRACKER" ]]; then
     echo "  ✓ State tracker found: $(basename "$TRACKER")"
 
-    # Check it's been updated recently
-    GUARD_STATUS=$(grep -oE "Guard function status.*\|.*" "$TRACKER" 2>/dev/null | tail -1)
-    LAST_GATE=$(grep -oE "Last completed gate.*\|.*" "$TRACKER" 2>/dev/null | tail -1)
-    echo "    $GUARD_STATUS"
-    echo "    $LAST_GATE"
+    # Verify state tracker has required fields
+    GUARD_STATUS=$(grep -oE "Guard function status.*\|.*" "$TRACKER" 2>/dev/null | tail -1) || {
+      echo "  ✗ State tracker missing 'Guard function status' field"
+      FAILED=$((FAILED + 1))
+    }
+    LAST_GATE=$(grep -oE "Last completed gate.*\|.*" "$TRACKER" 2>/dev/null | tail -1) || {
+      echo "  ✗ State tracker missing 'Last completed gate' field"
+      FAILED=$((FAILED + 1))
+    }
+    [[ -n "${GUARD_STATUS:-}" ]] && echo "    $GUARD_STATUS"
+    [[ -n "${LAST_GATE:-}" ]] && echo "    $LAST_GATE"
   else
     echo "  ✗ No state tracker for branch '$BRANCH'"
     echo "    Expected: $SESSION_DIR/YYYY-MM-DD-${SLUG}-state.md"
