@@ -6,6 +6,9 @@ All docs follow [Documentation Standards](guidelines/documentation-standards.md)
 
 | Directory | Description |
 | --- | --- |
+| [Architecture](ARCHITECTURE.md) | Design, hexagonal layout, API, tech stack, CI/CD, testing |
+| [Getting Started](GETTING-STARTED.md) | Docker Compose, k3d, mega simulator, load/chaos testing |
+| [Load Testing](LOAD-TESTING.md) | k6 profiles, Chaos Mesh, autoscaling, Grafana dashboards |
 | [ADRs](adr/index.md) | 22 architectural decisions + template |
 | [Automation](automation/index.md) | 7 pipelines, triggers, metrics, SLOs |
 | [Agents](agents/index.md) | 11 AI agents + orchestration protocol |
