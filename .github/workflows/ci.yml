@@ -70,8 +70,6 @@ jobs:
               - 'packages/url-frontier/**'
             validation:
               - 'packages/validation/**'
-            virtual-memory:
-              - 'packages/virtual-memory/**'
             worker-management:
               - 'packages/worker-management/**'
 
