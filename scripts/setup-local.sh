@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 # scripts/setup-local.sh — Create k3d cluster with local registry
 # Implements: REQ-K8E-001, REQ-K8E-002, REQ-K8E-003, REQ-K8E-006
 # Design: docs/specs/k8s-e2e/design.md §3.1
@@ -11,7 +11,13 @@ REGISTRY_PORT="${K3D_REGISTRY_PORT:-5111}"
 SERVERS="${K3D_SERVERS:-1}"
 AGENTS="${K3D_AGENTS:-2}"
 
-echo "=== IPF Local Kubernetes Setup ==="
+START_TIME=$(date +%s)
+
+echo ""
+echo "╔══════════════════════════════════════════╗"
+echo "║   IPF Local Kubernetes Setup             ║"
+echo "╚══════════════════════════════════════════╝"
+echo ""
 
 # Prerequisite check
 for cmd in k3d kubectl docker; do
@@ -50,7 +56,7 @@ kubectl wait --for=condition=Ready node --all --timeout=60s
 
 # ── ArgoCD Installation (REQ-LTO-020) ───────────────
 echo ""
-echo "=== Installing ArgoCD ==="
+echo "━━━ Installing ArgoCD ━━━"
 kubectl create namespace argocd --dry-run=client -o yaml | kubectl apply -f -
 kubectl apply -n argocd -f https://raw.githubusercontent.com/argoproj/argo-cd/v2.13.3/manifests/install.yaml
 echo "Waiting for ArgoCD server..."
@@ -60,7 +66,7 @@ echo "Default password: kubectl -n argocd get secret argocd-initial-admin-secret
 
 # ── Chaos Mesh Installation (REQ-LTO-024) ───────────
 echo ""
-echo "=== Installing Chaos Mesh ==="
+echo "━━━ Installing Chaos Mesh ━━━"
 if command -v helm &>/dev/null; then
   helm repo add chaos-mesh https://charts.chaos-mesh.org 2>/dev/null || true
   helm repo update chaos-mesh
@@ -75,7 +81,7 @@ else
 fi
 
 echo ""
-echo "=== Cluster Ready ==="
+echo "━━━ Cluster Ready ━━━"
 kubectl cluster-info
 kubectl get nodes -o wide
 echo ""
@@ -83,7 +89,7 @@ echo "Registry: k3d-${REGISTRY_NAME}:${REGISTRY_PORT}"
 echo ""
 
 # ── Build & Push Images ─────────────────────────────
-echo "=== Building & Pushing Images ==="
+echo "━━━ Building & Pushing Images ━━━"
 REGISTRY="k3d-${REGISTRY_NAME}:${REGISTRY_PORT}"
 
 echo "Building mega-simulator..."
@@ -102,15 +108,22 @@ docker build -t "${REGISTRY}/ipf-web-simulator:latest" \
 
 # ── Deploy Base + Monitoring ─────────────────────────
 echo ""
-echo "=== Deploying IPF Stack ==="
+echo "━━━ Deploying IPF Stack ━━━"
 kubectl create namespace ipf --dry-run=client -o yaml | kubectl apply -f -
 bash "$(dirname "$0")/create-dashboard-configmap.sh" || \
   echo "WARNING: dashboard configmap creation failed"
-kubectl apply -k infra/k8s/overlays/dev/ 2>/dev/null || \
+# Use e2e overlay for local k3d (uses local registry images, not ghcr.io)
+kubectl apply -k infra/k8s/overlays/e2e/ 2>/dev/null || \
   echo "WARNING: kustomize apply failed — some resources may need image builds first"
 
+END_TIME=$(date +%s)
+DURATION=$((END_TIME - START_TIME))
+
 echo ""
-echo "=== Setup Complete ==="
+echo "╔══════════════════════════════════════════╗"
+echo "║   Setup Complete (${DURATION}s)                  ║"
+echo "╚══════════════════════════════════════════╝"
+echo ""
 echo "ArgoCD UI:     kubectl port-forward svc/argocd-server -n argocd 8443:443"
 echo "Chaos Mesh:    kubectl port-forward svc/chaos-dashboard -n chaos-mesh 2333:2333"
 echo "Grafana:       kubectl port-forward svc/grafana -n ipf 3000:3000"

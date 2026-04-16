@@ -19,17 +19,17 @@
     "clean": "rm -rf dist .turbo"
   },
   "dependencies": {
-    "neverthrow": "^8.1.1",
-    "tldts": "^6.0.0",
     "@ipf/core": "workspace:*",
-    "@ipf/ssrf-guard": "workspace:*"
+    "@ipf/ssrf-guard": "workspace:*",
+    "neverthrow": "^8.2.0",
+    "tldts": "^6.1.86"
   },
   "devDependencies": {
     "@ipf/eslint-config": "workspace:*",
     "@ipf/testing": "workspace:*",
-    "@types/node": "^25.5.0",
-    "typescript": "^6.0.0",
-    "vitest": "^4.0.0",
-    "eslint": "^10.0.0"
+    "@types/node": "^25.6.0",
+    "eslint": "^10.2.0",
+    "typescript": "^6.0.2",
+    "vitest": "^4.1.4"
   }
 }

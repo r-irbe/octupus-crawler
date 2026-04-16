@@ -17,19 +17,19 @@
     "clean": "rm -rf dist .turbo"
   },
   "dependencies": {
+    "@ipf/core": "workspace:*",
     "neverthrow": "^8.2.0",
-    "zod": "^4.0.0",
-    "@ipf/core": "workspace:*"
+    "zod": "^4.3.6"
   },
   "devDependencies": {
     "@ipf/eslint-config": "workspace:*",
     "@ipf/job-queue": "workspace:*",
     "@ipf/testing": "workspace:*",
-    "@types/node": "^25.5.0",
-    "bullmq": "^5.52.0",
-    "redis": "^5.11.0",
-    "typescript": "^6.0.0",
-    "vitest": "^4.0.0",
-    "eslint": "^10.0.0"
+    "@types/node": "^25.6.0",
+    "bullmq": "^5.74.1",
+    "eslint": "^10.2.0",
+    "redis": "^5.12.1",
+    "typescript": "^6.0.2",
+    "vitest": "^4.1.4"
   }
 }

@@ -226,7 +226,6 @@ packages/                      # 18 shared libraries (never depend on apps/)
   completion-detection/        # Crawl completion via control plane
   application-lifecycle/       # Startup orchestration, graceful shutdown
   observability/               # OpenTelemetry + Pino + Prometheus
-  virtual-memory/              # Context budget, chunking, eviction
   api-router/ testing/         # tRPC router + Testcontainers helpers
   eslint-config/               # Shared ESLint config
 infra/

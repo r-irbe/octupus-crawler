@@ -12,6 +12,22 @@ mkdir -p "$RESULTS_DIR"
 
 log() { echo "[$(date -u +%Y-%m-%dT%H:%M:%SZ)] $*"; }
 
+wait_with_progress() {
+  local duration=$1
+  local phase=${2:-""}
+  local interval=30
+  local elapsed=0
+  while [ "$elapsed" -lt "$duration" ]; do
+    local remaining=$(( duration - elapsed ))
+    local step=$(( remaining < interval ? remaining : interval ))
+    sleep "$step"
+    elapsed=$(( elapsed + step ))
+    if [ "$elapsed" -lt "$duration" ]; then
+      log "  ⏳ $phase — ${elapsed}s / ${duration}s elapsed"
+    fi
+  done
+}
+
 check_hpa() {
   if ! kubectl get hpa -n "$NAMESPACE" crawler-worker-hpa &>/dev/null; then
     log "WARNING: HPA 'crawler-worker-hpa' not found in namespace $NAMESPACE"
@@ -56,6 +72,20 @@ wait_for_scale() {
 
 # ── Pre-flight ───────────────────────────────────────
 log "=== Autoscale Test Starting ==="
+
+for cmd in kubectl k6; do
+  if ! command -v "$cmd" &>/dev/null; then
+    log "ERROR: $cmd is required but not installed." >&2
+    exit 1
+  fi
+done
+
+K6_PID=""
+cleanup() {
+  if [ -n "$K6_PID" ]; then kill "$K6_PID" 2>/dev/null || true; fi
+}
+trap cleanup EXIT
+
 check_hpa
 record_state "00-initial"
 
@@ -115,6 +145,8 @@ log "=== Phase 4: Cool-down (5 min, no load) ==="
 log "Monitoring scale-down..."
 for i in 1 2 3 4 5; do
   sleep 60
+  REPLICAS=$(kubectl get deployment crawler-worker -n "$NAMESPACE" -o jsonpath='{.status.readyReplicas}' 2>/dev/null || echo "?")
+  log "  ⏳ Cool-down — ${i}m / 5m (replicas: ${REPLICAS:-0})"
   record_state "04-cooldown-${i}m"
 done
 
@@ -130,5 +162,5 @@ log "  3. Pods scaled back down during cool-down"
 log "  4. No OOM kills: kubectl get events -n $NAMESPACE | grep OOM"
 log ""
 log "View in Grafana:"
-log "  Infrastructure: http://localhost:3001/d/infrastructure-health"
-log "  Scenario Timeline: http://localhost:3001/d/scenario-timeline"
+log "  Infrastructure: http://localhost:3000/d/infrastructure-health"
+log "  Scenario Timeline: http://localhost:3000/d/scenario-timeline"

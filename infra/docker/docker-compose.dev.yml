@@ -96,7 +96,7 @@ services:
   # REQ-DATA-001: S3/MinIO for raw page content storage
   # REQ-DATA-022: Full S3 API compatibility for local dev
   minio:
-    image: minio/minio:latest
+    image: minio/minio:RELEASE.2025-09-07T16-13-09Z
     command: ["server", "/data", "--console-address", ":9001"]
     environment:
       MINIO_ROOT_USER: minioadmin
@@ -116,7 +116,7 @@ services:
   # REQ-INFRA-009: Persistence via snapshot dump + volume
   # REQ-INFRA-010: Health check via redis-cli ping
   dragonfly:
-    image: docker.dragonflydb.io/dragonflydb/dragonfly:v1.37.2
+    image: docker.dragonflydb.io/dragonflydb/dragonfly:v1.27.1
     command: ["--dir", "/data", "--dbfilename", "dump", "--proactor_threads", "2", "--maxmemory", "512mb"]
     ports:
       - "6379:6379"
@@ -133,7 +133,7 @@ services:
   # REQ-INFRA-014: Load alert rules from config
   # REQ-INFRA-020: Data persistence via named volume
   prometheus:
-    image: prom/prometheus:v2.50.0
+    image: prom/prometheus:v3.11.2
     volumes:
       - ../monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - ../prometheus/alert-rules.yml:/etc/prometheus/alert-rules.yml:ro
@@ -149,7 +149,7 @@ services:
   # Distributed tracing backend with built-in OTLP collector.
   # UI: http://localhost:16686 — search traces by service name, operation, tags
   jaeger:
-    image: jaegertracing/all-in-one:2.6.0
+    image: jaegertracing/all-in-one:1.76.0
     environment:
       COLLECTOR_OTLP_ENABLED: "true"
     ports:
@@ -157,7 +157,7 @@ services:
       - "4317:4317"     # OTLP gRPC
       - "4318:4318"     # OTLP HTTP
     healthcheck:
-      test: ["CMD-SHELL", "wget --spider -q http://localhost:16687/ || exit 1"]
+      test: ["CMD-SHELL", "wget --spider -q http://localhost:14269/ || exit 1"]
       interval: 5s
       timeout: 3s
       retries: 5
@@ -166,7 +166,7 @@ services:
   # REQ-LTO-008: Centralized log store for all crawler container logs
   # REQ-LTO-012: Docker Compose Loki stack
   loki:
-    image: grafana/loki:3.0.0
+    image: grafana/loki:3.6.10
     command: ["-config.file=/etc/loki/local-config.yaml"]
     ports:
       - "3100:3100"
@@ -179,7 +179,7 @@ services:
   # ── Promtail (Log Collector) ────────────────────────
   # Scrapes Docker container logs and ships to Loki
   promtail:
-    image: grafana/promtail:3.0.0
+    image: grafana/promtail:3.6.10
     volumes:
       - ../monitoring/promtail-config.yml:/etc/promtail/config.yml:ro
       - /var/run/docker.sock:/var/run/docker.sock:ro
@@ -191,7 +191,7 @@ services:
   # ── Grafana ────────────────────────────────────────
   # REQ-INFRA-013: Pre-configured dashboards
   grafana:
-    image: grafana/grafana:10.4.0
+    image: grafana/grafana:11.6
     volumes:
       - ../monitoring/dashboards:/var/lib/grafana/dashboards:ro
       - ../monitoring/provisioning:/etc/grafana/provisioning:ro

@@ -17,16 +17,16 @@
     "clean": "rm -rf dist .turbo"
   },
   "dependencies": {
-    "neverthrow": "^8.1.1"
+    "neverthrow": "^8.2.0"
   },
   "devDependencies": {
+    "@fast-check/vitest": "^0.4.0",
     "@ipf/eslint-config": "workspace:*",
     "@ipf/testing": "workspace:*",
-    "@fast-check/vitest": "^0.2.0",
-    "@types/node": "^25.5.0",
-    "fast-check": "^4.0.0",
-    "typescript": "^6.0.0",
-    "vitest": "^4.0.0",
-    "eslint": "^10.0.0"
+    "@types/node": "^25.6.0",
+    "eslint": "^10.2.0",
+    "fast-check": "^4.6.0",
+    "typescript": "^6.0.2",
+    "vitest": "^4.1.4"
   }
 }

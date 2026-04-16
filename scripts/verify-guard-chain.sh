@@ -24,17 +24,15 @@ while [[ "$ATTEMPT" -lt "$MAX_ATTEMPTS" && "$PASSED" == "false" ]]; do
 
   # --- Typecheck ---
   echo "▸ typecheck..."
-  if pnpm turbo typecheck --force 2>&1 | tee /tmp/ipf-typecheck.log | tail -3; then
+  set +e
+  pnpm turbo typecheck --force 2>&1 | tee /tmp/ipf-typecheck.log | tail -3
+  TC_EXIT=${PIPESTATUS[0]}
+  set -e
+  if [[ "$TC_EXIT" -eq 0 ]]; then
     TC_RESULT=$(grep -c "successful" /tmp/ipf-typecheck.log || true)
-    TC_FAILED=$(grep -c "Failed" /tmp/ipf-typecheck.log || true)
-    if [[ "$TC_FAILED" -gt 0 ]]; then
-      echo "  ✗ typecheck FAILED"
-      GATE_FAILED="typecheck"
-    else
-      echo "  ✓ typecheck passed ($TC_RESULT packages)"
-    fi
+    echo "  ✓ typecheck passed ($TC_RESULT packages)"
   else
-    echo "  ✗ typecheck FAILED (exit code)"
+    echo "  ✗ typecheck FAILED (exit $TC_EXIT)"
     GATE_FAILED="typecheck"
   fi
   echo ""
@@ -42,17 +40,14 @@ while [[ "$ATTEMPT" -lt "$MAX_ATTEMPTS" && "$PASSED" == "false" ]]; do
   # --- Lint ---
   if [[ -z "$GATE_FAILED" ]]; then
     echo "▸ lint..."
-    if pnpm turbo lint --force 2>&1 | tee /tmp/ipf-lint.log | tail -3; then
-      LINT_FAILED=$(grep -c "Failed" /tmp/ipf-lint.log || true)
-      LINT_ERRORS=$(grep -cE "[1-9][0-9]* error" /tmp/ipf-lint.log || true)
-      if [[ "$LINT_FAILED" -gt 0 || "$LINT_ERRORS" -gt 0 ]]; then
-        echo "  ✗ lint FAILED"
-        GATE_FAILED="lint"
-      else
-        echo "  ✓ lint passed"
-      fi
+    set +e
+    pnpm turbo lint --force 2>&1 | tee /tmp/ipf-lint.log | tail -3
+    LINT_EXIT=${PIPESTATUS[0]}
+    set -e
+    if [[ "$LINT_EXIT" -eq 0 ]]; then
+      echo "  ✓ lint passed"
     else
-      echo "  ✗ lint FAILED (exit code)"
+      echo "  ✗ lint FAILED (exit $LINT_EXIT)"
       GATE_FAILED="lint"
     fi
     echo ""
@@ -61,17 +56,15 @@ while [[ "$ATTEMPT" -lt "$MAX_ATTEMPTS" && "$PASSED" == "false" ]]; do
   # --- Test ---
   if [[ -z "$GATE_FAILED" ]]; then
     echo "▸ test (unit)..."
-    if pnpm turbo test --force 2>&1 | tee /tmp/ipf-test.log | tail -5; then
-      TEST_FAILED=$(grep -c "Failed" /tmp/ipf-test.log || true)
+    set +e
+    pnpm turbo test --force 2>&1 | tee /tmp/ipf-test.log | tail -5
+    TEST_EXIT=${PIPESTATUS[0]}
+    set -e
+    if [[ "$TEST_EXIT" -eq 0 ]]; then
       TEST_COUNT=$(grep -oE "[0-9]+ passed" /tmp/ipf-test.log | awk '{s+=$1} END {print s+0}')
-      if [[ "$TEST_FAILED" -gt 0 ]]; then
-        echo "  ✗ test FAILED"
-        GATE_FAILED="test"
-      else
-        echo "  ✓ test passed ($TEST_COUNT tests total)"
-      fi
+      echo "  ✓ test passed ($TEST_COUNT tests total)"
     else
-      echo "  ✗ test FAILED (exit code)"
+      echo "  ✗ test FAILED (exit $TEST_EXIT)"
       GATE_FAILED="test"
     fi
     echo ""
@@ -80,19 +73,16 @@ while [[ "$ATTEMPT" -lt "$MAX_ATTEMPTS" && "$PASSED" == "false" ]]; do
   # --- Integration Test ---
   if [[ -z "$GATE_FAILED" ]]; then
     echo "▸ test:integration..."
-    if pnpm turbo test:integration --force 2>&1 | tee /tmp/ipf-integration.log | tail -5; then
-      INT_FAILED=$(grep -c "Failed" /tmp/ipf-integration.log || true)
+    set +e
+    pnpm turbo test:integration --force 2>&1 | tee /tmp/ipf-integration.log | tail -5
+    INT_EXIT=${PIPESTATUS[0]}
+    set -e
+    if [[ "$INT_EXIT" -eq 0 ]]; then
       INT_COUNT=$(grep -oE "[0-9]+ passed" /tmp/ipf-integration.log | awk '{s+=$1} END {print s+0}')
-      if [[ "$INT_FAILED" -gt 0 ]]; then
-        echo "  ✗ integration FAILED"
-        # REQ-TCH-005: report container info
-        grep -A5 "container\|Container\|TESTCONTAINER" /tmp/ipf-integration.log 2>/dev/null || true
-        GATE_FAILED="test:integration"
-      else
-        echo "  ✓ integration passed ($INT_COUNT tests total)"
-      fi
+      echo "  ✓ integration passed ($INT_COUNT tests total)"
     else
-      echo "  ✗ integration FAILED (exit code)"
+      echo "  ✗ integration FAILED (exit $INT_EXIT)"
+      grep -A5 "container\|Container\|TESTCONTAINER" /tmp/ipf-integration.log 2>/dev/null || true
       GATE_FAILED="test:integration"
     fi
     echo ""
@@ -101,17 +91,15 @@ while [[ "$ATTEMPT" -lt "$MAX_ATTEMPTS" && "$PASSED" == "false" ]]; do
   # --- Property Test ---
   if [[ -z "$GATE_FAILED" ]]; then
     echo "▸ test:property..."
-    if pnpm turbo test:property --force 2>&1 | tee /tmp/ipf-property.log | tail -5; then
-      PROP_FAILED=$(grep -c "Failed" /tmp/ipf-property.log || true)
+    set +e
+    pnpm turbo test:property --force 2>&1 | tee /tmp/ipf-property.log | tail -5
+    PROP_EXIT=${PIPESTATUS[0]}
+    set -e
+    if [[ "$PROP_EXIT" -eq 0 ]]; then
       PROP_COUNT=$(grep -oE "[0-9]+ passed" /tmp/ipf-property.log | awk '{s+=$1} END {print s+0}')
-      if [[ "$PROP_FAILED" -gt 0 ]]; then
-        echo "  ✗ property FAILED"
-        GATE_FAILED="test:property"
-      else
-        echo "  ✓ property passed ($PROP_COUNT tests total)"
-      fi
+      echo "  ✓ property passed ($PROP_COUNT tests total)"
     else
-      echo "  ✗ property FAILED (exit code)"
+      echo "  ✗ property FAILED (exit $PROP_EXIT)"
       GATE_FAILED="test:property"
     fi
     echo ""

@@ -46,6 +46,9 @@ COPY --from=build /app/package.json /app/pnpm-lock.yaml /app/pnpm-workspace.yaml
 COPY --from=build /app/packages/ packages/
 RUN pnpm install --frozen-lockfile --prod --ignore-scripts
 
+# Ensure tsx cache dir is writable before dropping to non-root
+RUN mkdir -p /tmp/tsx-1000 && chown node:node /tmp/tsx-1000
+
 # REQ-INFRA-002: Run as non-root user
 USER node
 
