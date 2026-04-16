@@ -1,24 +1,26 @@
 # Mega Web Simulator — thousands of domains × pages
 # REQ-LTO-007: Multi-pod stateless deployment
-FROM node:22-alpine AS builder
+# Uses tsx to run TypeScript directly (same pattern as web-simulator)
 
+FROM node:22-slim AS base
+RUN corepack enable
+
+FROM base AS build
 WORKDIR /app
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml tsconfig.base.json ./
+COPY pnpm-lock.yaml package.json pnpm-workspace.yaml tsconfig.base.json ./
 COPY packages/testing/package.json packages/testing/
-RUN corepack enable && corepack prepare pnpm@10.33.0 --activate && \
-    pnpm install --frozen-lockfile --ignore-scripts --filter @ipf/testing
+RUN pnpm install --frozen-lockfile --ignore-scripts
 
 COPY packages/testing/ packages/testing/
-RUN pnpm --filter @ipf/testing build
 
-FROM node:22-alpine
+FROM base AS production
 WORKDIR /app
-RUN addgroup -S app && adduser -S app -G app
-COPY --from=builder /app/packages/testing/dist/ ./dist/
-COPY --from=builder /app/node_modules/ ./node_modules/
-COPY --from=builder /app/packages/testing/node_modules/ ./packages/testing/node_modules/
+COPY --from=build /app/ ./
 
-USER app
+# Pre-create tsx cache directory (tsx needs writable /tmp)
+RUN mkdir -p /tmp/tsx-1000 && chown node:node /tmp/tsx-1000
+
+USER node
 
 ENV DOMAIN_COUNT=1000 \
     PAGES_PER_DOMAIN=50 \
@@ -30,4 +32,4 @@ EXPOSE 8080
 HEALTHCHECK --interval=5s --timeout=3s --retries=5 \
     CMD wget --spider -q http://localhost:8080/health || exit 1
 
-CMD ["node", "dist/simulators/mega-simulator-entrypoint.js"]
+CMD ["node", "--import", "tsx/esm", "packages/testing/src/simulators/mega-simulator-entrypoint.ts"]
