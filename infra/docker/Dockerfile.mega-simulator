@@ -6,7 +6,7 @@ WORKDIR /app
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml tsconfig.base.json ./
 COPY packages/testing/package.json packages/testing/
 RUN corepack enable && corepack prepare pnpm@10.33.0 --activate && \
-    pnpm install --frozen-lockfile --filter @ipf/testing
+    pnpm install --frozen-lockfile --ignore-scripts --filter @ipf/testing
 
 COPY packages/testing/ packages/testing/
 RUN pnpm --filter @ipf/testing build

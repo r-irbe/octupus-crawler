@@ -9,7 +9,7 @@ FROM base AS build
 WORKDIR /app
 COPY pnpm-lock.yaml package.json pnpm-workspace.yaml tsconfig.base.json ./
 COPY packages/testing/package.json packages/testing/
-RUN pnpm install --frozen-lockfile
+RUN pnpm install --frozen-lockfile --ignore-scripts
 
 COPY packages/testing/ packages/testing/
 
