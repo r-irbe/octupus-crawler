@@ -31,19 +31,20 @@
     "typespec:lint": "spectral lint specs/generated/openapi.v1.yaml --ruleset specs/.spectral.yaml"
   },
   "dependencies": {
-    "tsx": "^4.19.0"
+    "tsx": "^4.21.0"
   },
   "devDependencies": {
     "@changesets/changelog-github": "^0.6.0",
     "@changesets/cli": "^2.30.0",
-    "@stoplight/spectral-cli": "^6.15.0",
-    "@typespec/compiler": "^1.10.0",
-    "@typespec/http": "^1.10.0",
-    "@typespec/openapi3": "^1.10.0",
-    "@typespec/rest": "^0.80.0",
-    "@typespec/versioning": "^0.80.0",
-    "turbo": "^2.8.0",
-    "typescript": "^6.0.0"
+    "@stoplight/spectral-cli": "^6.15.1",
+    "@typespec/compiler": "^1.11.0",
+    "@typespec/http": "^1.11.0",
+    "@typespec/openapi": "^1.11.0",
+    "@typespec/openapi3": "^1.11.0",
+    "@typespec/rest": "^0.81.0",
+    "@typespec/versioning": "^0.81.0",
+    "turbo": "^2.9.6",
+    "typescript": "^6.0.2"
   },
   "pnpm": {
     "overrides": {
@@ -52,15 +53,28 @@
       "@typescript-eslint/typescript-estree>typescript": "^6.0.0"
     },
     "onlyBuiltDependencies": [
-      "@prisma/client",
-      "@prisma/engines",
-      "prisma",
-      "esbuild",
-      "cpu-features",
-      "msgpackr-extract",
-      "protobufjs",
-      "ssh2",
-      "unrs-resolver"
+      "-",
+      "'",
+      "[",
+      "]",
+      "@",
+      "*",
+      "a",
+      "b",
+      "c",
+      "e",
+      "f",
+      "g",
+      "j",
+      "k",
+      "m",
+      "o",
+      "p",
+      "r",
+      "s",
+      "t",
+      "u",
+      "x"
     ]
   }
 }

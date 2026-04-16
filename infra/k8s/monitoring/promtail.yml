@@ -76,7 +76,7 @@ spec:
           type: RuntimeDefault
       containers:
         - name: promtail
-          image: grafana/promtail:3.0.0
+          image: grafana/promtail:3.6.10
           securityContext:
             runAsUser: 0
             allowPrivilegeEscalation: false
