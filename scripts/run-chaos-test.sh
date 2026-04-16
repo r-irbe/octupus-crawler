@@ -19,6 +19,22 @@ RECOVERY_DURATION=${RECOVERY_DURATION:-300}   # 5 min
 
 log() { echo "[$(date -u +%Y-%m-%dT%H:%M:%SZ)] $*"; }
 
+wait_with_progress() {
+  local duration=$1
+  local phase=${2:-""}
+  local interval=30
+  local elapsed=0
+  while [ "$elapsed" -lt "$duration" ]; do
+    local remaining=$(( duration - elapsed ))
+    local step=$(( remaining < interval ? remaining : interval ))
+    sleep "$step"
+    elapsed=$(( elapsed + step ))
+    if [ "$elapsed" -lt "$duration" ]; then
+      log "  ⏳ $phase — ${elapsed}s / ${duration}s elapsed ($(( duration - elapsed ))s remaining)"
+    fi
+  done
+}
+
 check_prereqs() {
   if ! kubectl get crd podchaos.chaos-mesh.org &>/dev/null; then
     log "ERROR: Chaos Mesh CRDs not found. Run scripts/setup-local.sh first."
@@ -93,7 +109,7 @@ log "Results directory: $RESULTS_DIR"
 log ""
 log "=== Phase 1: Baseline ($BASELINE_DURATION s) ==="
 snapshot_metrics "01-baseline-start"
-sleep "$BASELINE_DURATION"
+wait_with_progress "$BASELINE_DURATION" "Baseline"
 snapshot_metrics "01-baseline-end"
 
 # ── Phase 2: Pod Chaos (5 min) ───────────────────────
@@ -101,7 +117,7 @@ log ""
 log "=== Phase 2: Pod Kill Chaos ($POD_CHAOS_DURATION s) ==="
 apply_chaos "pod-kill" "$CHAOS_DIR/pod-kill.yml"
 snapshot_metrics "02-pod-chaos-start"
-sleep "$POD_CHAOS_DURATION"
+wait_with_progress "$POD_CHAOS_DURATION" "Pod Kill"
 snapshot_metrics "02-pod-chaos-end"
 remove_chaos "pod-kill" "$CHAOS_DIR/pod-kill.yml"
 
@@ -110,7 +126,7 @@ log ""
 log "=== Phase 3: Network Delay Chaos ($NET_CHAOS_DURATION s) ==="
 apply_chaos "network-delay" "$CHAOS_DIR/network-delay.yml"
 snapshot_metrics "03-network-chaos-start"
-sleep "$NET_CHAOS_DURATION"
+wait_with_progress "$NET_CHAOS_DURATION" "Network Delay"
 snapshot_metrics "03-network-chaos-end"
 remove_chaos "network-delay" "$CHAOS_DIR/network-delay.yml"
 
@@ -119,7 +135,7 @@ log ""
 log "=== Phase 4: CPU Stress Chaos ($STRESS_DURATION s) ==="
 apply_chaos "cpu-stress" "$CHAOS_DIR/stress-cpu.yml"
 snapshot_metrics "04-stress-start"
-sleep "$STRESS_DURATION"
+wait_with_progress "$STRESS_DURATION" "CPU Stress"
 snapshot_metrics "04-stress-end"
 remove_chaos "cpu-stress" "$CHAOS_DIR/stress-cpu.yml"
 
@@ -128,7 +144,7 @@ log ""
 log "=== Phase 5: Recovery ($RECOVERY_DURATION s) ==="
 log "All chaos removed. Monitoring recovery..."
 snapshot_metrics "05-recovery-start"
-sleep "$RECOVERY_DURATION"
+wait_with_progress "$RECOVERY_DURATION" "Recovery"
 snapshot_metrics "05-recovery-end"
 
 # ── Summary ──────────────────────────────────────────
