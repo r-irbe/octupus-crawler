@@ -29,7 +29,6 @@ COPY packages/redis/package.json packages/redis/
 COPY packages/job-queue/package.json packages/job-queue/
 COPY packages/resilience/package.json packages/resilience/
 COPY packages/api-router/package.json packages/api-router/
-COPY packages/virtual-memory/package.json packages/virtual-memory/
 RUN pnpm install --frozen-lockfile --ignore-scripts
 
 # Copy source and build
