@@ -130,8 +130,29 @@ record_state "01-monitoring"
 # ═══════════════════════════════════════════════════════
 log ""
 log "=== Phase 3: Chaos + Scaling ==="
-export PASS FAIL TOTAL
-bash "$SCRIPT_DIR/run-k8s-chaos-e2e.sh"
+# Source instead of bash to preserve PASS/FAIL/TOTAL counters
+set +e
+source "$SCRIPT_DIR/run-k8s-chaos-e2e.sh"
+set -e
 
+# ═══════════════════════════════════════════════════════
+# Summary
+# ═══════════════════════════════════════════════════════
+log ""
+log "╔══════════════════════════════════════════╗"
+log "║   K8s E2E Test Results                   ║"
+log "╚══════════════════════════════════════════╝"
+log ""
+log "  Total:  $TOTAL"
+log "  Passed: $PASS"
+log "  Failed: $FAIL"
+log ""
+if [ "$FAIL" -eq 0 ]; then
+  log "  ✓ ALL TESTS PASSED"
+else
+  log "  ✗ $FAIL TEST(S) FAILED"
+fi
 log ""
 log "Dashboards: http://localhost:3000 | Traces: http://localhost:16686"
+
+[ "$FAIL" -eq 0 ]
