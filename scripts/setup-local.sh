@@ -112,7 +112,8 @@ echo "━━━ Deploying IPF Stack ━━━"
 kubectl create namespace ipf --dry-run=client -o yaml | kubectl apply -f -
 bash "$(dirname "$0")/create-dashboard-configmap.sh" || \
   echo "WARNING: dashboard configmap creation failed"
-kubectl apply -k infra/k8s/overlays/dev/ 2>/dev/null || \
+# Use e2e overlay for local k3d (uses local registry images, not ghcr.io)
+kubectl apply -k infra/k8s/overlays/e2e/ 2>/dev/null || \
   echo "WARNING: kustomize apply failed — some resources may need image builds first"
 
 END_TIME=$(date +%s)
