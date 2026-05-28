@@ -43,7 +43,7 @@
     "@typespec/openapi3": "^1.11.0",
     "@typespec/rest": "^0.81.0",
     "@typespec/versioning": "^0.81.0",
-    "turbo": "^2.9.6",
+    "turbo": "^2.9.14",
     "typescript": "^6.0.2"
   },
   "pnpm": {
